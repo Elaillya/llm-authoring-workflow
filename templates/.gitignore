@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+responses/
+attempts/
+delivery/
+local/
+materials/
+providers*.json
+.env*
+*.key
+*.pem

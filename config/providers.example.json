@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "providers": {
+    "seed": {"display_name": "Seed 2.1 Turbo", "protocol": "chat_completions", "base_url": "", "model": "doubao-seed-2.1-turbo", "api_key": "", "api_key_file": "", "api_key_env": "", "expected_response_models": [], "idle_timeout_seconds": 600, "total_timeout_seconds": 1200, "request_options": {"max_tokens": 16384}},
+    "gpt": {"display_name": "GPT-5.6 sol", "protocol": "responses", "base_url": "", "model": "gpt-5.6-sol", "api_key": "", "api_key_file": "", "api_key_env": "", "expected_response_models": [], "idle_timeout_seconds": 180, "total_timeout_seconds": 1200, "request_options": {"max_output_tokens": 16384, "reasoning": {"effort": "high"}}},
+    "claude": {"display_name": "Claude Opus 4.6", "protocol": "anthropic_messages", "base_url": "", "model": "claude-opus-4-6", "api_key": "", "api_key_file": "", "api_key_env": "", "expected_response_models": [], "idle_timeout_seconds": 600, "total_timeout_seconds": 1200, "request_options": {"max_tokens": 16384, "thinking": {"type": "adaptive"}, "output_config": {"effort": "high"}}}
+  }
+}

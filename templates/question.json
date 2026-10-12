@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "task_id": "question-001",
+  "domain": "计算机科学",
+  "prompt": "",
+  "question_type": "",
+  "insight": {"mechanism": "", "priority": "", "conclusion": ""},
+  "author_notes": "",
+  "points": [{"id": "D1", "kind": "decisive", "criterion": ""}]
+}

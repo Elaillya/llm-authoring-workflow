@@ -1,0 +1,13 @@
+.venv/
+.browsers/
+.assets/
+local/
+workspaces/
+dist/
+__pycache__/
+*.pyc
+.env*
+*.key
+*.pem
+providers.json
+providers-*.json

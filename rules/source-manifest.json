@@ -1,0 +1,22 @@
+{
+  "snapshot_date": "2026-10-12",
+  "priority": [
+    "用户当前明确要求",
+    "第五期方案及新验收反馈",
+    "旧规范中仍适用的出题规则"
+  ],
+  "files": [
+    {
+      "file": "【开放难题五期】评测集外发方案.md",
+      "sha256": "bf231c01facb0954888a38ff008987fc9fbb1a231bd4e598def41e495b7e98b0"
+    },
+    {
+      "file": "试标验收问题汇总.md",
+      "sha256": "b0135ad7afc85edfca3d20c9557e7f12f7b985a414c38e4ed3c70cd01f36b379"
+    },
+    {
+      "file": "出题与模型评估工作规范.md",
+      "sha256": "b203c51b8328aea5cbc179e2e3f43bfda6bb74211aa16fc4c314f39b3a275112"
+    }
+  ]
+}
