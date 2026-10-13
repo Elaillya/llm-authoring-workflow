@@ -1,58 +1,95 @@
 # LLM Authoring Workflow
 
-开放难题第五期 **第一轮出题** 工具包，适用于 Codex 侧栏。默认计算机科学：先询问题型，助手生成并核实场景，写题面、Insight与考点，完成三个模型验证和完整Markdown截图，导出给第二轮的交接包。
+开放难题第五期完整出题与五模型排序工具，适用于 Codex 侧栏。默认计算机科学：选题型 → 生成并核实场景 → 冻结题面、Insight 和考点 → 三模型验证 → 填入 Arena 两个随机模型的 Markdown → 五模型考点评估和排序 → 完整提交。
 
-固定模型：Seed 2.1 Turbo、GPT-5.6 sol、Claude Opus 4.6。非决定性核心考点可选，没有时输出“无”。
+前三个模型固定为 Seed 2.1 Turbo、GPT-5.6 sol、Claude Opus 4.6。非决定性核心考点可选，没有时输出“无”。流程直接接续 Arena 和排序。
 
-## 第一次从GitHub使用
+## 第一次使用
 
-1. Clone或解压本仓，在VS Code打开仓库，在Codex侧栏发送：
+1. Clone 或解压本仓，在 VS Code 打开仓库，在 Codex 侧栏发送：
 
    ```text
-   按 AGENTS.md 为我创建独立工作区并开始第一轮出题。
+   按 AGENTS.md 为我创建独立工作区并开始完整出题流程。
    ```
 
-2. 助手会准备本仓独立环境与工作区，提示填写新工作区 `local/providers.json`。请填三个服务的base_url、实际model ID、api_key（或私有密钥文件/环境变量）。密钥留在私有文件，勿贴到聊天中。
-3. 在生成的 `Authoring.code-workspace` 中继续侧栏任务，从分析决策类、开放推荐类、How-to类中选一种。问题和限制由助手生成，不要求先填背景文件。
+2. 助手准备依赖和工作区，并提示填写 `local/providers.json` 中三个模型的服务地址、实际 model ID 和私有密钥。已配置的用户不用重新填写。
+3. 打开生成的 `Authoring.code-workspace`，在侧栏从分析决策类、开放推荐类、How-to 类中选一种。问题、事实和限制由助手生成并核实。
 
-准备过程也可以手动执行：
+手动准备也可以：
 
 ```bash
 python3 scripts/setup.py
 .venv/bin/python scripts/lab.py workspace-create ../my-authoring-workspace
 ```
 
-打开输出的工作区文件，侧栏发送：
+打开返回的工作区文件，在侧栏发送：
 
 ```text
-按 AGENTS.md 使用 llm-authoring-workflow 开始第一轮出题。
+按 AGENTS.md 开始或接续完整出题流程。
 ```
 
-`scripts/setup.py`下载当前工具专用Python依赖、Chromium和中文字体。环境基线Python≥3.10、Git和Linux/macOS；Windows使用WSL。实际验证环境为Linux/Python3.12，其他平台需自行验证。缺Chromium系统库时按Playwright提示安装；脚本不改账户登录、全局Python或系统服务。
+环境基线为 Python≥3.10、Git、Linux/macOS；Windows 使用 WSL。实际验证环境为 Linux/Python3.12。setup 准备专用依赖、Chromium 和中文字体；缺系统库时按 Playwright 提示安装。
 
-## 开始后的流程
+## 已做完三模型的旧题如何接续
 
-题型选择 → 配置检查 → 自动生成并核实场景 → 记录并冻结候选题面/Insight/考点 → Turbo筛查 → Turbo未达成时验证GPT/Claude → 三模型逐点评估及作者自查 → 锁定提交版并交接。
+2.0.0 保留现有题型、冻结版本、原回复、三模型判断、API截图、自查及旧交付。更新侧栏说明即可继续补齐 Arena 和排序。
 
-Seed必须未满足全部决定性点；GPT或Claude至少一个满足全部决定性点。网络错误或截断记证据不足。各次真实原件保留，修改题面重新采集，修改考点统一重评。
+在工具仓拉取更新，然后由侧栏执行（路径替换为已有工作区）：
 
-每题一个Git仓。新题在侧栏说“新建 question-002 的独立出题工作区”，打开返回的工作区文件即可并行工作；同一题目保持一个写入者。每道新题都会先询问题型，已经完整的共用API配置不会重复要求填写。
+```bash
+git pull --ff-only
+python3 scripts/lab.py --workspace ../my-authoring-workspace workspace-update
+```
 
-## 输出与边界
+打开原来的工作区，在侧栏发送：
 
-题目目录 `delivery/v001/` 包含 `出题提交.md`、`fields.json`、`question.json`、`sources.md`、三模型 `evaluation.json`、`author-self-review.json`、三份原Markdown、三张截图、API原始证据、`handoff.json`与文件哈希。下一版使用v002，旧证据保留。
+```text
+保留现有题目、三模型回复和判断，按新版 AGENTS.md 从缺失的 Arena 和五模型排序步骤继续。
+```
 
-第一轮到交接结束；独立质检、返修意见、Arena两模型和五模型排序属于第二轮，见 [交接接口](docs/HANDOFF.md)。作者自查不能冒充独立专家质检或最终验收。
+升级会备份并更新工具入口和侧栏 Skill；已有题目数据与模型配置保持。已完成且通过门槛的旧题会直接得到 Arena 填写文件，原 `delivery/v001` 保留，完整提交用 `v002` 等新目录。
 
-截图明确标注API Markdown渲染，呈现模型版本和完整正文。数学原语法保留，首版无专用公式排版，外部图片不加载。是否满足平台截图接收条件由实际规则决定。
+## Arena 阶段只填两份 Markdown
+
+助手运行 `lab arena-prepare --evaluation evaluations/three-rNNNN.json`，自动创建：
+
+- `arena-input/rNNNN/model-4.md`
+- `arena-input/rNNNN/model-5.md`
+- `arena-input/rNNNN/arena-prompt.md`：用于 Arena 的题面。
+
+打开前两份文件，将 `model_name: 待填写` 改为揭晓的完整型号，把分隔线下面的占位文字替换为完整原始 Markdown 回复。其余文件由工具管理。保存后在侧栏说：
+
+```text
+已填好两个 Arena 回复，请继续五模型考点评估、排序和完整交付。
+```
+
+使用 Arena Search 联网模式、Battle Mode、新会话获取随机两模型；不得重复，不得与前三个相同，不得属于 GPT/Claude 系列。**这里不用上传 Arena 截图，截图由你自行向甲方提交。** 工具记录 Markdown 为用户提供，不把它当作已独立核验的 Arena 页面。
+
+## 验证与排序
+
+候选题面、Insight 和考点先冻结，再筛查 Turbo；Turbo 未达成全部决定性点时才调用 GPT/Claude。最终必须保存三份完整真实回复，GPT 或 Claude 至少一个全部决定性达成。已有完整原件直接复用，不重新收费调用。
+
+五模型使用同一冻结考点逐项判断：决定性点控制是否整体达成，非决定性点也进入排序。全部决定性达成的模型优先；同梯队按全部核心考点满足数排序，相同则并列。排序只显示模型1–5，顺序固定为 Seed、GPT、Claude、Arena模型4、Arena模型5。理由采用“总结＋逐模型具体考点说明”，不少于500字。
+
+每题独立 Git；新题在侧栏说“新建 question-002 的独立工作区”。同一题保持一个写入者，旧版本和失败证据保留。
+
+## 输出
+
+完整提交目录包含 `出题提交.md`、`fields.json`、冻结题目与来源、五份 Markdown 原文、五模型 `evaluation.json`、`ranking.json`、作者自查、前三个模型的 API 截图和原始证据、两个 Arena 输入原件及哈希清单。Arena 截图单独由用户提交。
+
+最终导出使用五模型评估和排序记录：
+
+```bash
+lab export --evaluation evaluations/five-rNNNN.json --self-review evaluations/self-review-rNNNN.json --ranking evaluations/ranking-rNNNN.json --output delivery/v002
+```
+
+目录已存在时不覆盖。详细接续与交付字段见 [提交接口](docs/HANDOFF.md)。API 截图明确标注 Markdown 渲染来源；数学原语法保留，外部图片不加载。
 
 ## 检查与打包
 
 ```bash
 .venv/bin/python -m unittest discover -s tests
-.venv/bin/python scripts/build_release.py --output dist/llm-authoring-workflow-v1.0.1.zip
+.venv/bin/python scripts/build_release.py --output dist/llm-authoring-workflow-v2.0.0.zip
 ```
 
-发布脚本只打包已提交且属于通用目录的Git文件。源码修改先检查并提交。测试都是合成夹具；测试通过不证明正式题目的专业判断或供应商在线可用。
-
-准备好后，将ZIP解压内容放入自己的新GitHub仓库，或把本工具仓设置为新仓的remote后push。发布操作由仓库所有者执行；详见 [上传GitHub](docs/PUBLISH.md)。代码MIT许可，字体使用其独立SIL许可证；项目方原始作业文档未放入源码发布包。
+发布脚本从已提交的通用源码生成 ZIP，检查凭据字段。测试使用合成夹具。上传步骤见 [上传 GitHub](docs/PUBLISH.md)。代码 MIT 许可，字体使用其独立 SIL 许可证。

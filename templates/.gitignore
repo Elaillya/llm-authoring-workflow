@@ -9,3 +9,4 @@ providers*.json
 .env*
 *.key
 *.pem
+arena-input/

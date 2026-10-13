@@ -1,7 +1,7 @@
-# 工具仓与第一轮出题
+# 完整出题与五模型排序
 
-如果用户要求开始出题，先读 `README.md` 与 `skills/llm-authoring-workflow/SKILL.md`。在独立工作区执行，首次无工作区时用系统 Python 运行 `scripts/lab.py workspace-create ../llm-authoring-workspace`，再按 `scripts/setup.py` 准备依赖环境。先询问题型，同时提示填写新工作区 `local/providers.json` 中三个模型配置。
+开始或接续出题时，先读 README.md 与 skills/llm-authoring-workflow/SKILL.md。新用户用 scripts/lab.py workspace-create 建工作区并准备依赖，首次提示三个模型配置，每道新题询问题型。已有题目运行 status，复用冻结版本和原件，接续缺失步骤。
 
-如果用户要求维护代码，以 `docs/SPEC.md` 和 `rules/authoring.md` 为依据，运行 `python -m unittest discover -s tests`。维护时不调用真实模型；专业场景和事实由出题流程生成，计算机科学为默认领域。
+范围为题目、Insight、决定性与可选非决定性考点、三模型验证、Arena两份Markdown、五模型考点评估和排序、完整交付。Arena填写文件由工具创建，用户只填型号和原文，截图由用户自行提交甲方。具体专业规则以 rules/authoring.md 为准。
 
-第一轮范围是题目、Insight、核心考点、三模型达成性验证、作者自查及交接。第二轮独立质检及排序通过 handoff.json 接续，不在本仓实现。真实任务、密钥和环境位于工作区或忽略目录，发布包只从 Git 跟踪的通用文件生成。
+升级已有工作区用 workspace-update，保留题目和私有配置。维护代码按 docs/SPEC.md，运行 python -m unittest discover -s tests；软件验证使用合成材料，真实模型调用留给出题任务。发布源码仅包含通用工具文件。

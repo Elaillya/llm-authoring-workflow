@@ -28,7 +28,7 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(len(fields['models']),3);self.assertNotIn('ranking',fields)
         for role in ROLES:self.assertEqual((output/'models'/f'{role}.md').read_bytes(),(read_response(self.root,role)['directory']/'reply.md').read_bytes())
         self.assertEqual(len(list((output/'screenshots').glob('*.png'))),3)
-        handoff=json.loads((output/'handoff.json').read_text());self.assertEqual(handoff['models_in_order'],list(ROLES));self.assertEqual(handoff['next_workflow'],'quality_review_and_ranking')
+        handoff=json.loads((output/'handoff.json').read_text());self.assertEqual(handoff['models_in_order'],list(ROLES));self.assertEqual(handoff['next_workflow'],'arena_and_ranking')
         manifest=json.loads((output/'manifest.json').read_text())
         for filename,digest in manifest['files'].items():self.assertEqual(sha(output/filename),digest)
     def test_no_export_when_three_model_gate_fails(self):

@@ -1,11 +1,13 @@
-# 第一轮到第二轮的接口
+# 完整提交与旧题接续接口
 
-当前工具只实现第一轮。第二轮未来作为单独workflow接收完整出题包，不修改出题者的原件。
+2.0.0 同一工作流完成出题及五模型排序。旧三模型handoff和delivery是历史检查点，保留原文；不需要交给另一个质检workflow。
 
-入口是handoff.json，kind=`llm_authoring_handoff`、schema_version=1，记录workflow版本、题目与考点哈希、模型顺序seed/gpt/claude、三模型门槛、后续材料路径。manifest.json列出同包文件哈希，导入时先重算。
+workspace-update更新既有工作区侧栏说明和工具路径，自动查找当前冻结版本通过门槛的三模型评估并创建Arena填写文件。题面、考点、原文、判断、自查、私有配置和旧交付不改写。
 
-第二轮顺序：独立质检题目、Insight、全部核心考点与三模型判断 → 实质不通过则说明理由和具体修改建议，交给出题者返修 → 无实质问题时再获取Arena Search + Battle随机两模型 → 全五模型达成性与排序。
+Arena输入为arena-input/rNNNN/model-4.md与model-5.md。model_name记录真实完整型号，分隔线下是原Markdown。request.json由工具绑定冻结题目。导入同时检查两份输入，保留不可变原件及哈希；不要求截图。截图由用户单独提交甲方，页面模式/随机性不是工具已核验的事实。
 
-第五期后半段的新要求应独立实现：排序使用模型1–5指代表格顺序，允许并列；满足全部决定性点的第一梯队优先于未达成梯队，梯队内依全部核心考点满足度比较；理由至少500字，采用“总结＋逐模型考点达成情况”。这些不作为第一轮交付字段或完成条件。历史300字排序要求不用于第五期。
+完整导出handoff.json的kind为llm_complete_submission，schema_version=1，记录版本、题目哈希、seed/gpt/claude/arena_1/arena_2顺序、出题门槛和排序，next_workflow为platform_submission。fields.json包含题目、题型、Insight、两类考点、五个模型完整Markdown/达成性/理由、排序与排序理由。
 
-来源文档部分飞书流程图未导出；不推断缺失图中的额外合同、模板或平台字段。需要新增接收字段时第二轮按实际方案补充版本化接口。
+固定显示顺序为模型1 Seed、模型2 GPT、模型3 Claude、模型4/5 Arena。evaluation.json评估全部核心考点；authoring-evaluation.json为前三个模型决定性点的兼容检查视图。ranking.json绑定完整evaluation哈希；全部决定性达成梯队优先，同梯队按全部满足数排序，相同并列。备注至少500字，结构为总结＋模型1至模型5具体考点情况。
+
+旧delivery/v001保留，完整结果用v002等新目录。manifest.json覆盖五原文、判断、排序、三API截图及来源证据的文件哈希。软件导出完成不等于甲方平台验收完成。

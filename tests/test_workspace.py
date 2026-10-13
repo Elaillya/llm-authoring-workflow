@@ -36,13 +36,36 @@ class WorkspaceTests(unittest.TestCase):
         self.fill_config();before=(self.root/'local/providers.json').read_bytes()
         with self.assertRaises(Error):create_workspace(self.root)
         self.assertEqual((self.root/'local/providers.json').read_bytes(),before)
-    def test_new_source_namespace_has_no_second_round_commands(self):
+    def test_arena_import_is_available_but_does_not_invent_missing_evidence(self):
         from llm_authoring.cli import main
-        from contextlib import redirect_stderr
+        from contextlib import redirect_stderr,redirect_stdout
         from io import StringIO
-        for command in ('rank','arena-import'):
-            with redirect_stderr(StringIO()):
-                with self.assertRaises(SystemExit):main([command])
+        from unittest.mock import patch
+        with patch('llm_authoring.cli.collect') as network,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
+            self.assertEqual(main(['--workspace',str(self.root),'--task',str(self.task),'arena-import']),2)
+            network.assert_not_called()
+    def test_update_keeps_current_question_originals_config_and_old_delivery(self):
+        from llm_authoring.workspace import update_workspace
+        from llm_authoring.core import freeze,write_json,sha
+        from test_core import question,populate
+        self.fill_config();choose_type(self.task,'分析决策类')
+        q=question();q['task_id']='question-001';freeze(self.task,q)
+        notes=self.task/'drafts/sources.md';notes.write_text('合成来源，测试升级不修改现有材料。')
+        ev=populate(self.task);write_json(self.task/'evaluations/three-r0001.json',ev)
+        old=self.task/'delivery/v001/handoff.json';write_json(old,{'workflow_version':'1.0.1','next_workflow':'quality_review_and_ranking'})
+        log=self.task/'WORKLOG.md';log.write_text('历史工作记录：上半部分已完成，原始判断保留。\n')
+        protected=[p for p in self.task.rglob('*') if p.is_file() and any(name in p.parts for name in ['revisions','responses','delivery','evaluations','drafts'])]
+        protected += [self.task/'REQUEST.json',self.task/'CURRENT.json',self.task/'TASK.json',self.root/'local/providers.json',self.root/'local/runtime.json']
+        before={str(p):sha(p) for p in protected}
+        result=update_workspace(self.root)
+        self.assertTrue(result['tasks'][0]['preserved_existing_question'])
+        self.assertEqual(before,{str(p):sha(p) for p in protected})
+        self.assertTrue(log.read_text().endswith('历史工作记录：上半部分已完成，原始判断保留。\n'))
+        self.assertTrue(Path(result['instructions_backup']).is_dir())
+        slot=Path(result['tasks'][0]['arena']['input_files']['arena_1']);slot.write_text('用户已填内容，不允许覆盖')
+        update_workspace(self.root)
+        self.assertEqual(slot.read_text(),'用户已填内容，不允许覆盖')
+        self.assertEqual(before,{str(p):sha(p) for p in protected})
     def test_gpt_call_is_blocked_until_seed_current_version_fails(self):
         from contextlib import redirect_stderr,redirect_stdout
         from io import StringIO

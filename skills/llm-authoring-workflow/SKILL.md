@@ -1,15 +1,16 @@
 ---
 name: llm-authoring-workflow
-description: 完成开放难题第五期第一轮出题：开始时选题型，首次配置三个模型，自动构造并核实计算机科学场景，写Insight与考点，验证三模型、保存Markdown截图、作者自查、交付出题包；返修时依据冻结版本重评。
+description: 完成开放难题第五期完整出题与五模型排序，或从旧三模型检查点接续：新题先选题型并首次配置三模型，生成计算机科学场景与Insight/考点，三模型验证，创建Arena两份Markdown填入文件，五模型评估和排序，导出完整提交。
 ---
 
-# 第一轮出题
+# 完整出题与五模型排序
 
-先读当前题目 AGENTS.md、REQUEST.json、WORKLOG.md，以及工具仓的 `rules/authoring.md`。工具仓路径见当前题目 TOOLKIT.md；命令为该工作区 `bin/lab`。首次只有工具仓时按其 README 建立独立工作区。
+先读当前题目AGENTS.md、REQUEST.json、WORKLOG.md及工具仓rules/authoring.md。工具路径见TOOLKIT.md，命令为工作区bin/lab。首次只有工具仓时按README创建工作区；更新已建工作区用workspace-update。
 
-1. 运行 `lab begin`。用户未给题型时先询问分析决策类、开放推荐类、How-to类三选一；用户选择后 `lab choose-type 类型`。缺模型配置时提示填写工具显示的私有 providers.json，列出Seed 2.1 Turbo、GPT-5.6 sol、Claude Opus 4.6。其他背景由助手生成，勿要求用户填问题或限制。
-2. `begin`就绪后按 `references/design.md` 设计并冻结题目及作者自查。
-3. 按 `references/collect.md` 获取同一题面的三模型原文与截图。
-4. 按 `references/evaluate-deliver.md` 逐项判断、自查、导出交接。第一轮完成后结束，第二轮通过交接文件独立启动。
+1. 运行lab begin与lab status。新题尚未选类型时询问分析决策类、开放推荐类、How-to类并choose-type；首次缺配置时提示填写私有providers.json。已有题型或配置直接复用，背景由助手生成。
+2. 当前题目未冻结时按references/design.md设计并冻结；已有冻结版本、原件和判断时从缺失步骤继续，保留旧交付。
+3. 只有缺失API证据时按references/collect.md获取三模型原文和图，Seed先筛查。按references/evaluate-deliver.md完成决定性判断及作者自查。已有完整证据不重新调用。
+4. 三模型门槛通过后按references/arena-rank.md创建Arena两份MD、给用户可点击路径，等待填入。用户只填真实型号和原文，Arena图自行提交，不索要截图或额外清单。
+5. 用户填好后导入，统一评估五模型全部考点、排序、校验500字理由、导出新的完整提交目录并更新WORKLOG。
 
-连续推进材料已具备的步骤。网络或模型身份问题保留证据；实际不能独立获得的必要信息才请求用户。每个检查点更新短 WORKLOG，绑定真实路径与当前版本。完成条件为三个完整真实回复、版本一致的决定性判断、区分度、自查、完整截图与第一轮交接字段齐全。
+材料齐备时连续推进。完成条件是五份完整真实Markdown、同一版本考点判断、合规的型号、排序与具体理由、前三个模型的原API截图以及完整提交字段与manifest。原件、负结果和历史版本保留；工具收到的Arena MD是用户提供，不能称为已独立核验页面或甲方验收。

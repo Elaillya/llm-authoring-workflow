@@ -1,9 +1,11 @@
 """Portable source toolkit and private question workspaces have separate roots."""
 import os
+import shutil
+import tempfile
 from pathlib import Path
 import subprocess
 from . import VERSION
-from .core import Error, NAMES, TYPES, read_json, require, write_json
+from .core import Error, NAMES, TYPES, active_question, read_json, require, write_json
 from .providers import load_provider, make_payload
 
 TOOL_ROOT=Path(__file__).resolve().parents[1]
@@ -50,6 +52,12 @@ def workspace_file(folder,label,workspace):
                     'args':['--task','${workspaceFolder}','start'],'problemMatcher':[]}]}}
 
 
+def workspace_readme(tool):
+    return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
+            '首次使用请填写 local/providers.json。题目类型每次由你选择，计算机科学场景由助手生成。\n'
+            f'Arena阶段只需填写工具创建的两份Markdown，截图由你单独提交。\n\n工具说明：{tool}/README.md\n')
+
+
 def create_workspace(destination,tool=TOOL_ROOT,runtime=None):
     root=Path(destination).absolute();tool=Path(tool).resolve()
     require(not root.exists(),'工作区目录已存在，拒绝覆盖题目或私有配置')
@@ -66,8 +74,8 @@ def create_workspace(destination,tool=TOOL_ROOT,runtime=None):
              'exe=Path(runtime["python"])\nif not exe.is_file():\n print("首次使用：请让侧栏运行工具仓 scripts/setup.py，准备依赖环境。",file=sys.stderr);sys.exit(2)\n'+\
              'os.execv(str(exe),[str(exe),str(Path(marker["toolkit_root"])/"scripts/lab.py"),"--workspace",str(root),*sys.argv[1:]])\n'
     (root/'bin/lab').write_text(launcher);(root/'bin/lab').chmod(0o755)
-    write_json(root/'Authoring.code-workspace',workspace_file('task','第一轮出题',root))
-    (root/'README.md').write_text(f'# 第一轮出题工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始第一轮出题”。\n首次使用请填写 local/providers.json。题目类型每次由你选择，计算机科学场景由助手生成。\n\n工具说明：{tool}/README.md\n')
+    write_json(root/'Authoring.code-workspace',workspace_file('task','出题与五模型排序',root))
+    (root/'README.md').write_text(workspace_readme(tool))
     result=create_task(root,'question-001',root/'task')
     return {'workspace':str(root),'workspace_file':str(root/'Authoring.code-workspace'),'providers_file':str(config),'first_task':result}
 
@@ -94,4 +102,78 @@ def begin(root,workspace):
     if any(m['configuration']!='ready' for m in models.values()):needs.append('model_configuration')
     return {'phase':'authoring','domain':'计算机科学','question_type':request.get('question_type'),'question_type_choices':list(TYPES),
             'models':models,'configuration_file':str(config),'requires_input':needs,'ready':not needs,
-            'scenario_owner':'assistant','next':'先询问题型并提示缺失模型配置，其他场景内容由助手生成' if needs else '按已选题型自动生成并核实计算机科学场景'}
+            'scenario_owner':'assistant','next':'先询问题型并提示缺失模型配置，其他场景内容由助手生成' if needs else
+            '已有冻结题目，运行status查看缺失材料并接续，不重跑已完成模型' if (root/'CURRENT.json').exists() else '按已选题型自动生成并核实计算机科学场景'}
+
+
+def find_authoring_evaluation(root):
+    from .authoring import check_three
+    root=Path(root)
+    if not (root/'CURRENT.json').exists():return None
+    current=active_question(root)
+    standard=root/'evaluations'/('three-'+current['revision']+'.json')
+    candidates=[standard]+sorted((root/'evaluations').glob('*.json'),key=lambda p:p.stat().st_mtime,reverse=True)
+    for path in dict.fromkeys(candidates):
+        if not path.is_file():continue
+        try:
+            if check_three(root,read_json(path))['three_model_gate']:return path
+        except (Error,ValueError,TypeError,KeyError,AttributeError,OSError):continue
+    return None
+
+
+def update_workspace(workspace,tool=TOOL_ROOT):
+    """Update only sidebar instructions and the toolkit binding; retain task evidence."""
+    workspace=Path(workspace).resolve();tool=Path(tool).resolve()
+    marker=read_json(workspace/'.authoring-workspace.json')
+    require(marker.get('workflow')=='llm-authoring','工作区类型不匹配')
+    candidates=[workspace/'task']+sorted((workspace/'tasks').glob('*'))
+    tasks=[]
+    for root in candidates:
+        if not (root/'TASK.json').is_file():continue
+        require(not root.is_symlink() and root.resolve().is_relative_to(workspace),'题目路径不能逃逸工作区')
+        task=read_json(root/'TASK.json')
+        require(task.get('workflow')=='llm-authoring','题目工作流类型不匹配')
+        tasks.append((root,task['task_id']))
+    require(tasks,'工作区没有可接续的题目')
+    backup=Path(tempfile.mkdtemp(prefix='workflow-'+VERSION+'-',dir=workspace/'local'))
+    for name in ('.authoring-workspace.json','Authoring.code-workspace','README.md'):
+        if (workspace/name).is_file():shutil.copy2(workspace/name,backup/name)
+    updated=[]
+    for root,task_id in tasks:
+        saved=backup/root.relative_to(workspace);saved.mkdir(parents=True,exist_ok=True)
+        for name in ('AGENTS.md','TOOLKIT.md','WORKLOG.md','.gitignore'):
+            path=root/name
+            require(not path.is_symlink(),'接续说明文件不能为符号链接')
+            if path.exists():shutil.copy2(path,saved/name)
+        skill=root/'.agents/skills/llm-authoring-workflow'
+        require(not skill.is_symlink() and skill.resolve().is_relative_to(root.resolve()),'工作区Skill不能为符号链接或逃逸题目目录')
+        if skill.exists():shutil.copytree(skill,saved/'skill')
+        content=(tool/'templates/AGENTS.md').read_text().replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
+        (root/'AGENTS.md').write_text(content)
+        shutil.copytree(tool/'skills/llm-authoring-workflow',skill,dirs_exist_ok=True)
+        (root/'TOOLKIT.md').write_text(f'# 工具入口\n\n源码：{tool}\n工作区：{workspace}\n命令：{workspace}/bin/lab\n工具版本：{VERSION}\n')
+        ignore=root/'.gitignore';old_ignore=ignore.read_text() if ignore.exists() else ''
+        if 'arena-input/' not in old_ignore.splitlines():ignore.write_text(old_ignore.rstrip()+'\narena-input/\n')
+        log=root/'WORKLOG.md';previous=log.read_text() if log.exists() else ''
+        banner=f'## 当前工作流：{VERSION} 完整出题与五模型排序'
+        if banner not in previous:
+            log.write_text(banner+'\n\n已保留原题、三模型原件、判断、截图与旧交付。历史记录中的上下轮分工已由当前流程替代。'
+                           '接续Arena两份Markdown、五模型全部考点评估及排序；使用新的交付版号。\n\n---\n\n'+previous)
+        evaluation=find_authoring_evaluation(root)
+        arena=None
+        if evaluation:
+            from .arena import prepare_arena
+            arena=prepare_arena(root,read_json(evaluation))
+        updated.append({'task':str(root),'preserved_existing_question':(root/'CURRENT.json').exists(),
+                        'authoring_evaluation':str(evaluation) if evaluation else None,'arena':arena})
+    marker.update({'toolkit_root':str(tool),'version':VERSION});write_json(workspace/'.authoring-workspace.json',marker)
+    (workspace/'README.md').write_text(workspace_readme(tool))
+    file=workspace/'Authoring.code-workspace'
+    if file.exists():
+        value=read_json(file)
+        for folder in value.get('folders',[]):
+            if folder.get('name')=='第一轮出题':folder['name']='出题与五模型排序'
+        write_json(file,value)
+    return {'workflow_version':VERSION,'tasks':updated,'instructions_backup':str(backup),
+            'preserved':'题型、题面、Insight、考点、三模型结果、自查、旧交付、私有配置与运行环境',
+            'next':'打开原工作区，在侧栏接续Arena与五模型排序，不需要重新出题或调用前三个模型'}

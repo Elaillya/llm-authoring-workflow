@@ -1,4 +1,4 @@
-"""Authoring ends with a three-model handoff. Professional judgments remain explicit."""
+"""Three-model screening checkpoints and shared point-level evidence validation."""
 from pathlib import Path
 import shutil
 import tempfile
@@ -16,20 +16,21 @@ def decisive_points(root):
     return [p for p in active_question(root)['question']['points'] if p['kind']=='decisive']
 
 
-def evaluation_template(root,roles=ROLES):
+def evaluation_template(root,roles=ROLES,include_supporting=False):
     current=active_question(root)
-    result={'schema_version':1,'phase':'authoring','task_id':current['question']['task_id'],
+    result={'schema_version':1,'phase':'five_model_evaluation' if include_supporting else 'authoring','task_id':current['question']['task_id'],
             'prompt_sha256':current['prompt_sha256'],'rubric_sha256':current['rubric_sha256'],'question_sha256':current['question_sha256'],'reviewer':'','models':{}}
     for role in roles:
         response=read_response(root,role)
         result['models'][role]={'response_sha256':response['meta']['reply_sha256'],
-                               'points':{p['id']:{'met':None,'reason':'','quotes':[]} for p in decisive_points(root)}}
+                               'points':{p['id']:{'met':None,'reason':'','quotes':[]} for p in (current['question']['points'] if include_supporting else decisive_points(root))}}
     return result
 
 
-def validated_models(root,ev,roles=ROLES):
-    current=active_question(root);points=decisive_points(root)
-    require(ev.get('schema_version')==1 and ev.get('phase')=='authoring' and ev.get('task_id')==current['question']['task_id'],'评估不属于当前出题任务')
+def validated_models(root,ev,roles=ROLES,include_supporting=False):
+    current=active_question(root);points=current['question']['points'] if include_supporting else decisive_points(root)
+    phase='five_model_evaluation' if include_supporting else 'authoring'
+    require(ev.get('schema_version')==1 and ev.get('phase')==phase and ev.get('task_id')==current['question']['task_id'],'评估不属于当前出题任务')
     require(ev.get('prompt_sha256')==current['prompt_sha256'],'评估题面版本失效，需获取新回复')
     require(ev.get('rubric_sha256')==current['rubric_sha256'],'评估考点版本失效，须对三模型统一重评')
     require(ev.get('question_sha256')==current['question_sha256'],'完整冻结版本失效，重新确认三模型判断；题面未变可复用完整原回复')
@@ -38,9 +39,12 @@ def validated_models(root,ev,roles=ROLES):
     stats={}
     for role in roles:
         item=read_response(root,role);record=ev['models'][role]
-        require(item['meta'].get('display_name')==NAMES[role],'指定模型名称不匹配')
+        if role in NAMES:require(item['meta'].get('display_name')==NAMES[role],'指定模型名称不匹配')
+        else:
+            from .arena import validate_arena_evidence
+            validate_arena_evidence(root,role,item)
         require(record.get('response_sha256')==item['meta']['reply_sha256'],'评估与原文不匹配')
-        require(set(record.get('points',{}))=={p['id'] for p in points},'第一轮逐项评估全部决定性考点')
+        require(set(record.get('points',{}))=={p['id'] for p in points},'逐项评估全部指定考点；五模型排序也需判断非决定性点')
         judgments=[]
         for point in points:
             judgment=record['points'][point['id']]
@@ -49,9 +53,11 @@ def validated_models(root,ev,roles=ROLES):
             quotes=judgment.get('quotes',[])
             require(isinstance(quotes,list) and all(isinstance(q,str) and q.strip() and q in item['text'] for q in quotes),'引用不是原文的准确子串')
             require(not judgment['met'] or quotes,'满足须有原文引用依据')
-            judgments.append({'id':point['id'],**judgment})
-        met=sum(j['met'] for j in judgments)
-        stats[role]={'name':NAMES[role],'decisive_met':met,'decisive_total':len(points),'attained':met==len(points),'judgments':judgments}
+            judgments.append({**judgment,'id':point['id'],'kind':point['kind']})
+        decisive=[j for j in judgments if j['kind']=='decisive']
+        met=sum(j['met'] for j in decisive)
+        stats[role]={'name':item['meta']['display_name'],'decisive_met':met,'decisive_total':len(decisive),'attained':met==len(decisive),
+                     'total_met':sum(j['met'] for j in judgments),'total_points':len(points),'judgments':judgments}
     return stats
 
 
@@ -119,7 +125,7 @@ def export_authoring(root,ev,review,output):
     staging=Path(tempfile.mkdtemp(prefix='.authoring-export-',dir=output.parent))
     try:
         (staging/'models').mkdir();(staging/'screenshots').mkdir();(staging/'evidence').mkdir()
-        lines=['# 第一轮出题提交内容','\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
+        lines=['# 三模型出题检查点','\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
                '\n## 关键洞察（Insight）\n',f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
         for field,title in [('decisive_points','决定性核心考点'),('supporting_points','非决定性核心考点')]:
             lines.append('\n## '+title+'\n')
@@ -136,8 +142,8 @@ def export_authoring(root,ev,review,output):
                                    'reply_markdown':item['text'],'attained':stat['attained'],'attainment_notes':notes,'screenshot':f'screenshots/{role}.png'}
             lines.extend([f'\n## 模型{index}：{NAMES[role]}\n','### 模型回复\n',item['text'],'\n### 是否达成全部决定性核心考点\n',
                           '是' if stat['attained'] else '否','\n### 达成性备注\n',notes,f'\n截图：[完整API渲染截图](screenshots/{role}.png)'])
-        lines.extend(['\n## 出题说明备注\n',q['author_notes'],'\n## 第一轮交接说明\n',
-                      '三模型区分度检查通过。截图由保存的API原文渲染。此包交给第二轮独立质检；不代表平台验收通过。'])
+        lines.extend(['\n## 出题说明备注\n',q['author_notes'],'\n## 检查点接续说明\n',
+                      '三模型区分度检查通过。截图由保存的API原文渲染。此为出题检查点，继续补齐Arena两份Markdown、五模型排序及完整提交。'])
         (staging/'出题提交.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
         shutil.copyfile(Path(root)/'drafts/sources.md',staging/'sources.md')
@@ -145,9 +151,9 @@ def export_authoring(root,ev,review,output):
         from . import VERSION
         handoff={'schema_version':1,'kind':'llm_authoring_handoff','workflow_version':VERSION,'task_id':q['task_id'],
                  'question_sha256':current['question_sha256'],'prompt_sha256':current['prompt_sha256'],'rubric_sha256':current['rubric_sha256'],
-                 'models_in_order':list(ROLES),'three_model_gate':True,'next_workflow':'quality_review_and_ranking',
+                 'models_in_order':list(ROLES),'three_model_gate':True,'next_workflow':'arena_and_ranking',
                  'next_inputs':['question.json','sources.md','evaluation.json','models/','screenshots/','evidence/'],
-                 'next_action':'独立质检题面、Insight、考点和三模型判断；有实质问题注明理由和修改建议，返修后再复核。'}
+                 'next_action':'保留本检查点，准备Arena两份Markdown填入文件，完成五模型全部考点评估、排序及最终提交。'}
         write_json(staging/'handoff.json',handoff)
         write_json(staging/'manifest.json',{'schema_version':1,'phase':'authoring','files':{p.relative_to(staging).as_posix():sha(p) for p in staging.rglob('*') if p.is_file()}})
         require(not output.exists(),'交接发布期间目标被其他写入者占用')

@@ -1,11 +1,9 @@
-# 三模型判断与交接
+# 三模型验证与出题检查点
 
-运行 `lab evaluation-template evaluations/three-rNNNN.json`，读取冻结考点与每份完整reply.md。填写reviewer，每个决定性点的met、reason、quotes；满足需要原文准确引用，不满足说明缺失或冲突。无法判定保持null并补证据。非决定性点留在题目内，第一轮不用其达成性控制出题门槛。
+运行lab evaluation-template evaluations/three-rNNNN.json，逐项填写全部决定性考点met/reason/quotes，满足需原文准确引用；缺证据保持null。已有同版本判断复用。
 
-`lab check evaluations/three-rNNNN.json`计算全部决定性达成：Seed必须未全部达成，GPT或Claude至少一个全部达成。未过时保留结果，依据真实专业问题修订，不改变标准迎合差异。
+lab check evaluations/three-rNNNN.json验证Seed未全部决定性达成、GPT/Claude至少一个全部达成。作者自查复用同版本和依据哈希有效的文件；只有依据或题目改变时更新。辅助点不影响三模型出题门槛，进入五模型排序时统一补评。
 
-复核当前自查、引用与整体判断的一致性、模型实际版本/推理模式、完整截图、来源说明。运行 `lab export --evaluation evaluations/three-rNNNN.json --self-review evaluations/self-review-rNNNN.json --output delivery/v001`。
+有旧delivery检查点直接保留。需要中途保存时用lab checkpoint --evaluation evaluations/three-rNNNN.json --self-review evaluations/self-review-rNNNN.json --output delivery/v001。检查点只有三模型，不是最终完成；继续references/arena-rank.md。
 
-核对出题提交.md/fields.json/三份原文/三张图与manifest。没有辅助点时字段为“无”。handoff.json标明第一轮结束且第二轮独立质检待进行。向用户给出交接包路径，更新WORKLOG和题目Git检查点。完成本轮，不继续其他模型或排序。
-
-返修按原因调整，实质改题面重取回复、改考点统一重评。用v002等新目录交接；不认可质检意见时给可复核专业依据与未修改理由。
+题面改变获取新回复，考点改变统一重评全部已获取模型。旧原件和交付始终保留。

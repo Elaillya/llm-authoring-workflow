@@ -1,4 +1,4 @@
-"""Frozen authoring evidence for exactly three fixed models."""
+"""Frozen question evidence shared by API and manually supplied Arena replies."""
 import hashlib
 import json
 from pathlib import Path
@@ -9,6 +9,8 @@ import tempfile
 from datetime import datetime, timezone
 
 ROLES = ('seed', 'gpt', 'claude')
+ARENA_ROLES = ('arena_1', 'arena_2')
+ALL_ROLES = ROLES + ARENA_ROLES
 NAMES = {'seed':'Seed 2.1 Turbo', 'gpt':'GPT-5.6 sol', 'claude':'Claude Opus 4.6'}
 TYPES = ('分析决策类', '开放推荐类', 'How-to类')
 
@@ -97,7 +99,7 @@ def active_question(root):
 
 
 def response_dir(root,role):
-    require(role in ROLES,'模型角色不合法')
+    require(role in ALL_ROLES,'模型角色不合法')
     return Path(root)/'responses'/active_question(root)['prompt_sha256']/role
 
 
@@ -121,7 +123,8 @@ def save_response(root, role, text, meta, raw=None):
     (directory/'reply.md').write_text(text,encoding='utf-8')
     if raw is not None:
         rawname=meta.get('raw_response_file','raw_response.json')
-        require(rawname in ('raw_response.json','raw_response.sse'),'API 原响应文件名不合法')
+        allowed=('arena-input.md',) if meta.get('source_kind')=='arena_manual' else ('raw_response.json','raw_response.sse')
+        require(rawname in allowed,'原响应文件名不合法')
         (directory/rawname).write_bytes(raw)
     metadata={**meta,'schema_version':1,'role':role,'task_id':current['question']['task_id'],
               'prompt_sha256':current['prompt_sha256'],'rubric_at_capture':current['rubric_sha256'],
@@ -137,9 +140,10 @@ def read_response(root,role):
     meta=read_json(directory/'metadata.json');text=(directory/'reply.md').read_text(encoding='utf-8')
     require(meta['prompt_sha256']==active_question(root)['prompt_sha256'],'回复题面版本不一致')
     require(sha(directory/'reply.md')==meta['reply_sha256'],'模型回复原件已改变')
-    if meta.get('source_kind')=='api':
+    if meta.get('source_kind') in ('api','arena_manual'):
         rawname=meta.get('raw_response_file','raw_response.json')
-        require(rawname in ('raw_response.json','raw_response.sse'),'API 原响应文件名不合法')
+        allowed=('arena-input.md',) if meta.get('source_kind')=='arena_manual' else ('raw_response.json','raw_response.sse')
+        require(rawname in allowed,'原响应文件名不合法')
         rawpath=directory/rawname
         require(rawpath.is_file() and not rawpath.is_symlink() and sha(rawpath)==meta.get('raw_response_sha256'),'API 原始响应缺失或已改变')
     require(meta.get('completion_status')=='complete','回复未完整完成，不用于评估')
