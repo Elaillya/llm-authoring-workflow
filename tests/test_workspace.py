@@ -31,6 +31,72 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['question_type'])
         self.assertTrue((Path(new['task'])/'.git').is_dir())
         self.assertNotIn('arena-inbox',[p.name for p in Path(new['task']).iterdir()])
+    def test_renamed_task_retains_frozen_evidence_and_is_default_with_separate_new_task(self):
+        from llm_authoring.workspace import rename_task,update_workspace
+        from llm_authoring.core import freeze,sha,write_json
+        from test_core import question,populate
+        self.fill_config();choose_type(self.task,'分析决策类')
+        q=question();q['task_id']='question-001';freeze(self.task,q)
+        write_json(self.task/'evaluations/three-r0001.json',populate(self.task))
+        protected=[p for p in self.task.rglob('*') if p.is_file() and any(n in p.parts for n in ['revisions','responses','evaluations','drafts'])]
+        before={str(p.relative_to(self.task)):sha(p) for p in protected}
+        config=(self.root/'local/providers.json').read_bytes()
+        result=rename_task(self.root,self.task,'cs_47')
+        renamed=Path(result['task'])
+        self.assertEqual(renamed,self.root/'tasks/cs_47')
+        self.assertTrue(self.task.is_symlink())
+        self.assertEqual(self.task.resolve(),renamed)
+        task=json.loads((renamed/'TASK.json').read_text())
+        self.assertEqual(task['task_id'],'question-001')
+        self.assertEqual(task['display_id'],'cs_47')
+        self.assertEqual(before,{p:sha(renamed/p) for p in before})
+        self.assertEqual(json.loads((self.root/'.authoring-workspace.json').read_text())['default_task'],'tasks/cs_47')
+        self.assertTrue((renamed/'cs_47.code-workspace').is_file())
+        new=create_task(self.root,'cs_35')
+        self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['question_type'])
+        self.assertFalse((Path(new['task'])/'CURRENT.json').exists())
+        self.assertEqual(config,(self.root/'local/providers.json').read_bytes())
+        from llm_authoring.cli import main
+        from contextlib import redirect_stdout
+        from io import StringIO
+        output=StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(main(['--workspace',str(self.root),'status']),0)
+        self.assertEqual(json.loads(output.getvalue())['revision'],'r0001')
+        update=update_workspace(self.root)
+        self.assertEqual(len(update['tasks']),2)
+        self.assertEqual(before,{p:sha(renamed/p) for p in before})
+    def test_rename_conflict_does_not_move_current_task(self):
+        from llm_authoring.workspace import rename_task
+        from llm_authoring.core import Error
+        create_task(self.root,'cs_35')
+        with self.assertRaises(Error):rename_task(self.root,self.task,'cs_35')
+        with self.assertRaises(Error):rename_task(self.root,self.task,'../outside')
+        self.assertTrue((self.task/'TASK.json').is_file())
+    def test_rename_preserves_custom_window_settings_and_rejects_window_collision(self):
+        from llm_authoring.workspace import rename_task
+        from llm_authoring.core import Error,read_json,write_json
+        old=self.task/'question-001.code-workspace'
+        config=read_json(old);config['settings']={'editor.fontSize':17}
+        write_json(old,config)
+        collision=self.task/'cs_47.code-workspace'
+        collision.write_text('existing user workspace')
+        with self.assertRaises(Error):rename_task(self.root,self.task,'cs_47')
+        self.assertEqual(collision.read_text(),'existing user workspace')
+        self.assertFalse((self.root/'tasks/cs_47').exists())
+        collision.unlink()
+        result=rename_task(self.root,self.task,'cs_47')
+        self.assertEqual(read_json(result['workspace_file'])['settings'],config['settings'])
+    def test_failed_rename_restores_previous_directory_and_metadata(self):
+        from llm_authoring.workspace import rename_task
+        from unittest.mock import patch
+        paths=[self.task/'TASK.json',self.task/'AGENTS.md',self.task/'question-001.code-workspace',self.root/'.authoring-workspace.json',self.root/'Authoring.code-workspace']
+        before={p:p.read_bytes() for p in paths}
+        with patch('llm_authoring.workspace.write_json',side_effect=OSError('synthetic write failure')):
+            with self.assertRaises(OSError):rename_task(self.root,self.task,'cs_47')
+        self.assertTrue(self.task.is_dir());self.assertFalse(self.task.is_symlink())
+        self.assertFalse((self.root/'tasks/cs_47').exists())
+        self.assertEqual(before,{p:p.read_bytes() for p in paths})
     def test_workspace_and_private_config_are_not_overwritten(self):
         from llm_authoring.core import Error
         self.fill_config();before=(self.root/'local/providers.json').read_bytes()

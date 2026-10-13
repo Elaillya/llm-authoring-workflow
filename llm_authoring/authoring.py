@@ -4,6 +4,7 @@ import shutil
 import tempfile
 from .core import (Error, NAMES, ROLES, active_question, read_json, read_response,
                    require, sha, validate_image, write_json)
+from .delivery import model_files, reply_link, submission_id
 
 COMMON_CHECKS=('realistic_stable_cs_scenario','clear_natural_prompt','no_insight_leak_or_hidden_conditions',
                'insight_mechanism_priority_conclusion','insight_necessary_decisive_specific_consensual',
@@ -117,7 +118,7 @@ def export_authoring(root,ev,review,output):
         require(not output.resolve().is_relative_to((Path(root)/protected).resolve()),'交接不能写入原始证据或冻结目录')
     validated=[(role,read_response(root,role)) for role in ROLES]
     for role,item in validated:validate_api_evidence(item,role)
-    fields={'phase':'authoring','task_id':q['task_id'],'domain':q.get('domain','计算机科学'),'prompt':q['prompt'],'question_type':q['question_type'],
+    fields={'phase':'authoring','task_id':submission_id(root,q['task_id']),'domain':q.get('domain','计算机科学'),'prompt':q['prompt'],'question_type':q['question_type'],
             'insight':q['insight'],'author_notes':q['author_notes'],
             'decisive_points':[p for p in q['points'] if p['kind']=='decisive'],
             'supporting_points':[p for p in q['points'] if p['kind']=='supporting'] or '无','models':{}}
@@ -125,34 +126,36 @@ def export_authoring(root,ev,review,output):
     staging=Path(tempfile.mkdtemp(prefix='.authoring-export-',dir=output.parent))
     try:
         (staging/'models').mkdir();(staging/'screenshots').mkdir();(staging/'evidence').mkdir()
-        lines=['# 三模型出题检查点','\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
+        paths=model_files({role:item['meta']['display_name'] for role,item in validated})
+        lines=['# 三模型出题检查点','\n## 题目编号\n',fields['task_id'],'\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
                '\n## 关键洞察（Insight）\n',f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
         for field,title in [('decisive_points','决定性核心考点'),('supporting_points','非决定性核心考点')]:
             lines.append('\n## '+title+'\n')
             lines.extend(['无'] if fields[field]=='无' else [f'- {p["id"]}：{p["criterion"]}' for p in fields[field]])
         for index,(role,item) in enumerate(validated,1):
             m=item['meta'];stat=result['models'][role];pic=validate_api_evidence(item,role)
-            shutil.copyfile(item['directory']/'reply.md',staging/'models'/f'{role}.md')
+            shutil.copyfile(item['directory']/'reply.md',staging/paths[role])
             shutil.copyfile(pic,staging/'screenshots'/f'{role}.png')
             evidence=staging/'evidence'/role;evidence.mkdir()
             for name in ('metadata.json',m.get('raw_response_file','raw_response.json'),'render-manifest.json'):
                 shutil.copyfile(item['directory']/name,evidence/name)
             notes='\n\n'.join(f'{j["id"]}：{"满足" if j["met"] else "不满足"}；原因：{j["reason"]}'+('；原文依据：'+' / '.join(j['quotes']) if j['quotes'] else '') for j in stat['judgments'])
             fields['models'][role]={'ordinal':index,'display_name':m['display_name'],'requested_model':m['model'],'returned_model':m['returned_model'],
-                                   'reply_markdown':item['text'],'attained':stat['attained'],'attainment_notes':notes,'screenshot':f'screenshots/{role}.png'}
-            lines.extend([f'\n## 模型{index}：{NAMES[role]}\n','### 模型回复\n',item['text'],'\n### 是否达成全部决定性核心考点\n',
+                                   'reply_markdown':item['text'],'reply_file':paths[role],'attained':stat['attained'],'attainment_notes':notes,'screenshot':f'screenshots/{role}.png'}
+            lines.extend([f'\n## {NAMES[role]}\n',reply_link(fields['models'][role]),'\n### 是否达成全部决定性核心考点\n',
                           '是' if stat['attained'] else '否','\n### 达成性备注\n',notes,f'\n截图：[完整API渲染截图](screenshots/{role}.png)'])
         lines.extend(['\n## 出题说明备注\n',q['author_notes'],'\n## 检查点接续说明\n',
                       '三模型区分度检查通过。截图由保存的API原文渲染。此为出题检查点，继续补齐Arena两份Markdown、五模型排序及完整提交。'])
-        (staging/'出题提交.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+        (staging/'提交信息.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
-        shutil.copyfile(Path(root)/'drafts/sources.md',staging/'sources.md')
+        shutil.copyfile(Path(root)/'drafts/sources.md',staging/'evidence/sources.md')
         write_json(staging/'evaluation.json',ev);write_json(staging/'author-self-review.json',review)
         from . import VERSION
         handoff={'schema_version':1,'kind':'llm_authoring_handoff','workflow_version':VERSION,'task_id':q['task_id'],
                  'question_sha256':current['question_sha256'],'prompt_sha256':current['prompt_sha256'],'rubric_sha256':current['rubric_sha256'],
                  'models_in_order':list(ROLES),'three_model_gate':True,'next_workflow':'arena_and_ranking',
-                 'next_inputs':['question.json','sources.md','evaluation.json','models/','screenshots/','evidence/'],
+                 'submission_id':fields['task_id'],
+                 'next_inputs':['question.json','evidence/sources.md','evaluation.json','models/','screenshots/','evidence/'],
                  'next_action':'保留本检查点，准备Arena两份Markdown填入文件，完成五模型全部考点评估、排序及最终提交。'}
         write_json(staging/'handoff.json',handoff)
         write_json(staging/'manifest.json',{'schema_version':1,'phase':'authoring','files':{p.relative_to(staging).as_posix():sha(p) for p in staging.rglob('*') if p.is_file()}})
@@ -160,4 +163,5 @@ def export_authoring(root,ev,review,output):
         staging.rename(output)
     except BaseException:
         shutil.rmtree(staging);raise
-    return {'phase':'authoring','output':str(output),'markdown':str(output/'出题提交.md'),'handoff':str(output/'handoff.json')}
+    return {'phase':'authoring','output':str(output),'markdown':str(output/'提交信息.md'),
+            'model_markdown':{role:str(output/path) for role,path in paths.items()},'handoff':str(output/'handoff.json')}

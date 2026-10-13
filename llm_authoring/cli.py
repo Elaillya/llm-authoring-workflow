@@ -7,7 +7,7 @@ from .core import ALL_ROLES, Error, ROLES, active_question, freeze, read_json, r
 from .authoring import check_seed,check_three,evaluation_template,export_authoring,self_review_template
 from .providers import collect,recover
 from .render import render_response
-from .workspace import TOOL_ROOT,begin,choose_type,create_task,create_workspace,locate_workspace,find_authoring_evaluation,update_workspace
+from .workspace import TOOL_ROOT,begin,choose_type,create_task,create_workspace,default_task,locate_workspace,find_authoring_evaluation,rename_task,update_workspace
 from .arena import prepare_arena,import_arena
 from .ranking import check_five,export_complete,five_evaluation_template,ranking_template,validate_ranking
 
@@ -19,6 +19,7 @@ def main(argv=None):
     subs=parser.add_subparsers(dest='command',required=True)
     w=subs.add_parser('workspace-create');w.add_argument('directory',type=Path)
     n=subs.add_parser('new');n.add_argument('id')
+    rn=subs.add_parser('rename');rn.add_argument('name')
     subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update');subs.add_parser('arena-import')
     t=subs.add_parser('choose-type');t.add_argument('type',choices=['分析决策类','开放推荐类','How-to类'])
     f=subs.add_parser('freeze');f.add_argument('question',type=Path)
@@ -43,10 +44,11 @@ def main(argv=None):
         if args.command=='workspace-create':result=create_workspace(args.directory)
         else:
             workspace=args.workspace.absolute() if args.workspace else locate_workspace(args.task or Path.cwd())
-            root=args.task.absolute() if args.task else Path.cwd() if (Path.cwd()/'TASK.json').is_file() else workspace/'task'
+            root=args.task.absolute() if args.task else Path.cwd() if (Path.cwd()/'TASK.json').is_file() else default_task(workspace)
             require(locate_workspace(root)==workspace,'题目不属于指定工作区')
             config=workspace/'local/providers.json'
             if args.command=='new':result=create_task(workspace,args.id)
+            elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
                 print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先让我选择题型，首次提示配置三个模型；计算机科学场景由你生成并核实。Arena阶段创建两份Markdown填写文件，等我贴好回复后继续五模型考点评估、排序及完整交付；Arena截图由我自行提交。\n');return 0

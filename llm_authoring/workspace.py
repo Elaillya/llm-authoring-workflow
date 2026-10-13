@@ -1,5 +1,6 @@
 """Portable source toolkit and private question workspaces have separate roots."""
 import os
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -46,6 +47,75 @@ def create_task(workspace,task_id,destination=None):
     return {'task':str(root),'workspace_file':str(file)}
 
 
+def default_task(workspace):
+    workspace=Path(workspace).resolve()
+    path=Path(read_json(workspace/'.authoring-workspace.json').get('default_task','task'))
+    require(not path.is_absolute() and '..' not in path.parts,'默认题目路径不合法')
+    return workspace/path
+
+
+def rename_task(workspace,root,label):
+    """Rename the visible task while preserving frozen IDs and legacy paths."""
+    workspace=Path(workspace).resolve();root=Path(root).resolve()
+    require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,127}',label),'题目名称不合法')
+    require(root!=workspace and root.is_relative_to(workspace),'题目不属于工作区')
+    task=read_json(root/'TASK.json')
+    require(task.get('workflow')=='llm-authoring','题目工作流类型不匹配')
+    destination=workspace/'tasks'/label
+    require(not destination.exists() and not destination.is_symlink(),'题目目录已存在，拒绝覆盖')
+    require(not destination.parent.is_symlink(),'题目父目录不能为符号链接')
+    marker=read_json(workspace/'.authoring-workspace.json')
+    tool=Path(marker['toolkit_root'])
+    content=(tool/'templates/AGENTS.md').read_text().replace('{{TASK_ID}}',label).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
+    old_name=task.get('display_id',task['task_id'])+'.code-workspace'
+    new_name=label+'.code-workspace'
+    old=root/old_name;new=root/new_name
+    require(old==new or not (new.exists() or new.is_symlink()),'目标窗口文件已存在，拒绝覆盖')
+    window=read_json(old) if old.exists() else workspace_file('.',label,workspace)
+    for folder in window.get('folders',[]):
+        if (root/folder['path']).resolve()==root:folder['name']=label
+    primary=default_task(workspace).resolve()==root
+    old_files={}
+    for file in workspace.glob('*.code-workspace'):
+        old_files[file]=read_json(file)
+    backup=Path(tempfile.mkdtemp(prefix='rename-'+label+'-',dir=workspace/'local'))
+    originals={p:(p.read_bytes(),p.stat().st_mode&0o777) for p in
+               [root/'TASK.json',root/'AGENTS.md',old,workspace/'.authoring-workspace.json',*old_files] if p.exists()}
+    for p,(data,mode) in originals.items():
+        saved=backup/p.relative_to(workspace);saved.parent.mkdir(parents=True,exist_ok=True)
+        saved.write_bytes(data);saved.chmod(mode)
+    destination.parent.mkdir(exist_ok=True)
+    root.rename(destination)
+    try:
+        # An old conversation can still access its original cwd through this alias.
+        root.symlink_to(os.path.relpath(destination,root.parent),target_is_directory=True)
+        task['display_id']=label;write_json(destination/'TASK.json',task)
+        if primary:
+            marker['default_task']=destination.relative_to(workspace).as_posix()
+            write_json(workspace/'.authoring-workspace.json',marker)
+        for file,value in old_files.items():
+            for folder in value.get('folders',[]):
+                if (file.parent/folder['path']).resolve()==destination:
+                    folder.update({'name':label,'path':os.path.relpath(destination,file.parent)})
+            write_json(file,value)
+        if (destination/old_name).exists() and old_name!=new_name:
+            (destination/old_name).rename(destination/new_name)
+        file=destination/new_name
+        write_json(file,window)
+        (destination/'AGENTS.md').write_text(content)
+    except BaseException:
+        # Only these small instruction/identity files are ever written by rename.
+        if old_name!=new_name:(destination/new_name).unlink(missing_ok=True)
+        for p,(data,mode) in originals.items():
+            target=destination/p.relative_to(root) if p.is_relative_to(root) else p
+            target.write_bytes(data);target.chmod(mode)
+        if root.is_symlink() and root.resolve()==destination:root.unlink()
+        destination.rename(root)
+        raise
+    return {'task':str(destination),'workspace_file':str(file),'display_id':label,
+            'frozen_task_id':task['task_id'],'legacy_path':str(root),'instructions_backup':str(backup)}
+
+
 def workspace_file(folder,label,workspace):
     return {'folders':[{'name':label,'path':folder}], 'extensions':{'recommendations':['openai.chatgpt']},
             'tasks':{'version':'2.0.0','tasks':[{'label':'出题：侧栏开始指令','type':'process','command':str(Path(workspace)/'bin/lab'),
@@ -55,7 +125,9 @@ def workspace_file(folder,label,workspace):
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
             '首次使用请填写 local/providers.json。题目类型每次由你选择，计算机科学场景由助手生成。\n'
-            f'Arena阶段只需填写工具创建的两份Markdown，截图由你单独提交。\n\n工具说明：{tool}/README.md\n')
+            'Arena阶段只需填写工具创建的两份Markdown，截图由你单独提交。\n'
+            '交付为一份提交信息和五份按模型名称命名的原Markdown，排序直接使用模型名称。\n'
+            f'新题运行 bin/lab new <编号>，每道题打开自己的code-workspace文件。\n\n工具说明：{tool}/README.md\n')
 
 
 def create_workspace(destination,tool=TOOL_ROOT,runtime=None):
@@ -129,11 +201,11 @@ def update_workspace(workspace,tool=TOOL_ROOT):
     candidates=[workspace/'task']+sorted((workspace/'tasks').glob('*'))
     tasks=[]
     for root in candidates:
-        if not (root/'TASK.json').is_file():continue
+        if root.is_symlink() or not (root/'TASK.json').is_file():continue
         require(not root.is_symlink() and root.resolve().is_relative_to(workspace),'题目路径不能逃逸工作区')
         task=read_json(root/'TASK.json')
         require(task.get('workflow')=='llm-authoring','题目工作流类型不匹配')
-        tasks.append((root,task['task_id']))
+        tasks.append((root,task.get('display_id',task['task_id'])))
     require(tasks,'工作区没有可接续的题目')
     backup=Path(tempfile.mkdtemp(prefix='workflow-'+VERSION+'-',dir=workspace/'local'))
     for name in ('.authoring-workspace.json','Authoring.code-workspace','README.md'):

@@ -8,6 +8,7 @@ from .core import (ALL_ROLES, ARENA_ROLES, ROLES, active_question, hash_json,
                    read_response, require, sha, write_json)
 from .authoring import check_three, evaluation_template, export_authoring, validated_models
 from .arena import validate_arena_evidence, validate_names
+from .delivery import model_files, named_text, reply_link
 
 
 def five_evaluation_template(root, authoring_evaluation):
@@ -36,7 +37,7 @@ def check_five(root, evaluation):
             groups.append([])
             previous = key
         groups[-1].append(role)
-    order = ' > '.join(' = '.join(f'模型{ALL_ROLES.index(role)+1}' for role in group) for group in groups)
+    order = ' > '.join(' = '.join(stats[role]['name'] for role in group) for group in groups)
     return {'phase': 'five_model_evaluation', 'three_model_gate': True, 'models': stats,
             'groups': groups, 'order': order, 'models_in_order': list(ALL_ROLES)}
 
@@ -58,39 +59,47 @@ def ranking_template(root, evaluation):
     return {'schema_version': 1, 'phase': 'ranking', 'task_id': current['question']['task_id'],
             'question_sha256': current['question_sha256'], 'evaluation_sha256': hash_json(evaluation),
             'reviewer': evaluation['reviewer'], 'groups': result['groups'], 'order': result['order'],
+            'display_names': {role: stat['name'] for role, stat in result['models'].items()},
             'summary': f'排序为{result["order"]}。全部决定性考点达成的模型先于未全部达成的模型；'
                        '同一梯队按全部核心考点满足数比较，满足数相同时并列。以下逐模型列出满足和未满足的具体考点及依据。',
             'models': notes}
 
 
-def ranking_notes(ranking):
-    return '总结：' + ranking['summary'] + '\n\n' + '\n\n'.join(
-        f'模型{index}：\n\n{ranking["models"][role]}' for index, role in enumerate(ALL_ROLES, 1))
+def ranking_notes(ranking, names=None):
+    names = names or ranking.get('display_names')
+    require(isinstance(names, dict) and set(names) == set(ALL_ROLES), '排序备注需要五个模型的实际名称')
+    return '总结：' + named_text(ranking['summary'], names) + '\n\n' + '\n\n'.join(
+        f'{names[role]}：\n\n{named_text(ranking["models"][role], names)}' for role in ALL_ROLES)
 
 
 def validate_ranking(root, evaluation, ranking):
     expected = ranking_template(root, evaluation)
-    for key in ('schema_version', 'phase', 'task_id', 'question_sha256', 'evaluation_sha256', 'groups', 'order'):
+    for key in ('schema_version', 'phase', 'task_id', 'question_sha256', 'evaluation_sha256', 'groups'):
         require(ranking.get(key) == expected[key], '排序与当前题目、五模型判断或考点优先级不一致：' + key)
+    # Historical records remain usable without rewriting their ordinal order.
+    legacy = ' > '.join(' = '.join(f'模型{ALL_ROLES.index(role)+1}' for role in group) for group in expected['groups'])
+    require(ranking.get('order') in (expected['order'], legacy), '排序与当前题目、五模型判断或考点优先级不一致：order')
+    if 'display_names' in ranking:
+        require(ranking['display_names'] == expected['display_names'], '排序中的模型名称与真实原件不一致')
     require(isinstance(ranking.get('reviewer'), str) and ranking['reviewer'].strip(), '排序需记录实际执行者')
     require(isinstance(ranking.get('summary'), str) and ranking['summary'].strip(), '排序理由需要总结')
-    require(set(ranking.get('models', {})) == set(ALL_ROLES), '排序理由需覆盖模型1至模型5')
+    require(set(ranking.get('models', {})) == set(ALL_ROLES), '排序理由需覆盖全部五个模型')
     for role in ALL_ROLES:
         require(isinstance(ranking['models'][role], str) and ranking['models'][role].strip(), '每个模型需要具体考点达成性备注')
-    require(len(re.sub(r'\s', '', ranking_notes(ranking))) >= 500, '排序理由（总结＋逐模型说明）不少于500字')
+    require(len(re.sub(r'\s', '', ranking_notes(ranking, expected['display_names']))) >= 500, '排序理由（总结＋逐模型说明）不少于500字')
     return check_five(root, evaluation)
 
 
 def submission_markdown(fields):
     q = fields
-    lines = ['# 完整出题与模型排序提交', '\n## 题目 prompt\n', q['prompt'], '\n## 题目类型\n', q['question_type'],
+    lines = ['# 完整出题与模型排序提交', '\n## 题目编号\n', q['task_id'], '\n## 题目 prompt\n', q['prompt'], '\n## 题目类型\n', q['question_type'],
              '\n## 关键洞察（Insight）\n', f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
     for field, title in [('decisive_points', '决定性核心考点'), ('supporting_points', '非决定性核心考点')]:
         lines.append('\n## ' + title + '\n')
         lines.extend(['无'] if q[field] == '无' else [f'- {p["id"]}：{p["criterion"]}' for p in q[field]])
-    for index, role in enumerate(ALL_ROLES, 1):
+    for role in ALL_ROLES:
         model = fields['models'][role]
-        lines.extend([f'\n## 模型{index}：{model["display_name"]}\n', '### 模型回复\n', model['reply_markdown'],
+        lines.extend([f'\n## {model["display_name"]}\n', reply_link(model),
                       '\n### 是否达成全部决定性核心考点\n', '是' if model['attained'] else '否',
                       '\n### 达成性备注\n', model['attainment_notes']])
         if model.get('screenshot'):
@@ -123,14 +132,16 @@ def export_complete(root, evaluation, review, ranking, output):
         export_authoring(root, authoring, review, package)
         from .core import read_json
         fields = read_json(package / 'fields.json')
+        names = {role: stat['name'] for role, stat in result['models'].items()}
+        paths = model_files(names)
         fields.update({'phase': 'complete', 'ranking': result['order'], 'ranking_groups': result['groups'],
-                       'models_in_order': list(ALL_ROLES), 'ranking_notes': ranking_notes(ranking)})
+                       'models_in_order': list(ALL_ROLES), 'ranking_notes': ranking_notes(ranking, names)})
         for index, role in enumerate(ALL_ROLES, 1):
             item = read_response(root, role)
             stat = result['models'][role]
             if role in ARENA_ROLES:
                 validate_arena_evidence(root, role, item)
-                shutil.copyfile(item['directory'] / 'reply.md', package / 'models' / f'{role}.md')
+                shutil.copyfile(item['directory'] / 'reply.md', package / paths[role])
                 evidence = package / 'evidence' / role
                 evidence.mkdir()
                 for name in ('metadata.json', 'arena-input.md'):
@@ -140,8 +151,8 @@ def export_complete(root, evaluation, review, ranking, output):
                                          'reply_markdown': item['text'], 'screenshot': None,
                                          'source_kind': 'arena_manual', 'screenshot_submission': 'user_submits_separately'}
             fields['models'][role].update({'attained': stat['attained'], 'attainment_notes': attainment_notes(stat),
-                                         'decisive_met': stat['decisive_met'], 'total_met': stat['total_met']})
-        (package / '出题提交.md').write_text(submission_markdown(fields), encoding='utf-8')
+                                         'reply_file': paths[role], 'decisive_met': stat['decisive_met'], 'total_met': stat['total_met']})
+        (package / '提交信息.md').write_text(submission_markdown(fields), encoding='utf-8')
         write_json(package / 'fields.json', fields)
         write_json(package / 'authoring-evaluation.json', authoring)
         write_json(package / 'evaluation.json', evaluation)
@@ -150,6 +161,7 @@ def export_complete(root, evaluation, review, ranking, output):
         current = active_question(root)
         write_json(package / 'handoff.json', {'schema_version': 1, 'kind': 'llm_complete_submission', 'workflow_version': VERSION,
                    'task_id': current['question']['task_id'], 'question_sha256': current['question_sha256'],
+                   'submission_id': fields['task_id'],
                    'prompt_sha256': current['prompt_sha256'], 'rubric_sha256': current['rubric_sha256'],
                    'models_in_order': list(ALL_ROLES), 'three_model_gate': True, 'ranking': result['order'],
                    'next_workflow': 'platform_submission', 'arena_screenshots': 'user_submits_separately',
@@ -161,5 +173,6 @@ def export_complete(root, evaluation, review, ranking, output):
         package.rename(output)
     finally:
         shutil.rmtree(staging)
-    return {'phase': 'complete', 'output': str(output), 'markdown': str(output / '出题提交.md'), 'ranking': result['order'],
+    return {'phase': 'complete', 'output': str(output), 'markdown': str(output / '提交信息.md'), 'ranking': result['order'],
+            'model_markdown': {role: str(output/path) for role, path in paths.items()},
             'models': 5, 'arena_screenshots_required': False}

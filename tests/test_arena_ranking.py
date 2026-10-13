@@ -8,7 +8,8 @@ from llm_authoring.core import (ALL_ROLES, ARENA_ROLES, Error, active_question,
                                freeze, read_response, response_dir, sha)
 from llm_authoring.arena import prepare_arena, import_arena
 from llm_authoring.ranking import (check_five, export_complete, five_evaluation_template,
-                                   ranking_template, validate_ranking)
+                                   ranking_template, validate_ranking, ranking_notes)
+from llm_authoring.delivery import named_text
 from test_core import prepared, populate, question
 from test_export import ExportTests
 
@@ -20,8 +21,8 @@ def fill_slots(root, evaluation, names=('fixture-model-4', 'fixture-model-5')):
     return paths
 
 
-def fill_five(root, three):
-    fill_slots(root, three)
+def fill_five(root, three, names=('fixture-model-4', 'fixture-model-5')):
+    fill_slots(root, three, names)
     import_arena(root)
     evaluation = five_evaluation_template(root, three)
     for role, record in evaluation['models'].items():
@@ -102,16 +103,36 @@ class ArenaTests(unittest.TestCase):
 
 
 class RankingTests(ArenaTests):
-    def test_ties_use_ordinals_and_ranking_is_bound_to_evaluation(self):
+    def test_name_conversion_preserves_normal_chinese_narrative(self):
+        names={role:read_response(self.root,role)['meta']['display_name'] for role in ('seed','gpt','claude')}
+        names.update({'arena_1':'fixture-four','arena_2':'fixture-five'})
+        narrative='五个模型一致遵循冻结标准。这个模型一般讨论恢复，模型一开始进行检查，模型二次推理。'
+        self.assertEqual(named_text(narrative,names),narrative)
+        self.assertEqual(named_text('模型一：未达成；模型2达成。',names),'Seed 2.1 Turbo：未达成；GPT-5.6 sol达成。')
+    def test_ties_use_real_names_and_ranking_is_bound_to_evaluation(self):
         five = fill_five(self.root, self.three)
         result = check_five(self.root, five)
-        self.assertEqual(result['order'], '模型2 = 模型3 = 模型4 = 模型5 > 模型1')
+        self.assertEqual(result['order'], 'GPT-5.6 sol = Claude Opus 4.6 = fixture-model-4 = fixture-model-5 > Seed 2.1 Turbo')
         ranking = ranking_template(self.root, five)
+        self.assertNotRegex(ranking_notes(ranking), r'模型[一二三四五1-5]')
+        for name in result['models'].values():
+            self.assertIn(name['name'], ranking_notes(ranking))
         validate_ranking(self.root, five, ranking)
         changed = copy.deepcopy(five); changed['models']['arena_1']['points']['D1']['reason'] += '修订说明'
         with self.assertRaisesRegex(Error, 'evaluation_sha256'): validate_ranking(self.root, changed, ranking)
         ranking['groups'] = [['gpt'], ['claude', 'arena_1', 'arena_2'], ['seed']]
         with self.assertRaisesRegex(Error, 'groups'): validate_ranking(self.root, five, ranking)
+    def test_legacy_ordinal_order_is_accepted_but_rendered_with_names(self):
+        five = fill_five(self.root, self.three)
+        ranking = ranking_template(self.root, five)
+        del ranking['display_names']
+        ranking['order'] = '模型2 = 模型3 = 模型4 = 模型5 > 模型1'
+        ranking['summary'] = '模型2、模型3、模型4和模型5全部达成；模型1未全部达成。'
+        expected = check_five(self.root, five)
+        self.assertEqual(validate_ranking(self.root, five, ranking)['order'], expected['order'])
+        output = ranking_notes(ranking, {role: item['name'] for role, item in expected['models'].items()})
+        self.assertNotRegex(output, r'模型[一二三四五1-5]')
+        self.assertIn('Seed 2.1 Turbo未全部达成', output)
     def test_reason_requires_summary_all_five_models_and_500_characters(self):
         five = fill_five(self.root, self.three)
         ranking = ranking_template(self.root, five)
@@ -161,8 +182,18 @@ class CompleteExportTests(unittest.TestCase):
         self.assertEqual(fields['ranking'], ranking['order'])
         self.assertEqual(len(list((output / 'screenshots').glob('*.png'))), 3)
         for role in ALL_ROLES:
-            self.assertEqual(sha(output / 'models' / f'{role}.md'), before[role])
+            model_file = output / fields['models'][role]['reply_file']
+            self.assertEqual(model_file.name, fields['models'][role]['display_name'] + '.md')
+            self.assertEqual(sha(model_file), before[role])
             self.assertEqual(sha(read_response(self.root, role)['directory'] / 'reply.md'), before[role])
+        metadata = (output / '提交信息.md').read_text()
+        self.assertNotIn('### 模型回复', metadata)
+        self.assertNotIn('# 合成测试回复', metadata)
+        self.assertNotRegex(metadata, r'模型[一二三四五1-5]')
+        self.assertEqual(len(list(output.rglob('*.md'))) - len(list((output/'evidence').rglob('*.md'))), 6)
+        self.assertFalse((output/'出题提交.md').exists())
+        self.assertFalse(list(output.rglob('*.zip')))
+        self.assertTrue((output/'提交信息.md').exists())
         handoff = json.loads((output / 'handoff.json').read_text())
         self.assertEqual(handoff['kind'], 'llm_complete_submission')
         self.assertEqual(handoff['next_workflow'], 'platform_submission')
@@ -172,3 +203,16 @@ class CompleteExportTests(unittest.TestCase):
     def test_missing_arena_does_not_create_a_final_submission(self):
         with self.assertRaises(Error): five_evaluation_template(self.root, self.ev)
         self.assertFalse((self.root / 'delivery/v002').exists())
+    def test_model_filenames_are_safe_and_keep_original_unicode_markdown(self):
+        five = fill_five(self.root, self.ev, names=('fixture/model:4', '中文-model-5'))
+        output = self.root/'delivery/safe-names'
+        export_complete(self.root, five, self.review, ranking_template(self.root,five), output)
+        fields = json.loads((output/'fields.json').read_text())
+        for role in ALL_ROLES:
+            model = fields['models'][role]
+            file = output/model['reply_file']
+            self.assertEqual(file.parent,output/'models')
+            self.assertNotRegex(file.name,r'[<>:"/\\|?*]')
+            self.assertEqual(file.read_bytes(),(read_response(self.root,role)['directory']/'reply.md').read_bytes())
+        self.assertIn('中文-model-5.md',[p.name for p in (output/'models').iterdir()])
+        self.assertIn('fixture/model:4',(output/'提交信息.md').read_text())
