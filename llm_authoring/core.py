@@ -49,12 +49,14 @@ def hash_json(value): return hashlib.sha256(json.dumps(value,ensure_ascii=False,
 def now(): return datetime.now(timezone.utc).isoformat(timespec='seconds')
 
 
-def validate_question(q):
+def validate_question(q,legacy_domain=False):
     require(q.get('schema_version')==1, '题目 schema_version 必须为 1')
     require(bool(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,127}',q.get('task_id',''))), '题目 ID 不合法')
     prompt=q.get('prompt','')
     require(isinstance(prompt,str) and prompt.strip() and len(prompt)<=100, '题目 prompt 必须为非空文本且不超过 100 字符（含标点和空白）')
     require(q.get('question_type') in TYPES, '题目类型必须是分析决策类、开放推荐类或 How-to类')
+    if not legacy_domain or 'domain' in q:
+        require(isinstance(q.get('domain'),str) and q['domain'].strip(), '题目需要用户选择的专业领域')
     require(all(isinstance(q.get('insight',{}).get(k),str) and q['insight'][k].strip()
                 for k in ['mechanism','priority','conclusion']), 'Insight 需要机制、优先级和参考结论')
     require(isinstance(q.get('author_notes'),str) and q['author_notes'].strip(), '需要真实来源及出题说明备注')
@@ -73,7 +75,9 @@ def freeze(root, q):
     request=read_json(root/'REQUEST.json')
     require(request.get('question_type')==q['question_type'],'先询问并记录用户选择的题型，再冻结相同题型的题目')
     if (root/'TASK.json').exists():require(read_json(root/'TASK.json').get('task_id')==q['task_id'],'题目ID与工作区不匹配')
-    require(q.get('domain','计算机科学')=='计算机科学','本流程固定在计算机科学领域')
+    selected=question_domain(root,request)
+    require(selected is not None,'先询问并记录用户选择的领域，再冻结题目')
+    require(q['domain']==selected,'题目领域与用户选择不一致；已冻结题目换领域请新建题目')
     revs=root/'revisions';revs.mkdir(exist_ok=True)
     value={'question':q,'prompt_sha256':hash_json(q['prompt']),'rubric_sha256':hash_json(q['points']),
            'question_sha256':hash_json(q)}
@@ -92,10 +96,19 @@ def freeze(root, q):
 def active_question(root):
     root=Path(root);name=read_json(root/'CURRENT.json')['revision']
     require(bool(re.fullmatch(r'r\d{4}',name)), '当前题目版本不合法')
-    value=read_json(root/'revisions'/name/'question.json');q=value['question'];validate_question(q)
+    value=read_json(root/'revisions'/name/'question.json');q=value['question'];validate_question(q,legacy_domain=True)
     require(value['question_sha256']==hash_json(q) and value['prompt_sha256']==hash_json(q['prompt'])
             and value['rubric_sha256']==hash_json(q['points']), '冻结题目被改写；请保留原件并创建新版本')
     return value
+
+
+def question_domain(root,request=None):
+    root=Path(root);request=read_json(root/'REQUEST.json') if request is None else request
+    if (root/'CURRENT.json').is_file():
+        # Older frozen records could omit this field under the former CS-only contract.
+        return active_question(root)['question'].get('domain','计算机科学')
+    domain=request.get('domain')
+    return domain if request.get('domain_confirmed') is True and isinstance(domain,str) and domain.strip() else None
 
 
 def response_dir(root,role):

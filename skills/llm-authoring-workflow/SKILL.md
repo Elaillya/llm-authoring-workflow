@@ -1,13 +1,13 @@
 ---
 name: llm-authoring-workflow
-description: 完成开放难题第五期完整出题与五模型排序，或从旧三模型检查点接续：新题先选题型并首次配置三模型，生成计算机科学场景与Insight/考点，三模型验证，创建Arena两份Markdown填入文件，五模型评估和排序，导出完整提交。
+description: 完成开放难题第五期完整出题与五模型排序，或从已有检查点接续：新题先询问专业领域和题型，首次配置三模型，按所选领域生成场景与Insight/考点，三模型验证，创建Arena两份Markdown填入文件，五模型评估和排序，导出完整提交。
 ---
 
 # 完整出题与五模型排序
 
 先读当前题目AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md及工具仓rules/authoring.md。工具路径见TOOLKIT.md，命令为工作区bin/lab。首次只有工具仓时按README创建工作区；更新已建工作区用workspace-update。
 
-1. 运行lab begin与lab status。新题尚未选类型时询问分析决策类、开放推荐类、How-to类并choose-type；首次缺配置时提示填写私有providers.json。已有题型或配置直接复用，背景由助手生成。
+1. 运行lab begin与lab status。新题缺domain时先询问用户希望出题的专业领域，使用lab choose-domain "用户选择的领域"记录，不自动代选；再询问分析决策类、开放推荐类、How-to类并choose-type。首次缺配置时提示填写私有providers.json。已有冻结题目沿用原领域、题型和配置；用户已明确给出的选择直接记录，背景由助手生成。
 2. 当前题目未冻结时按references/design.md设计并冻结；已有冻结版本、原件和判断时从缺失步骤继续，保留旧交付。
 3. 只有缺失API证据时按references/collect.md获取三模型原文和图，Seed先筛查。按references/evaluate-deliver.md完成决定性判断及作者自查。已有完整证据不重新调用。
 4. 三模型门槛通过后按references/arena-rank.md创建Arena两份MD、给用户可点击路径，等待填入。用户只填真实型号和原文，Arena图自行提交，不索要截图或额外清单。

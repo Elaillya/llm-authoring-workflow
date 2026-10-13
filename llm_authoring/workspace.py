@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 import subprocess
 from . import VERSION
-from .core import Error, NAMES, TYPES, active_question, read_json, require, write_json
+from .core import Error, NAMES, TYPES, active_question, question_domain, read_json, require, write_json
 from .providers import load_provider, make_payload
 
 TOOL_ROOT=Path(__file__).resolve().parents[1]
@@ -33,7 +33,7 @@ def create_task(workspace,task_id,destination=None):
         content=(tool/'templates'/name).read_text().replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
         (root/name).write_text(content)
     write_json(root/'TASK.json',{'schema_version':1,'workflow':'llm-authoring','task_id':task_id})
-    write_json(root/'REQUEST.json',{'schema_version':1,'domain':'计算机科学','question_type':None,'scenario_generation':'assistant_sourced'})
+    write_json(root/'REQUEST.json',{'schema_version':1,'domain':None,'domain_confirmed':False,'question_type':None,'scenario_generation':'assistant_sourced'})
     for name in ('materials','drafts','evaluations','delivery'):(root/name).mkdir()
     q=read_json(tool/'templates/question.json');q['task_id']=task_id;write_json(root/'drafts/question.json',q)
     # Copy the small Skill so sidebar discovery works without platform-specific symlinks.
@@ -124,7 +124,7 @@ def workspace_file(folder,label,workspace):
 
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
-            '首次使用请填写 local/providers.json。题目类型每次由你选择，计算机科学场景由助手生成。\n'
+            '首次使用请填写 local/providers.json。新题先由你选择领域，再选择题型；场景由助手生成。\n'
             'Arena阶段只需填写工具创建的两份Markdown，截图由你单独提交。\n'
             '交付为一份提交信息和五份按模型名称命名的原Markdown，排序直接使用模型名称。\n'
             f'新题运行 bin/lab new <编号>，每道题打开自己的code-workspace文件。\n\n工具说明：{tool}/README.md\n')
@@ -158,7 +158,17 @@ def choose_type(root,question_type):
     if request.get('question_type') and request['question_type']!=question_type:
         require(not (Path(root)/'CURRENT.json').exists(),'已有冻结题目，改题型请新建题目，保留旧题返修来源')
     request['question_type']=question_type;write_json(file,request)
-    return {'question_type':question_type,'domain':'计算机科学','next':'由助手生成问题、关键事实及限制并核实来源'}
+    return {'question_type':question_type,'domain':question_domain(root,request),'next':'按用户选择的领域生成问题、关键事实及限制并核实来源'}
+
+
+def choose_domain(root,domain):
+    require(isinstance(domain,str) and domain.strip(),'请输入非空的专业领域名称')
+    domain=domain.strip();root=Path(root)
+    file=root/'REQUEST.json';request=read_json(file)
+    if (root/'CURRENT.json').is_file():
+        require(domain==question_domain(root,request),'已有冻结题目，改领域请新建题目，保留旧题返修来源')
+    request.update({'domain':domain,'domain_confirmed':True});write_json(file,request)
+    return {'domain':domain,'next':'记录用户选择的题型，再由助手生成并核实本领域场景'}
 
 
 def begin(root,workspace):
@@ -170,12 +180,14 @@ def begin(root,workspace):
             models[role]={'display_name':NAMES[role],'configuration':'ready'}
         except (Error,ValueError,TypeError,KeyError,AttributeError,OSError):models[role]={'display_name':NAMES[role],'configuration':'needs_configuration'}
     needs=[]
+    domain=question_domain(root,request)
+    if domain is None:needs.append('domain')
     if request.get('question_type') not in TYPES:needs.append('question_type')
     if any(m['configuration']!='ready' for m in models.values()):needs.append('model_configuration')
-    return {'phase':'authoring','domain':'计算机科学','question_type':request.get('question_type'),'question_type_choices':list(TYPES),
+    return {'phase':'authoring','domain':domain,'question_type':request.get('question_type'),'question_type_choices':list(TYPES),
             'models':models,'configuration_file':str(config),'requires_input':needs,'ready':not needs,
-            'scenario_owner':'assistant','next':'先询问题型并提示缺失模型配置，其他场景内容由助手生成' if needs else
-            '已有冻结题目，运行status查看缺失材料并接续，不重跑已完成模型' if (root/'CURRENT.json').exists() else '按已选题型自动生成并核实计算机科学场景'}
+            'scenario_owner':'assistant','next':'先询问缺失领域，再询问题型并提示缺失模型配置，其他场景内容由助手生成' if needs else
+            '已有冻结题目，运行status查看缺失材料并接续，不重跑已完成模型' if (root/'CURRENT.json').exists() else '按已选领域和题型自动生成并核实场景'}
 
 
 def find_authoring_evaluation(root):

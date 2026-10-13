@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from llm_authoring.workspace import TOOL_ROOT,begin,choose_type,create_task,create_workspace
+from llm_authoring.workspace import TOOL_ROOT,begin,choose_domain,choose_type,create_task,create_workspace
 
 
 class WorkspaceTests(unittest.TestCase):
@@ -10,25 +10,27 @@ class WorkspaceTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)/'我的 工作区'
         create_workspace(self.root);self.task=self.root/'task'
     def tearDown(self):self.tmp.cleanup()
-    def fill_config(self):
+    def fill_config(self,select_domain=True):
         file=self.root/'local/providers.json';value=json.loads(file.read_text())
         for p in value['providers'].values():p['base_url']='https://example.com/v1/';p['api_key']='synthetic-private-fixture'
         file.write_text(json.dumps(value));file.chmod(0o600)
+        if select_domain:choose_domain(self.task,'计算机科学')
     def test_first_use_requests_type_and_three_model_configuration(self):
         result=begin(self.task,self.root)
-        self.assertEqual(result['requires_input'],['question_type','model_configuration'])
+        self.assertEqual(result['requires_input'],['domain','question_type','model_configuration'])
         self.assertEqual(len(result['question_type_choices']),3)
         self.assertEqual(len(result['models']),3)
         self.assertEqual((self.root/'local/providers.json').stat().st_mode&0o777,0o600)
     def test_configured_user_only_needs_type_then_assistant_supplies_scenario(self):
-        self.fill_config();result=begin(self.task,self.root)
-        self.assertEqual(result['requires_input'],['question_type'])
+        self.fill_config(select_domain=False);result=begin(self.task,self.root)
+        self.assertEqual(result['requires_input'],['domain','question_type'])
+        choose_domain(self.task,'材料科学')
         choose_type(self.task,'How-to类');result=begin(self.task,self.root)
         self.assertTrue(result['ready']);self.assertEqual(result['scenario_owner'],'assistant')
     def test_new_task_asks_type_without_requiring_credentials_again(self):
         self.fill_config();choose_type(self.task,'How-to类')
         new=create_task(self.root,'question-002')
-        self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['question_type'])
+        self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['domain','question_type'])
         self.assertTrue((Path(new['task'])/'.git').is_dir())
         self.assertNotIn('arena-inbox',[p.name for p in Path(new['task']).iterdir()])
     def test_renamed_task_retains_frozen_evidence_and_is_default_with_separate_new_task(self):
@@ -53,7 +55,7 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(json.loads((self.root/'.authoring-workspace.json').read_text())['default_task'],'tasks/cs_47')
         self.assertTrue((renamed/'cs_47.code-workspace').is_file())
         new=create_task(self.root,'cs_35')
-        self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['question_type'])
+        self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['domain','question_type'])
         self.assertFalse((Path(new['task'])/'CURRENT.json').exists())
         self.assertEqual(config,(self.root/'local/providers.json').read_bytes())
         from llm_authoring.cli import main

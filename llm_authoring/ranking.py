@@ -92,7 +92,7 @@ def validate_ranking(root, evaluation, ranking):
 
 def submission_markdown(fields):
     q = fields
-    lines = ['# 完整出题与模型排序提交', '\n## 题目编号\n', q['task_id'], '\n## 题目 prompt\n', q['prompt'], '\n## 题目类型\n', q['question_type'],
+    lines = ['# 完整出题与模型排序提交', '\n## 题目编号\n', q['task_id'], '\n## 题目领域\n', q['domain'], '\n## 题目 prompt\n', q['prompt'], '\n## 题目类型\n', q['question_type'],
              '\n## 关键洞察（Insight）\n', f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
     for field, title in [('decisive_points', '决定性核心考点'), ('supporting_points', '非决定性核心考点')]:
         lines.append('\n## ' + title + '\n')

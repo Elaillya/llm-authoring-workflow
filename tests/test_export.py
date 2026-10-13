@@ -42,6 +42,13 @@ class ExportTests(unittest.TestCase):
     def test_self_review_must_match_question_and_specific_type(self):
         self.review['question_sha256']='obsolete'
         with self.assertRaisesRegex(Error,'自查版本'):export_authoring(self.root,self.ev,self.review,self.root/'out')
+    def test_legacy_cs_review_key_remains_valid_without_rewriting_review(self):
+        import copy
+        review=copy.deepcopy(self.review)
+        review['checks']['realistic_stable_cs_scenario']=review['checks'].pop('realistic_stable_domain_scenario')
+        original=copy.deepcopy(review)
+        export_authoring(self.root,self.ev,review,self.root/'legacy-review')
+        self.assertEqual(review,original)
     def test_incomplete_point_is_not_a_negative_model_result(self):
         self.ev['models']['seed']['points']['D1']['met']=None
         with self.assertRaisesRegex(Error,'证据不足'):export_authoring(self.root,self.ev,self.review,self.root/'out')

@@ -11,8 +11,8 @@ class TerminalReadTest(unittest.TestCase):
     def test_completed_event_does_not_wait_for_eof(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            write_json(root/"REQUEST.json", {"question_type":"How-to类"})
-            freeze(root, {'schema_version':1,'task_id':'diagnostic-terminal','prompt':'连接检查，请只回复OK。','question_type':'How-to类',
+            write_json(root/"REQUEST.json", {"question_type":"How-to类","domain":"接口诊断","domain_confirmed":True})
+            freeze(root, {'schema_version':1,'task_id':'diagnostic-terminal','domain':'接口诊断','prompt':'连接检查，请只回复OK。','question_type':'How-to类',
                           'insight':{'mechanism':'连接检查','priority':'完成','conclusion':'OK'},'author_notes':'诊断夹具，不是正式题目。',
                           'points':[{'id':'D1','kind':'decisive','criterion':'回复OK'}]})
             config = root/'providers.json'

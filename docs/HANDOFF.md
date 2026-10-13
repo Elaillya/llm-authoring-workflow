@@ -1,6 +1,6 @@
 # 完整提交与旧题接续接口
 
-2.1.0 同一工作流完成出题及五模型排序，直接交付Markdown。旧三模型handoff和delivery是历史检查点，保留原文；不需要交给另一个质检workflow。
+2.2.0 同一工作流完成出题及五模型排序，直接交付Markdown。新题先询问专业领域，再询问题型。旧三模型handoff和delivery是历史检查点，保留原文；不需要交给另一个质检workflow。
 
 workspace-update更新既有工作区侧栏说明和工具路径，自动查找当前冻结版本通过门槛的三模型评估并创建Arena填写文件。题面、考点、原文、判断、自查、私有配置和旧交付不改写。
 
@@ -15,3 +15,5 @@ Arena输入为arena-input/rNNNN/model-4.md与model-5.md。model_name记录真实
 用户复制的文件为提交信息.md及models/下五份按实际模型名称命名的原Markdown；提交信息仅链接原文，不内嵌全文。JSON、API截图和evidence/保留来源与检查记录，不生成交付ZIP。export/checkpoint返回markdown及model_markdown路径，助手给出这些文件的可点击链接。
 
 rename调整目录与TASK.json.display_id，保留TASK.json.task_id及冻结版本中的task_id，以免原评估与回复绑定失效。新候选仍沿用该内部task_id，提交编号取display_id。旧路径保留为工作区内别名，默认入口更新；升级只处理真实题目目录。每个题目有独立Git，新增题目不复制旧题内容。
+
+专业领域是每题的REQUEST.domain，首次为空，choose-domain记录domain_confirmed=true。题目冻结包含所选domain，未选择或不匹配时阻断。旧冻结题目继续原领域，更新侧栏说明不改REQUEST或原件；旧未冻结的自动计算机科学默认值须重新询问用户。旧自查realistic_stable_cs_scenario字段仅对计算机科学旧题兼容读取，新模板使用realistic_stable_domain_scenario。原协议中缺domain的旧冻结题目按其历史计算机科学约定读取，不从可变REQUEST重新解释，保留原字节。

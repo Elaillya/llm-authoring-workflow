@@ -15,7 +15,7 @@ def question():
 def prepared(root):
     notes=Path(root)/'drafts/sources.md';notes.parent.mkdir(parents=True,exist_ok=True)
     notes.write_text('# 合成来源夹具\n\n没有真实专业来源，仅测试格式和版本约束。\n')
-    write_json(Path(root)/'REQUEST.json',{'question_type':'分析决策类'})
+    write_json(Path(root)/'REQUEST.json',{'question_type':'分析决策类','domain':'计算机科学','domain_confirmed':True})
     freeze(root,question())
 
 

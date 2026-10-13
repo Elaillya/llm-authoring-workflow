@@ -3,10 +3,10 @@ from pathlib import Path
 import shutil
 import tempfile
 from .core import (Error, NAMES, ROLES, active_question, read_json, read_response,
-                   require, sha, validate_image, write_json)
+                   question_domain, require, sha, validate_image, write_json)
 from .delivery import model_files, reply_link, submission_id
 
-COMMON_CHECKS=('realistic_stable_cs_scenario','clear_natural_prompt','no_insight_leak_or_hidden_conditions',
+COMMON_CHECKS=('realistic_stable_domain_scenario','clear_natural_prompt','no_insight_leak_or_hidden_conditions',
                'insight_mechanism_priority_conclusion','insight_necessary_decisive_specific_consensual',
                'rubric_specific_atomic_and_supported','insight_and_rubric_distinct','sources_and_assumptions_honest')
 TYPE_CHECKS={'分析决策类':'decision_selects_one_allowed_option','开放推荐类':'recommendation_infers_profile_and_limited_candidates',
@@ -86,8 +86,12 @@ def validate_self_review(root,review):
     require(review.get('schema_version')==1 and review.get('phase')==expected['phase'] and review.get('question_sha256')==expected['question_sha256'],'自查版本失效，按当前题面、Insight和考点重新自查')
     require(review.get('source_notes_sha256')==expected['source_notes_sha256'],'专业依据笔记已改变，按新依据更新自查')
     require(isinstance(review.get('reviewer'),str) and review['reviewer'].strip(),'自查需记录实际执行者，AI自查不能冒充独立专家质检')
-    require(set(review.get('checks',{}))==set(expected['checks']),'自查须覆盖全部通用及本题型要求')
-    for item in review['checks'].values():
+    checks=dict(review.get('checks',{}))
+    if 'realistic_stable_cs_scenario' in checks and 'realistic_stable_domain_scenario' not in checks:
+        require(question_domain(root)=='计算机科学','旧CS自查字段仅适用于计算机科学旧题；请按所选领域重新自查')
+        checks['realistic_stable_domain_scenario']=checks.pop('realistic_stable_cs_scenario')
+    require(set(checks)==set(expected['checks']),'自查须覆盖全部通用及本题型要求')
+    for item in checks.values():
         require(item.get('passed') is True and isinstance(item.get('reason'),str) and item['reason'].strip(),'自查未通过或无具体理由，先修订再交接')
 
 
@@ -118,7 +122,7 @@ def export_authoring(root,ev,review,output):
         require(not output.resolve().is_relative_to((Path(root)/protected).resolve()),'交接不能写入原始证据或冻结目录')
     validated=[(role,read_response(root,role)) for role in ROLES]
     for role,item in validated:validate_api_evidence(item,role)
-    fields={'phase':'authoring','task_id':submission_id(root,q['task_id']),'domain':q.get('domain','计算机科学'),'prompt':q['prompt'],'question_type':q['question_type'],
+    fields={'phase':'authoring','task_id':submission_id(root,q['task_id']),'domain':question_domain(root),'prompt':q['prompt'],'question_type':q['question_type'],
             'insight':q['insight'],'author_notes':q['author_notes'],
             'decisive_points':[p for p in q['points'] if p['kind']=='decisive'],
             'supporting_points':[p for p in q['points'] if p['kind']=='supporting'] or '无','models':{}}
@@ -127,7 +131,7 @@ def export_authoring(root,ev,review,output):
     try:
         (staging/'models').mkdir();(staging/'screenshots').mkdir();(staging/'evidence').mkdir()
         paths=model_files({role:item['meta']['display_name'] for role,item in validated})
-        lines=['# 三模型出题检查点','\n## 题目编号\n',fields['task_id'],'\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
+        lines=['# 三模型出题检查点','\n## 题目编号\n',fields['task_id'],'\n## 题目领域\n',fields['domain'],'\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
                '\n## 关键洞察（Insight）\n',f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
         for field,title in [('decisive_points','决定性核心考点'),('supporting_points','非决定性核心考点')]:
             lines.append('\n## '+title+'\n')
