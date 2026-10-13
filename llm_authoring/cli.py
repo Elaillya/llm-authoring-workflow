@@ -9,6 +9,7 @@ from .providers import collect,recover
 from .render import render_response
 from .workspace import TOOL_ROOT,begin,choose_domain,choose_type,create_task,create_workspace,default_task,locate_workspace,find_authoring_evaluation,rename_task,update_workspace
 from .arena import prepare_arena,import_arena
+from .manual import prepare_model,import_model,manual_status
 from .ranking import check_five,export_complete,five_evaluation_template,ranking_template,validate_ranking
 
 
@@ -27,6 +28,8 @@ def main(argv=None):
     c=subs.add_parser('collect');c.add_argument('role',choices=ROLES);c.add_argument('--allow-live',action='store_true');c.add_argument('--retry-reason',default='');c.add_argument('--max-output',type=int);c.add_argument('--seed-evaluation',type=Path)
     r=subs.add_parser('recover');r.add_argument('role',choices=ROLES);r.add_argument('attempt',type=Path)
     s=subs.add_parser('render');s.add_argument('role',choices=ROLES)
+    for command in ('model-prepare','model-import'):
+        m=subs.add_parser(command);m.add_argument('role',choices=ROLES);m.add_argument('--seed-evaluation',type=Path)
     for command in ('evaluation-template','self-review-template','seed-evaluation-template'):
         q=subs.add_parser(command);q.add_argument('output',type=Path)
     ch=subs.add_parser('check');ch.add_argument('evaluation',type=Path)
@@ -47,28 +50,21 @@ def main(argv=None):
             workspace=args.workspace.absolute() if args.workspace else locate_workspace(args.task or Path.cwd())
             root=args.task.absolute() if args.task else Path.cwd() if (Path.cwd()/'TASK.json').is_file() else default_task(workspace)
             require(locate_workspace(root)==workspace,'题目不属于指定工作区')
-            config=workspace/'local/providers.json'
             if args.command=='new':result=create_task(workspace,args.id)
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先询问我选择的专业领域，再让我选择题型；首次提示配置三个模型。按我选定的领域生成并核实场景。Arena阶段创建两份Markdown填写文件，等我贴好回复后继续五模型考点评估、排序及完整交付；Arena截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先询问我选择的专业领域，再让我选择题型；不调用模型API。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三模型门槛通过后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
             elif args.command=='freeze':
-                require(begin(root,workspace)['ready'],'先选领域、题型并完成三个模型配置，再设计与冻结')
+                require(begin(root,workspace)['ready'],'先选领域和题型，再设计与冻结')
                 result=freeze(root,read_json(args.question))
-            elif args.command=='collect':
-                if args.max_output is not None:require(args.max_output>0,'max-output 必须大于零')
-                if args.role!='seed':
-                    probe=args.seed_evaluation or root/'evaluations'/('seed-'+active_question(root)['revision']+'.json')
-                    require(probe.is_file(),'先完成当前候选的Turbo决定性考点判断，再调用GPT/Claude')
-                    require(check_seed(root,read_json(probe))['continue_to_gpt_claude'],'Turbo已达成全部决定性点，先修订候选，暂不调用GPT/Claude')
-                result=collect(root,config,args.role,allow_live=args.allow_live,retry_reason=args.retry_reason,max_output=args.max_output)
-            elif args.command=='recover':result=recover(root,config,args.role,args.attempt)
-            elif args.command=='render':
-                runtime=read_json(workspace/'local/runtime.json');result=render_response(root,args.role,runtime['assets'],runtime['browsers'])
+            elif args.command in ('collect','recover','render'):
+                raise Error('当前流程不调用模型API或生成渲染截图；请使用 model-prepare / model-import，官方网页截图由用户单独提交')
+            elif args.command=='model-prepare':result=prepare_model(root,args.role,args.seed_evaluation)
+            elif args.command=='model-import':result=import_model(root,args.role,args.seed_evaluation)
             elif args.command in ('evaluation-template','self-review-template','seed-evaluation-template'):
                 require(not args.output.exists(),'输出已存在，拒绝覆盖判断或自查')
                 value=self_review_template(root) if args.command=='self-review-template' else evaluation_template(root,('seed',) if args.command=='seed-evaluation-template' else ROLES)
@@ -92,12 +88,14 @@ def main(argv=None):
                 if (root/'CURRENT.json').exists():
                     result['revision']=active_question(root)['revision'];result['responses']={}
                     for role in ALL_ROLES:
-                        try:r=read_response(root,role);result['responses'][role]={'complete':True,'display_name':r['meta'].get('display_name'),'screenshot':r['meta'].get('screenshot_kind','user_submits_separately' if role not in ROLES else 'missing')}
+                        try:r=read_response(root,role);result['responses'][role]={'complete':True,'display_name':r['meta'].get('display_name'),'screenshot':r['meta'].get('screenshot_kind','user_submits_separately' if role not in ROLES or r['meta'].get('source_kind')=='official_manual' else 'missing')}
                         except Error:result['responses'][role]={'complete':False,'status':'evidence_missing_or_incomplete'}
                     result['authoring_evaluation']=str(path) if (path:=find_authoring_evaluation(root)) else None
                     missing=[role for role,value in result['responses'].items() if not value['complete']]
-                    result['stage']='collect_three' if any(role in ROLES for role in missing) else 'awaiting_arena_markdown' if missing else 'five_model_evaluation_and_ranking'
-                    result['next']='保留已有原件，补齐缺失API回复/截图及三模型判断' if result['stage']=='collect_three' else '已保留三模型；准备或填写Arena两份Markdown文件，截图自行提交' if missing else '统一评估五模型全部考点，生成并校验排序，然后导出新的完整提交版'
+                    result.update(manual_status(root))
+                    if all(result['responses'][role]['complete'] for role in ROLES) and result['authoring_evaluation']:
+                        result['stage']='awaiting_arena_markdown' if missing else 'five_model_evaluation_and_ranking'
+                        result['next']='三模型门槛已通过；创建或填写 Arena 两份Markdown' if missing else '统一评估五模型全部考点，生成并校验排序，然后导出新的完整提交版'
                     if (root/'arena-input'/result['revision']).exists():
                         result['arena_input_files']=[str(root/'arena-input'/result['revision']/f'model-{index}.md') for index in (4,5)]
             else:raise Error('未知命令')

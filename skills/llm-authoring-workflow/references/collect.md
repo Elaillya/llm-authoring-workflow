@@ -1,11 +1,10 @@
-# 三模型采集
+# 三模型手动 Markdown
 
-已授权使用当前工作区私有配置做本题必要调用。先 `lab collect seed --allow-live` 与 `lab render seed`；随后 `lab seed-evaluation-template evaluations/seed-rNNNN.json`，按全部决定性考点填写met/reason/quotes，`lab seed-check evaluations/seed-rNNNN.json`。若Turbo全部达成，先修订有专业依据的候选并重新冻结，不消耗GPT/Claude调用。若Turbo未达成，再分别 `lab collect gpt --allow-live`、`lab collect claude --allow-live` 及对应render；CLI会核对当前版本的Turbo判断。请求不带Insight/考点，GPT中高reasoning、Claude中高thinking。保留实际请求与返回型号，版本不符先核供应商映射，不能改显示名称冒充。
+不运行 collect、recover、render，不读取或提示 API 密钥，不自动调用模型，不渲染模拟官方页面。每条命令在当前题目目录执行，lab 指父工作区 bin/lab；也可显式 --task 指定该题。
 
-候选记录在测试前冻结，是防止倒推标准的版本记录；全部验证和自查通过后导出的版本才是最终提交锁定。最终仍要三个模型完整原文与判断，GPT/Claude至少一个整体达成。
+1. 候选已冻结后运行 `lab model-prepare seed`。创建 model-input/rNNNN/prompt.md 与 Seed 2.1 Turbo.md，只创建 Seed 的文件。给用户两个可点击链接，让用户将 prompt 发送到对应型号官方网页的新会话，并将完整回答原 Markdown 替换占位文字保存。所有截图由用户单独提交。
+2. 用户说填好后运行 `lab model-import seed`，再 `lab seed-evaluation-template evaluations/seed-rNNNN.json`，逐项填 met/reason/quotes；满足必须有原文准确引用，缺证据保持 null。运行 `lab seed-check evaluations/seed-rNNNN.json`。
+3. 若 Seed 全部决定性达成，保留真实结果，按专业依据修订候选并冻结新版本；新题面重新提供 Seed 回复，不提前要求 GPT/Claude。若 Seed 未全部达成，运行 `lab model-prepare gpt` 和 `lab model-prepare claude`，分别创建同目录的 GPT-5.6 sol.md 与 Claude Opus 4.6.md，给出可点击链接，等待用户填好。若判断保存在其他路径，prepare/import 均显式传 --seed-evaluation；默认使用当前版本标准 seed-rNNNN.json。
+4. 用户填好后分别 `lab model-import gpt`、`lab model-import claude`。prepare 和 import 都验证当前版本 Seed 判断，不能用旧版本或未判定结果越过门槛。GPT/Claude 使用项目要求的中高推理模式，全部发送相同冻结题面和统一 Markdown 指令，不携带 Insight 或考点。网页不能确认规定型号时停在缺材料处，不能换型号或修改名称冒充。
 
-完整原Markdown、JSON/SSE、metadata、截图和渲染manifest保存于responses/。截图显示题面、模型版号、原文哈希和完整正文，API渲染来源明确；远程资源阻断。原文不得改写，格式问题独立记录。
-
-总时限及空闲时限由私有配置控制；Responses终止事件到达即停止等待，不被心跳无限延长。中途响应及失败记录保留；缺完整回复不判为不满足。已有原响应优先 `lab recover ROLE attempts/<hash>/ROLE/aNNNN.json`，不重复扣费。确有已修正的失败原因才带 `--retry-reason`重试，未知in_flight先核上游结果。成功原文不覆盖。
-
-回复过短先检查截断或服务异常，别为了制造区分挑选样本。三份完整正文和截图齐全再做最终三模型判定。
+输入文件仅为回复正文，不增加标题、出处声明或外层代码块。工具保留用户原始字节、metadata 和冻结题面绑定。未填、截断、格式损坏均不作为未达成；请用户修正对应文件。导入幂等，已保存原件不可覆盖。只改 Insight 或考点而题面不变时，复用完整原回复并统一重评；题面改变时使用新输入版本。历史 API 原件仅兼容读取，不重新采集。

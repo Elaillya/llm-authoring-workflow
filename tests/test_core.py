@@ -20,6 +20,10 @@ def prepared(root):
 
 
 def populate(root):
+    # Explicitly construct a historical API task for compatibility tests.
+    task=Path(root)/'TASK.json'
+    if task.exists():
+        value=json.loads(task.read_text());value['response_mode']='legacy_api';write_json(task,value)
     from llm_authoring.authoring import evaluation_template
     for role,name in [('seed','Seed 2.1 Turbo'),('gpt','GPT-5.6 sol'),('claude','Claude Opus 4.6')]:
         text='# 合成回复\n\n先核对验收依据；依据约束实现。\n'

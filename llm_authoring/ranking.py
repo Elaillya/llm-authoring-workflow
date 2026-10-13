@@ -105,10 +105,13 @@ def submission_markdown(fields):
         if model.get('screenshot'):
             lines.append(f'\n截图：[完整API渲染截图]({model["screenshot"]})')
         else:
-            lines.append('\nArena 截图由用户另行向甲方提交。')
+            lines.append('\n官方网页截图由用户另行向甲方提交。')
     lines.extend(['\n## 五模型核心考点达成性排序\n', fields['ranking'], '\n## 排序理由备注\n', fields['ranking_notes'],
                   '\n## 出题说明备注\n', fields['author_notes'], '\n## 材料来源说明\n',
-                  '前三份回复为保存的API原文；两份Arena回复为用户提供的Markdown，工具未独立核验Arena页面、模式和随机过程。'])
+                  ('前三份回复为用户提供的官方页面Markdown；两份Arena回复为用户提供的Markdown。'
+                   '工具未独立核验官方页面型号、会话及Arena模式和随机过程，全部网页截图由用户单独提交。')
+                  if all(q['models'][role].get('source_kind')=='official_manual' for role in ROLES) else
+                  '前三份回复包含历史API原文；两份Arena回复为用户提供的Markdown。历史API渲染图不等于官方网页截图，网页截图由用户单独提交。'])
     return '\n'.join(lines) + '\n'
 
 
@@ -116,12 +119,12 @@ def export_complete(root, evaluation, review, ranking, output):
     result = validate_ranking(root, evaluation, ranking)
     output = Path(output).absolute()
     require(not output.exists(), '提交目录已存在，拒绝覆盖；请使用新的交付版号')
-    for name in ('responses', 'revisions', 'attempts', 'arena-input', 'evaluations', 'drafts'):
+    for name in ('responses', 'revisions', 'attempts', 'arena-input', 'model-input', 'evaluations', 'drafts'):
         require(not output.resolve().is_relative_to((Path(root) / name).resolve()), '提交不能写入原件、考点、输入或评估目录')
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix='.complete-export-', dir=output.parent))
     try:
-        # Reuse the unchanged three-response screenshot and API-evidence checks.
+        # Reuse manual-source validation and historical evidence compatibility.
         authoring = copy.deepcopy(evaluation)
         authoring['phase'] = 'authoring'
         decisive = {p['id'] for p in active_question(root)['question']['points'] if p['kind'] == 'decisive'}
@@ -165,7 +168,8 @@ def export_complete(root, evaluation, review, ranking, output):
                    'prompt_sha256': current['prompt_sha256'], 'rubric_sha256': current['rubric_sha256'],
                    'models_in_order': list(ALL_ROLES), 'three_model_gate': True, 'ranking': result['order'],
                    'next_workflow': 'platform_submission', 'arena_screenshots': 'user_submits_separately',
-                   'next_action': '完整出题与五模型排序材料已生成，用户提交甲方；Arena截图由用户单独提供。'})
+                   'model_screenshots': 'user_submits_separately',
+                   'next_action': '完整出题与五模型排序材料已生成，用户提交甲方；所有模型的官方网页截图由用户单独提供。'})
         (package / 'manifest.json').unlink()
         write_json(package / 'manifest.json', {'schema_version': 1, 'phase': 'complete',
                    'files': {p.relative_to(package).as_posix(): sha(p) for p in package.rglob('*') if p.is_file()}})

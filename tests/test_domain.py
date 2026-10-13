@@ -14,9 +14,6 @@ class DomainTests(unittest.TestCase):
         self.workspace=Path(self.temp.name)/'workspace'
         create_workspace(self.workspace)
         self.task=self.workspace/'task'
-        file=self.workspace/'local/providers.json';config=read_json(file)
-        for p in config['providers'].values():p.update({'base_url':'https://example.invalid/v1','api_key':'synthetic-domain-fixture'})
-        write_json(file,config)
     def tearDown(self):self.temp.cleanup()
     def candidate(self,domain):
         q=question();q.update({'task_id':'question-001','domain':domain})

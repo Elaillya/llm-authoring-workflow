@@ -10,3 +10,4 @@ providers*.json
 *.key
 *.pem
 arena-input/
+model-input/

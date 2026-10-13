@@ -1,16 +1,16 @@
 ---
 name: llm-authoring-workflow
-description: 完成开放难题第五期完整出题与五模型排序，或从已有检查点接续：新题先询问专业领域和题型，首次配置三模型，按所选领域生成场景与Insight/考点，三模型验证，创建Arena两份Markdown填入文件，五模型评估和排序，导出完整提交。
+description: 完成开放难题第五期完整出题与五模型排序。询问领域和题型，设计并冻结候选，先收用户填写的Seed Markdown，判断未全部达成后收GPT/Claude Markdown，再收Arena两份Markdown、评估五模型和排序，交付六份MD；不调用API、不生成截图。
 ---
 
 # 完整出题与五模型排序
 
-先读当前题目AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md及工具仓rules/authoring.md。工具路径见TOOLKIT.md，命令为工作区bin/lab。首次只有工具仓时按README创建工作区；更新已建工作区用workspace-update。
+先读当前题目 AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md 及工具仓 rules/authoring.md。路径见 TOOLKIT.md，命令为父工作区 bin/lab。首次仅有工具仓时按 README 准备环境并建工作区，不索取 API 配置。
 
-1. 运行lab begin与lab status。新题缺domain时先询问用户希望出题的专业领域，使用lab choose-domain "用户选择的领域"记录，不自动代选；再询问分析决策类、开放推荐类、How-to类并choose-type。首次缺配置时提示填写私有providers.json。已有冻结题目沿用原领域、题型和配置；用户已明确给出的选择直接记录，背景由助手生成。
-2. 当前题目未冻结时按references/design.md设计并冻结；已有冻结版本、原件和判断时从缺失步骤继续，保留旧交付。
-3. 只有缺失API证据时按references/collect.md获取三模型原文和图，Seed先筛查。按references/evaluate-deliver.md完成决定性判断及作者自查。已有完整证据不重新调用。
-4. 三模型门槛通过后按references/arena-rank.md创建Arena两份MD、给用户可点击路径，等待填入。用户只填真实型号和原文，Arena图自行提交，不索要截图或额外清单。
-5. 用户填好后导入，统一评估五模型全部考点、按真实名称排序、校验500字理由，导出提交信息.md和五份按模型名命名的回复文件，给出六个可点击链接并更新WORKLOG。交付直接使用Markdown，不生成ZIP。
+1. 运行 lab begin 与 lab status。缺领域时询问用户希望出题的专业领域，lab choose-domain 记录；再询问分析决策类、开放推荐类、How-to类并 choose-type。用户已明确给出的选择直接记录。场景、事实、限制和来源核实由助手完成；不要求用户填写 INPUTS 或提供经历。
+2. 未冻结时按 references/design.md 设计、核实并冻结题面、Insight 和考点。已有材料从缺失步骤接续，保留原件和历史交付。
+3. 按 references/collect.md 创建 Seed Markdown 填写文件，给出 prompt 和填写文件的可点击链接，等待用户填写。导入后按全部决定性点判断；未全部达成才创建 GPT 和 Claude 的文件。三模型完整原文和判断齐备后，按 references/evaluate-deliver.md 验证门槛及作者自查。
+4. 门槛通过后按 references/arena-rank.md 创建 Arena 两份 Markdown。用户填真实型号和原文。全部模型的官方网页截图由用户自己提交，不要求上传图片或额外配置。
+5. 用户填好后导入，统一判断全部考点，按真实名称排序并校验理由。交付提交信息.md和五份按模型名命名的原回复，各给可点击链接，更新 WORKLOG 和 Git 检查点，不生成 ZIP。
 
-材料齐备时连续推进。完成条件是五份完整真实Markdown、同一版本考点判断、合规的型号、排序与具体理由、前三个模型的原API截图以及完整提交字段与manifest。原件、负结果和历史版本保留；工具收到的Arena MD是用户提供，不能称为已独立核验页面或甲方验收。
+材料齐备时连续推进。完成条件是五份完整原 Markdown、同版考点判断、合规型号、具名排序及至少500字理由、完整提交字段及 manifest。原件和负结果保留。缺少回复或型号不能确认记为证据不足；禁止补写模型答案或伪造网页。用户提供的 Markdown 不代表工具独立核验了网页或甲方验收。

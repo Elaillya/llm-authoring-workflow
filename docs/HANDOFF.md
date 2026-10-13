@@ -1,19 +1,15 @@
-# 完整提交与旧题接续接口
+# 完整提交与旧题接续
 
-2.2.0 同一工作流完成出题及五模型排序，直接交付Markdown。新题先询问专业领域，再询问题型。旧三模型handoff和delivery是历史检查点，保留原文；不需要交给另一个质检workflow。
+3.0.0 默认使用用户提供的官方网页 Markdown。新题先询问领域和题型，不需要 API 配置。冻结候选后 model-prepare seed 创建题面与 Seed 填写文件；model-import seed 保存原文。当前版本 Seed 判断未达成全部决定性点后，才允许 model-prepare/model-import gpt、claude。文件在 model-input/rNNNN/，按模型名字命名，仅粘贴回复正文，不要求用户创建文件或额外清单。
 
-workspace-update更新既有工作区侧栏说明和工具路径，自动查找当前冻结版本通过门槛的三模型评估并创建Arena填写文件。题面、考点、原文、判断、自查、私有配置和旧交付不改写。
+request 绑定题目 ID、版本、完整题目/题面/考点哈希；GPT/Claude 还绑定先行 Seed 判断和原文。原始输入及 metadata 不覆盖。评估绑定当前冻结版本及回复哈希，题面改变重新获取回答，题面不变而 Insight/考点改变统一重评已存原文。
 
-Arena输入为arena-input/rNNNN/model-4.md与model-5.md。model_name记录真实完整型号，分隔线下是原Markdown。request.json由工具绑定冻结题目。导入同时检查两份输入，保留不可变原件及哈希；不要求截图。截图由用户单独提交甲方，页面模式/随机性不是工具已核验的事实。
+三模型门槛通过后，arena-prepare 创建 arena-input/rNNNN/model-4.md、model-5.md、arena-prompt.md。两份文件头部填写实际 model_name，后面填原 Markdown；工具检查完整性与型号限制。所有网页截图由用户直接提交甲方，工具不渲染图片，不独立声称网页型号/模式/随机性核验。
 
-完整导出handoff.json的kind为llm_complete_submission，schema_version=1，记录版本、题目哈希、seed/gpt/claude/arena_1/arena_2顺序、出题门槛和排序，next_workflow为platform_submission。fields.json包含题目、题型、Insight、两类考点、五个模型完整Markdown/达成性/理由、排序与排序理由。
+五模型排序全部决定性达成梯队优先，同梯队按全部核心考点满足数比较，相同并列。决定性和非决定性点均判断；没有非决定性点填“无”。排序与备注使用实际名称，理由至少500字；旧编号形式可兼容读取并转换展示。
 
-展示名称来自实际回复元数据，排序及备注全部使用型号。evaluation.json评估全部核心考点；authoring-evaluation.json为前三个模型决定性点的兼容检查视图。ranking.json绑定完整evaluation哈希；全部决定性达成梯队优先，同梯队按全部满足数排序，相同并列。备注至少500字，结构为总结＋五个具名模型的具体考点情况。旧版编号order仍可校验，新导出转换成真实名称，保留旧判断。
+完整交付为提交信息.md及models/下五份按模型名命名的原回复，主文件不内嵌回答。JSON、evidence 和 manifest 作为辅助记录；不生成 ZIP。handoff.kind=llm_complete_submission，next_workflow=platform_submission；软件导出不代表甲方验收。
 
-旧delivery/v001保留，完整结果用v002等新目录。manifest.json覆盖五原文、判断、排序、三API截图及来源证据的文件哈希。软件导出完成不等于甲方平台验收完成。
+workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评估、回复、自查、交付、Git历史、私有配置与运行环境。旧 API 原件可继续校验与导出，历史 API 渲染图不能作为官方网页截图，collect/recover/render 入口已停用。TASK.response_mode=official_manual 的新题只接受手动原件。
 
-用户复制的文件为提交信息.md及models/下五份按实际模型名称命名的原Markdown；提交信息仅链接原文，不内嵌全文。JSON、API截图和evidence/保留来源与检查记录，不生成交付ZIP。export/checkpoint返回markdown及model_markdown路径，助手给出这些文件的可点击链接。
-
-rename调整目录与TASK.json.display_id，保留TASK.json.task_id及冻结版本中的task_id，以免原评估与回复绑定失效。新候选仍沿用该内部task_id，提交编号取display_id。旧路径保留为工作区内别名，默认入口更新；升级只处理真实题目目录。每个题目有独立Git，新增题目不复制旧题内容。
-
-专业领域是每题的REQUEST.domain，首次为空，choose-domain记录domain_confirmed=true。题目冻结包含所选domain，未选择或不匹配时阻断。旧冻结题目继续原领域，更新侧栏说明不改REQUEST或原件；旧未冻结的自动计算机科学默认值须重新询问用户。旧自查realistic_stable_cs_scenario字段仅对计算机科学旧题兼容读取，新模板使用realistic_stable_domain_scenario。原协议中缺domain的旧冻结题目按其历史计算机科学约定读取，不从可变REQUEST重新解释，保留原字节。
+新任务 REQUEST.domain/domain_confirmed/question_type 为空或未确认，必须由用户选择；旧冻结题目沿用冻结领域。rename 只改显示名和目录，冻结 ID 与旧入口保留。重置现有任务需用户明确指定；先将整个目录（含未提交和忽略文件、Git历史）归档并校验，再建立空白同名任务；其他任务保持原件。

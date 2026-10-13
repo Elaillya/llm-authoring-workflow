@@ -11,16 +11,16 @@ class WorkspaceTests(unittest.TestCase):
         create_workspace(self.root);self.task=self.root/'task'
     def tearDown(self):self.tmp.cleanup()
     def fill_config(self,select_domain=True):
-        file=self.root/'local/providers.json';value=json.loads(file.read_text())
+        file=self.root/'local/providers.json';value=json.loads((TOOL_ROOT/'config/providers.example.json').read_text())
         for p in value['providers'].values():p['base_url']='https://example.com/v1/';p['api_key']='synthetic-private-fixture'
         file.write_text(json.dumps(value));file.chmod(0o600)
         if select_domain:choose_domain(self.task,'计算机科学')
-    def test_first_use_requests_type_and_three_model_configuration(self):
+    def test_first_use_requests_domain_and_type_without_configuration(self):
         result=begin(self.task,self.root)
-        self.assertEqual(result['requires_input'],['domain','question_type','model_configuration'])
+        self.assertEqual(result['requires_input'],['domain','question_type'])
         self.assertEqual(len(result['question_type_choices']),3)
         self.assertEqual(len(result['models']),3)
-        self.assertEqual((self.root/'local/providers.json').stat().st_mode&0o777,0o600)
+        self.assertFalse((self.root/'local/providers.json').exists())
     def test_configured_user_only_needs_type_then_assistant_supplies_scenario(self):
         self.fill_config(select_domain=False);result=begin(self.task,self.root)
         self.assertEqual(result['requires_input'],['domain','question_type'])
@@ -134,33 +134,13 @@ class WorkspaceTests(unittest.TestCase):
         update_workspace(self.root)
         self.assertEqual(slot.read_text(),'用户已填内容，不允许覆盖')
         self.assertEqual(before,{str(p):sha(p) for p in protected})
-    def test_gpt_call_is_blocked_until_seed_current_version_fails(self):
+    def test_legacy_collection_commands_are_disabled_without_any_network(self):
         from contextlib import redirect_stderr,redirect_stdout
         from io import StringIO
         from unittest.mock import patch
         from llm_authoring.cli import main
-        from llm_authoring.authoring import evaluation_template
-        from llm_authoring.core import freeze,save_response,write_json
-        from test_core import question
-        self.fill_config();choose_type(self.task,'分析决策类');q=question();q['task_id']='question-001';freeze(self.task,q)
-        save_response(self.task,'seed','先核对验收依据。',{'display_name':'Seed 2.1 Turbo','source_kind':'api','completion_status':'complete'},raw=b'{"fixture":"TEST ONLY"}')
-        args=['--workspace',str(self.root),'--task',str(self.task),'collect','gpt','--allow-live']
-        with patch('llm_authoring.cli.collect') as network,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
-            self.assertEqual(main(args),2);network.assert_not_called()
-        ev=evaluation_template(self.task,('seed',));ev['reviewer']='synthetic-fixture'
-        for j in ev['models']['seed']['points'].values():j.update({'met':True,'reason':'测试满足','quotes':['先核对验收依据']})
-        probe=self.task/'evaluations/seed-r0001.json';write_json(probe,ev)
-        with patch('llm_authoring.cli.collect') as network,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
-            self.assertEqual(main(args),2);network.assert_not_called()
-        for j in ev['models']['seed']['points'].values():j.update({'met':False,'reason':'测试未满足','quotes':[]})
-        ev['models']['seed']['points']['D1']['met']=None;write_json(probe,ev)
-        with patch('llm_authoring.cli.collect') as network,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
-            self.assertEqual(main(args),2);network.assert_not_called()
-        ev['models']['seed']['points']['D1']['met']=False
-        current_hash=ev['question_sha256'];ev['question_sha256']='stale';write_json(probe,ev)
-        with patch('llm_authoring.cli.collect') as network,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
-            self.assertEqual(main(args),2);network.assert_not_called()
-        ev['question_sha256']=current_hash
-        write_json(probe,ev)
-        with patch('llm_authoring.cli.collect',return_value={'fixture':'test only'}) as network,redirect_stdout(StringIO()):
-            self.assertEqual(main(args),0);network.assert_called_once()
+        args=['--workspace',str(self.root),'--task',str(self.task)]
+        for command in [('collect','seed','--allow-live'),('collect','gpt','--allow-live'),('collect','claude','--allow-live'),('recover','seed','fixture.json'),('render','seed')]:
+            with patch('llm_authoring.cli.collect') as collect,patch('llm_authoring.cli.recover') as recover,patch('llm_authoring.cli.render_response') as render,redirect_stderr(StringIO()),redirect_stdout(StringIO()):
+                self.assertEqual(main(args+list(command)),2)
+                collect.assert_not_called();recover.assert_not_called();render.assert_not_called()
