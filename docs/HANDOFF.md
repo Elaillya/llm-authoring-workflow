@@ -16,4 +16,6 @@ workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评
 
 ## 下一版设计入口（独立草稿）
 
+新建任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型及判断齐备后依次考点/达成性质检，合理问题自主返修、错误意见证据异议并通知用户。门禁满足后才Arena，导入须--evaluation当前判断。Cookie按需填已创建私有文件，过期更新；模型生成API仍禁用。具体分支见Skill的references/platform-checks.md。已有任务TASK保持原合同，此草稿本轮不部署。
+
 3.1.0-dev的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。

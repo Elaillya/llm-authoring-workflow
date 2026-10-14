@@ -42,6 +42,8 @@ def parse_slot(data):
 def prepare_arena(root, evaluation):
     root = Path(root)
     require(check_three(root, evaluation)['three_model_gate'], '先通过三模型出题门槛，再准备 Arena 输入')
+    from .platform_checks import final_gate
+    final_gate(root,evaluation)
     current = active_question(root)
     directory = root / 'arena-input' / current['revision']
     require(not directory.is_symlink() and directory.resolve().is_relative_to(root.resolve()), 'Arena 输入目录不能为符号链接或逃逸题目目录')
@@ -78,7 +80,7 @@ def prepare_arena(root, evaluation):
             'screenshots_required': False, 'next': '填写两份已创建的 Markdown；保存后由助手导入、逐点评估并排序'}
 
 
-def import_arena(root):
+def import_arena(root,evaluation=None):
     root = Path(root)
     current = active_question(root)
     directory = root / 'arena-input' / current['revision']
@@ -86,6 +88,11 @@ def import_arena(root):
     require(request.get('schema_version') == 1 and request.get('task_id') == current['question']['task_id'], 'Arena 输入不属于当前题目')
     for key in ('revision', 'question_sha256', 'prompt_sha256', 'rubric_sha256'):
         require(request.get(key) == current[key], 'Arena 输入绑定已过期，请按当前冻结题目准备新输入文件')
+    from .platform_checks import final_gate,required
+    if required(root):
+        require(evaluation is not None,'Arena导入需要显式提供当前三模型判断 --evaluation')
+        require(check_three(root,evaluation)['three_model_gate'],'Arena导入前重新确认当前三模型门槛')
+        final_gate(root,evaluation)
     records = []
     for index, role in enumerate(ARENA_ROLES, 4):
         path = directory / f'model-{index}.md'

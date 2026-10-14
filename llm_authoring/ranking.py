@@ -112,14 +112,18 @@ def submission_markdown(fields):
                    '工具未独立核验官方页面型号、会话及Arena模式和随机过程，全部网页截图由用户单独提交。')
                   if all(q['models'][role].get('source_kind')=='official_manual' for role in ROLES) else
                   '前三份回复包含历史API原文；两份Arena回复为用户提供的Markdown。历史API渲染图不等于官方网页截图，网页截图由用户单独提交。'])
+    if fields.get('platform_checks',{}).get('form_notes'):
+        lines.extend(['\n## 平台质检异议及表单备注\n',fields['platform_checks']['form_notes']])
     return '\n'.join(lines) + '\n'
 
 
 def export_complete(root, evaluation, review, ranking, output):
     result = validate_ranking(root, evaluation, ranking)
+    from .platform_checks import final_gate
+    final_gate(root,evaluation)
     output = Path(output).absolute()
     require(not output.exists(), '提交目录已存在，拒绝覆盖；请使用新的交付版号')
-    for name in ('responses', 'revisions', 'attempts', 'arena-input', 'model-input', 'evaluations', 'drafts'):
+    for name in ('responses', 'revisions', 'attempts', 'arena-input', 'model-input', 'evaluations', 'drafts','platform-checks'):
         require(not output.resolve().is_relative_to((Path(root) / name).resolve()), '提交不能写入原件、考点、输入或评估目录')
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix='.complete-export-', dir=output.parent))

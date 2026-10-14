@@ -11,3 +11,4 @@ __pycache__/
 *.pem
 providers.json
 providers-*.json
+platform-checks/

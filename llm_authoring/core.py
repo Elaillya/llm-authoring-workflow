@@ -78,6 +78,8 @@ def freeze(root, q):
     selected=question_domain(root,request)
     require(selected is not None,'先询问并记录用户选择的领域，再冻结题目')
     require(q['domain']==selected,'题目领域与用户选择不一致；已冻结题目换领域请新建题目')
+    from .platform_checks import question_gate
+    question_gate(root,q)
     if (root/'CURRENT.json').is_file():
         previous=active_question(root)
         if previous['question_sha256']==hash_json(q):return previous

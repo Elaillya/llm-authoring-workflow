@@ -32,7 +32,7 @@ def create_task(workspace,task_id,destination=None):
     for name in ('AGENTS.md','INPUTS.md','WORKLOG.md','.gitignore'):
         content=(tool/'templates'/name).read_text().replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
         (root/name).write_text(content)
-    write_json(root/'TASK.json',{'schema_version':1,'workflow':'llm-authoring','task_id':task_id,'response_mode':'official_manual','memory_id':str(uuid.uuid4())})
+    write_json(root/'TASK.json',{'schema_version':1,'workflow':'llm-authoring','task_id':task_id,'response_mode':'official_manual','memory_id':str(uuid.uuid4()),'platform_checks_required':True})
     write_json(root/'REQUEST.json',{'schema_version':1,'selection_schema':2,'domain':None,'domain_confirmed':False,'subdirection':None,'question_type':None,'scenario_generation':'assistant_sourced'})
     for name in ('materials','drafts','evaluations','delivery'):(root/name).mkdir()
     q=read_json(tool/'templates/question.json');q['task_id']=task_id;write_json(root/'drafts/question.json',q)
@@ -125,6 +125,7 @@ def workspace_file(folder,label,workspace):
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
             '新题先选计算机科学或商科，再选子方向与题型；助手读本地题库并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。\n'
+            'prompt与Insight后先做平台难度标签检查，通过后再冻结。三模型及判断齐备后做考点和达成性质检，合理问题自主返修，错误意见给证据异议和备注；Cookie按需填写私有文件。\n'
             '冻结后先填写Seed的Markdown；判断其未达成全部决定性点后，再填写GPT和Claude的Markdown。\n'
             'Arena阶段填写工具创建的另两份Markdown；全部模型的官方页面截图由你单独提交。\n'
             '交付为一份提交信息和五份按模型名称命名的原Markdown，排序直接使用模型名称。\n'

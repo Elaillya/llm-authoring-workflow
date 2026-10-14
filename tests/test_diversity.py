@@ -27,6 +27,8 @@ class DiversityTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.ws=Path(self.temp.name)/'ws';create_workspace(self.ws)
         self.a=self.ws/'task';self.b=Path(create_task(self.ws,'second')['task'])
         for root in (self.a,self.b):
+            # Exercise the earlier diversity contract independently of new QA gates.
+            task=read_json(root/'TASK.json');task.pop('platform_checks_required',None);write_json(root/'TASK.json',task)
             choose_domain(root,'计算机科学');choose_subdirection(root,'cs_courses');choose_type(root,'分析决策类')
             (root/'drafts/sources.md').write_text('合成测试的专业依据说明，未开展真实专业实验。')
     def tearDown(self):self.temp.cleanup()

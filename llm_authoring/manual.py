@@ -55,6 +55,8 @@ def validate_prompt(directory, request):
 def prepare_model(root, role, evaluation=None):
     require(role in ROLES, '模型角色不合法')
     root = Path(root)
+    from .platform_checks import question_gate
+    question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
     if response_dir(root, role).exists():
         item = read_response(root, role)
@@ -100,6 +102,8 @@ def prepare_model(root, role, evaluation=None):
 def import_model(root, role, evaluation=None):
     require(role in ROLES, '模型角色不合法')
     root = Path(root)
+    from .platform_checks import question_gate
+    question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
     directory = input_directory(root)
     request = read_json(directory / (role + '-request.json'))

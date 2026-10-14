@@ -120,10 +120,12 @@ def validate_api_evidence(item,role):
 def export_authoring(root,ev,review,output):
     result=check_three(root,ev)
     require(result['three_model_gate'],'三模型区分度未通过，保留真实负结果，不能作为完成题目交接')
+    from .platform_checks import final_gate,export_evidence
+    final_gate(root,ev)
     validate_self_review(root,review)
     current=active_question(root);q=current['question'];output=Path(output).absolute()
     require(not output.exists(),'交接目录已存在，拒绝覆盖')
-    for protected in ('responses','revisions','attempts','model-input','arena-input','evaluations','drafts'):
+    for protected in ('responses','revisions','attempts','model-input','arena-input','evaluations','drafts','platform-checks'):
         require(not output.resolve().is_relative_to((Path(root)/protected).resolve()),'交接不能写入原始证据或冻结目录')
     validated=[(role,read_response(root,role)) for role in ROLES]
     from .manual import validate_model_evidence
@@ -161,6 +163,10 @@ def export_authoring(root,ev,review,output):
                           f'\n历史截图：[API渲染截图](screenshots/{role}.png)' if pic else '\n官方网页截图由用户单独提交甲方。'])
         lines.extend(['\n## 出题说明备注\n',q['author_notes'],'\n## 检查点接续说明\n',
                       '三模型区分度检查通过。此为出题检查点，继续补齐Arena两份Markdown、五模型排序及完整提交。用户提供的Markdown不代表工具已核验官方网页型号或会话；网页截图另行提交。'])
+        platform=export_evidence(root,ev,staging)
+        if platform:
+            fields['platform_checks']=platform
+            if platform['form_notes']:lines.extend(['\n## 平台质检异议及表单备注\n',platform['form_notes']])
         (staging/'提交信息.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
         shutil.copyfile(Path(root)/'drafts/sources.md',staging/'evidence/sources.md')

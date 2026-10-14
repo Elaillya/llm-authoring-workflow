@@ -15,6 +15,8 @@ from .selection import choose_subdirection,upgrade_selection
 from .memory import context as memory_context,sync as memory_sync,show as memory_show,transaction,remember,STATUSES
 from .quality import candidate_check,review_template,reserve
 from .references import business_context
+from . import platform_checks as qa
+from . import platform_client
 
 
 def main(argv=None):
@@ -25,7 +27,8 @@ def main(argv=None):
     w=subs.add_parser('workspace-create');w.add_argument('directory',type=Path)
     n=subs.add_parser('new');n.add_argument('id')
     rn=subs.add_parser('rename');rn.add_argument('name')
-    subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update');subs.add_parser('arena-import')
+    subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update')
+    ai=subs.add_parser('arena-import');ai.add_argument('--evaluation',type=Path)
     t=subs.add_parser('choose-type');t.add_argument('type',choices=['分析决策类','开放推荐类','How-to类'])
     d=subs.add_parser('choose-domain');d.add_argument('domain')
     sd=subs.add_parser('choose-subdirection');sd.add_argument('branch')
@@ -37,6 +40,13 @@ def main(argv=None):
     dr=subs.add_parser('design-review-template');dr.add_argument('output',type=Path);dr.add_argument('--question',type=Path,required=True)
     cr=subs.add_parser('candidate-reserve');cr.add_argument('question',type=Path);cr.add_argument('--review',type=Path)
     br=subs.add_parser('business-references');br.add_argument('--subdirection')
+    qs=subs.add_parser('qa-setup');sources=qs.add_mutually_exclusive_group(required=True)
+    sources.add_argument('--har',type=Path);sources.add_argument('--config',type=Path)
+    qr=subs.add_parser('qa-run');qr.add_argument('stage',choices=list(platform_client.KEYS))
+    qr.add_argument('--question',type=Path);qr.add_argument('--evaluation',type=Path);qr.add_argument('--refresh',action='store_true')
+    qst=subs.add_parser('qa-status');qst.add_argument('--evaluation',type=Path)
+    qdt=subs.add_parser('qa-disagreement-template');qdt.add_argument('stage',choices=['criteria','attainment']);qdt.add_argument('output',type=Path);qdt.add_argument('--evaluation',type=Path,required=True)
+    qd=subs.add_parser('qa-disagree');qd.add_argument('decision',type=Path);qd.add_argument('--evaluation',type=Path,required=True)
     f=subs.add_parser('freeze');f.add_argument('question',type=Path)
     c=subs.add_parser('collect');c.add_argument('role',choices=ROLES);c.add_argument('--allow-live',action='store_true');c.add_argument('--retry-reason',default='');c.add_argument('--max-output',type=int);c.add_argument('--seed-evaluation',type=Path)
     r=subs.add_parser('recover');r.add_argument('role',choices=ROLES);r.add_argument('attempt',type=Path)
@@ -67,7 +77,7 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；不调用模型API。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三模型门槛通过后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型和判断齐备后按Skill做考点质检和达成性质检，合理问题自主修订复检；错误意见登记证据异议，明确告诉我不认同并给出表单备注。平台和三模型门禁满足后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
@@ -85,6 +95,15 @@ def main(argv=None):
                 write_json(args.output,review_template(root,read_json(args.question)));result={'output':str(args.output),'next':'助手逐项填写真实比较理由，再candidate-reserve或freeze，不向用户新增确认'}
             elif args.command=='candidate-reserve':result=reserve(root,read_json(args.question),args.review)
             elif args.command=='business-references':result=business_context(args.subdirection)
+            elif args.command=='qa-setup':result=platform_client.setup(workspace,platform_client.config_from_har(args.har) if args.har else read_json(args.config))
+            elif args.command=='qa-run':
+                q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
+                result=qa.run(root,args.stage,q=q,evaluation=read_json(args.evaluation) if args.evaluation else None,refresh=args.refresh)
+            elif args.command=='qa-status':result=qa.status(root,read_json(args.evaluation) if args.evaluation else None)
+            elif args.command=='qa-disagreement-template':
+                require(not args.output.exists(),'保留旧异议记录，使用新的文件名')
+                write_json(args.output,qa.disagreement_template(root,args.stage,read_json(args.evaluation)));result={'output':str(args.output),'next':'助手核对证据，填写理由和表单备注，再qa-disagree；不要求用户审批'}
+            elif args.command=='qa-disagree':result=qa.disagree(root,read_json(args.decision),read_json(args.evaluation))
             elif args.command=='freeze':
                 require(begin(root,workspace)['ready'],'先选大方向、子方向和题型，再设计、查重与冻结')
                 result=freeze(root,read_json(args.question))
@@ -99,7 +118,7 @@ def main(argv=None):
             elif args.command=='seed-check':result=check_seed(root,read_json(args.evaluation))
             elif args.command=='check':result=check_three(root,read_json(args.evaluation))
             elif args.command=='arena-prepare':result=prepare_arena(root,read_json(args.evaluation))
-            elif args.command=='arena-import':result=import_arena(root)
+            elif args.command=='arena-import':result=import_arena(root,read_json(args.evaluation) if args.evaluation else None)
             elif args.command=='five-evaluation-template':
                 require(not args.output.exists(),'输出已存在，保留原判断')
                 write_json(args.output,five_evaluation_template(root,read_json(args.authoring_evaluation)));result={'output':str(args.output)}
@@ -125,6 +144,10 @@ def main(argv=None):
                         result['next']='三模型门槛已通过；创建或填写 Arena 两份Markdown' if missing else '统一评估五模型全部考点，生成并校验排序，然后导出新的完整提交版'
                     if (root/'arena-input'/result['revision']).exists():
                         result['arena_input_files']=[str(root/'arena-input'/result['revision']/f'model-{index}.md') for index in (4,5)]
+                path=find_authoring_evaluation(root)
+                platform=qa.status(root,read_json(path) if path else None);result['platform_checks']=platform
+                if platform.get('required') and result['ready'] and not platform.get('ready_for_arena'):
+                    result['stage']=platform['stage'];result['next']='按平台检查状态补齐题目检查、考点质检和达成性质检；有证据异议须向用户说明并提供表单备注'
             else:raise Error('未知命令')
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:

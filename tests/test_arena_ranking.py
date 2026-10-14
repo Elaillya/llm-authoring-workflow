@@ -23,7 +23,7 @@ def fill_slots(root, evaluation, names=('fixture-model-4', 'fixture-model-5')):
 
 def fill_five(root, three, names=('fixture-model-4', 'fixture-model-5')):
     fill_slots(root, three, names)
-    import_arena(root)
+    import_arena(root,three)
     evaluation = five_evaluation_template(root, three)
     for role, record in evaluation['models'].items():
         for judgment in record['points'].values():

@@ -9,6 +9,8 @@ class WorkspaceTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)/'我的 工作区'
         create_workspace(self.root);self.task=self.root/'task'
+        task=json.loads((self.task/'TASK.json').read_text());task.pop('platform_checks_required',None)
+        (self.task/'TASK.json').write_text(json.dumps(task))
         # Preserve the v3 request format as a backwards-compatibility fixture.
         request=json.loads((self.task/'REQUEST.json').read_text());request.pop('selection_schema',None)
         (self.task/'REQUEST.json').write_text(json.dumps(request))

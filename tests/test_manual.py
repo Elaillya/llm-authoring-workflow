@@ -25,6 +25,8 @@ class ManualTests(unittest.TestCase):
         self.workspace = Path(self.temp.name) / 'workspace'
         create_workspace(self.workspace)
         self.root = self.workspace / 'task'
+        task=json.loads((self.root/'TASK.json').read_text());task.pop('platform_checks_required',None)
+        (self.root/'TASK.json').write_text(json.dumps(task))
         # Preserve the v3 request format as a backwards-compatibility fixture.
         request=json.loads((self.root/'REQUEST.json').read_text());request.pop('selection_schema',None)
         (self.root/'REQUEST.json').write_text(json.dumps(request))

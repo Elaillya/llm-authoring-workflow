@@ -11,3 +11,4 @@ providers*.json
 *.pem
 arena-input/
 model-input/
+platform-checks/
