@@ -9,6 +9,9 @@ class WorkspaceTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)/'我的 工作区'
         create_workspace(self.root);self.task=self.root/'task'
+        # Preserve the v3 request format as a backwards-compatibility fixture.
+        request=json.loads((self.task/'REQUEST.json').read_text());request.pop('selection_schema',None)
+        (self.task/'REQUEST.json').write_text(json.dumps(request))
     def tearDown(self):self.tmp.cleanup()
     def fill_config(self,select_domain=True):
         file=self.root/'local/providers.json';value=json.loads((TOOL_ROOT/'config/providers.example.json').read_text())

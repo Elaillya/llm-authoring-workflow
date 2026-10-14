@@ -11,6 +11,10 @@ from .workspace import TOOL_ROOT,begin,choose_domain,choose_type,create_task,cre
 from .arena import prepare_arena,import_arena
 from .manual import prepare_model,import_model,manual_status
 from .ranking import check_five,export_complete,five_evaluation_template,ranking_template,validate_ranking
+from .selection import choose_subdirection,upgrade_selection
+from .memory import context as memory_context,sync as memory_sync,show as memory_show,transaction,remember,STATUSES
+from .quality import candidate_check,review_template,reserve
+from .references import business_context
 
 
 def main(argv=None):
@@ -24,6 +28,15 @@ def main(argv=None):
     subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update');subs.add_parser('arena-import')
     t=subs.add_parser('choose-type');t.add_argument('type',choices=['分析决策类','开放推荐类','How-to类'])
     d=subs.add_parser('choose-domain');d.add_argument('domain')
+    sd=subs.add_parser('choose-subdirection');sd.add_argument('branch')
+    subs.add_parser('selection-upgrade');subs.add_parser('memory-sync')
+    mc=subs.add_parser('memory-context');mc.add_argument('--limit',type=int,default=12)
+    ms=subs.add_parser('memory-show');ms.add_argument('entry_id')
+    mr=subs.add_parser('memory-record');mr.add_argument('question',type=Path);mr.add_argument('--status',choices=STATUSES,required=True);mr.add_argument('--note',required=True)
+    dc=subs.add_parser('design-check');dc.add_argument('question',type=Path)
+    dr=subs.add_parser('design-review-template');dr.add_argument('output',type=Path);dr.add_argument('--question',type=Path,required=True)
+    cr=subs.add_parser('candidate-reserve');cr.add_argument('question',type=Path);cr.add_argument('--review',type=Path)
+    br=subs.add_parser('business-references');br.add_argument('--subdirection')
     f=subs.add_parser('freeze');f.add_argument('question',type=Path)
     c=subs.add_parser('collect');c.add_argument('role',choices=ROLES);c.add_argument('--allow-live',action='store_true');c.add_argument('--retry-reason',default='');c.add_argument('--max-output',type=int);c.add_argument('--seed-evaluation',type=Path)
     r=subs.add_parser('recover');r.add_argument('role',choices=ROLES);r.add_argument('attempt',type=Path)
@@ -54,12 +67,26 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先询问我选择的专业领域，再让我选择题型；不调用模型API。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三模型门槛通过后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；不调用模型API。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三模型门槛通过后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
+            elif args.command=='choose-subdirection':result=choose_subdirection(root,args.branch)
+            elif args.command=='selection-upgrade':result=upgrade_selection(root)
+            elif args.command=='memory-sync':result=memory_sync(workspace)
+            elif args.command=='memory-context':result=memory_context(root,workspace,args.limit)
+            elif args.command=='memory-show':result=memory_show(workspace,args.entry_id)
+            elif args.command=='memory-record':
+                with transaction(workspace) as connection:
+                    result={'entry_id':remember(connection,root,read_json(args.question),args.status,note=args.note),'status':args.status}
+            elif args.command=='design-check':result=candidate_check(root,read_json(args.question))
+            elif args.command=='design-review-template':
+                require(not args.output.exists(),'设计复核文件已存在，保留旧记录；新版请使用新文件名')
+                write_json(args.output,review_template(root,read_json(args.question)));result={'output':str(args.output),'next':'助手逐项填写真实比较理由，再candidate-reserve或freeze，不向用户新增确认'}
+            elif args.command=='candidate-reserve':result=reserve(root,read_json(args.question),args.review)
+            elif args.command=='business-references':result=business_context(args.subdirection)
             elif args.command=='freeze':
-                require(begin(root,workspace)['ready'],'先选领域和题型，再设计与冻结')
+                require(begin(root,workspace)['ready'],'先选大方向、子方向和题型，再设计、查重与冻结')
                 result=freeze(root,read_json(args.question))
             elif args.command in ('collect','recover','render'):
                 raise Error('当前流程不调用模型API或生成渲染截图；请使用 model-prepare / model-import，官方网页截图由用户单独提交')

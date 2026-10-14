@@ -4,7 +4,28 @@
   "domain": null,
   "prompt": "",
   "question_type": "",
-  "insight": {"mechanism": "", "priority": "", "conclusion": ""},
+  "insight": {
+    "mechanism": "",
+    "priority": "",
+    "conclusion": ""
+  },
   "author_notes": "",
-  "points": [{"id": "D1", "kind": "decisive", "criterion": ""}]
+  "points": [
+    {
+      "id": "D1",
+      "kind": "decisive",
+      "criterion": ""
+    }
+  ],
+  "subdirection": null,
+  "design_profile": {
+    "scenario": "",
+    "goal": "",
+    "constraints": [],
+    "mechanism_tags": [],
+    "point_targets": [],
+    "reasoning_path": []
+  },
+  "business_mechanisms": [],
+  "business_references": []
 }

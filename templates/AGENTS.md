@@ -2,7 +2,7 @@
 
 先读.agents/skills/llm-authoring-workflow/SKILL.md、TASK.json、REQUEST.json与WORKLOG.md。工具仓{{TOOL_ROOT}}，专业规则为其中rules/authoring.md。工作区命令{{WORKSPACE_ROOT}}/bin/lab，题目{{TASK_ID}}。
 
-运行lab begin与lab status，新题先询问专业领域并用lab choose-domain记录，再询问题型；不提示或使用模型API配置。问题、事实和限制由助手按所选领域生成并核实来源。已有冻结题目继续原领域与题型，保留成果。
+运行lab begin与lab status，新题先询问计算机科学还是商科，用lab choose-domain记录；再按begin菜单询问子方向并choose-subdirection，最后询问题型；不提示或使用模型API配置。问题、事实和限制由助手生成并核实来源。设计前读取父目录本地题库；按Skill的references/design.md完成自然表达、场景、Insight和考点差异检查及预留后冻结。商科使用对应参考库并核实本题适用性。已有冻结题目继续原领域与题型，保留成果。
 
 冻结候选后按Skill创建Seed填写文件并等待用户提供完整Markdown，导入和判断Seed；其未达成全部决定性点才创建GPT/Claude文件并等待用户填好。禁止collect/recover/render，禁止补写模型回复或伪造官方页面。
 

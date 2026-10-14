@@ -13,3 +13,7 @@ request 绑定题目 ID、版本、完整题目/题面/考点哈希；GPT/Claude
 workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评估、回复、自查、交付、Git历史、私有配置与运行环境。旧 API 原件可继续校验与导出，历史 API 渲染图不能作为官方网页截图，collect/recover/render 入口已停用。TASK.response_mode=official_manual 的新题只接受手动原件。
 
 新任务 REQUEST.domain/domain_confirmed/question_type 为空或未确认，必须由用户选择；旧冻结题目沿用冻结领域。rename 只改显示名和目录，冻结 ID 与旧入口保留。重置现有任务需用户明确指定；先将整个目录（含未提交和忽略文件、Git历史）归档并校验，再建立空白同名任务；其他任务保持原件。
+
+## 下一版设计入口（独立草稿）
+
+3.1.0-dev的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。

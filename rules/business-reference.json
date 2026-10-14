@@ -1,0 +1,726 @@
+{
+  "schema_version": 1,
+  "scope": "reference_index_and_mechanism_cards_not_question_bank",
+  "verified_on": "2026-10-14",
+  "timezone": "Asia/Shanghai",
+  "subdirections": [
+    {
+      "id": "business_daily",
+      "title": "日常小微经营与创业",
+      "description": "副业、小店、自由职业、社团收费服务；先验需求与现金计划，不需要从上市公司战略起步。"
+    },
+    {
+      "id": "business_marketing",
+      "title": "营销、消费者与定价",
+      "description": "客群差异、购买行为、套餐、促销、渠道、定价；重点解释行为和收益而非堆营销名词。"
+    },
+    {
+      "id": "business_operations",
+      "title": "运营与供应链",
+      "description": "排队、产能、排班、补货、交付、供应商、库存；可从校园打印店等生活场景进入。"
+    },
+    {
+      "id": "business_accounting",
+      "title": "管理会计与单位经济",
+      "description": "接单、停业务、外包、盈亏平衡、贡献毛益、回款；数据口径必须一致。"
+    },
+    {
+      "id": "business_organization",
+      "title": "组织、管理与激励",
+      "description": "团队分工、绩效规则、协作、奖金、能力与权限；先诊断约束，再建议管理动作。"
+    },
+    {
+      "id": "business_analytics",
+      "title": "商业分析与因果实验",
+      "description": "业务指标、抽样、A/B 测试、随机化单位、干扰、护栏；避免把相关性说成因果性。"
+    },
+    {
+      "id": "business_strategy",
+      "title": "战略与商业模式",
+      "description": "目标顾客、定位、竞争优势、价值创造与获利、能力取舍；要求可用事实支持，而非泛泛列 SWOT。"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "title": "5.1 Market Segmentation and Consumer Markets",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-marketing/pages/5-1-market-segmentation-and-consumer-markets",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_marketing"
+      ],
+      "mechanism_notes": "按实际需求、使用行为和收益诉求区分客群；人口标签本身不足以解释需求差异。",
+      "boundaries": "教材框架不提供本地客群规模或转化率；不能把群体标签当成个体偏好。",
+      "scenario_seed": "同一小店的通勤客与周末客是否该提供不同套餐。"
+    },
+    {
+      "id": "S02",
+      "title": "12.3 The Five-Step Procedure for Establishing Pricing Policy",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_marketing"
+      ],
+      "mechanism_notes": "定价需要同时考虑目标、需求反应、成本和竞争环境。",
+      "boundaries": "需求反应必须有场景证据；成本加成不是最优价格的证明。",
+      "scenario_seed": "服务商涨价后收入增加，但是否值得保留新价格。"
+    },
+    {
+      "id": "S03",
+      "title": "6.3 Steps in a Successful Marketing Research Plan",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-marketing/pages/6-3-steps-in-a-successful-marketing-research-plan",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_marketing",
+        "business_daily"
+      ],
+      "mechanism_notes": "先明确决策问题、目标人群和抽样，再选择一手或二手资料。",
+      "boundaries": "便利样本的意见不能自动推广到全部顾客；旧资料可能与当前决策不匹配。",
+      "scenario_seed": "准备开服务工作室，如何用有限预算验证需求。"
+    },
+    {
+      "id": "S04",
+      "title": "17.5 The Supply Chain and Its Functions",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-marketing/pages/17-5-the-supply-chain-and-its-functions",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_operations"
+      ],
+      "mechanism_notes": "采购、生产、物流和信息安排需要共同兑现面向顾客的价值承诺。",
+      "boundaries": "不能仅凭供应商单价推断总成本、稳定性或质量；具体交付条件需另查。",
+      "scenario_seed": "承诺次日到货的小商家是否应换便宜但不稳定的供应商。"
+    },
+    {
+      "id": "S05",
+      "title": "2.2 Identify and Apply Basic Cost Behavior Patterns",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-managerial-accounting/pages/2-2-identify-and-apply-basic-cost-behavior-patterns",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_accounting"
+      ],
+      "mechanism_notes": "固定成本、变动成本和阶梯成本的行为取决于相关业务量区间。",
+      "boundaries": "固定不等于永久不变；超出产能区间不能沿用旧单位成本。",
+      "scenario_seed": "接大订单需加班或另租设备时如何重算成本。"
+    },
+    {
+      "id": "S06",
+      "title": "3.2 Calculate a Break-Even Point in Units and Dollars",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-managerial-accounting/pages/3-2-calculate-a-break-even-point-in-units-and-dollars",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_accounting"
+      ],
+      "mechanism_notes": "在给定价格、单位变动成本和固定成本下，以贡献毛益分析盈亏平衡。",
+      "boundaries": "模型要求相关区间、成本近似线性；多产品需说明销售组合，不能证明需求足以达到盈亏平衡。",
+      "scenario_seed": "促销单量增加，考虑折扣、佣金与新增工时后是否真的多赚。"
+    },
+    {
+      "id": "S07",
+      "title": "10.1 Identify Relevant Information for Decision-Making",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-managerial-accounting/pages/10-1-identify-relevant-information-for-decision-making",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_accounting"
+      ],
+      "mechanism_notes": "比较备选方案会改变的未来收入与成本，并区分沉没成本、不可避免成本与机会成本。",
+      "boundaries": "短期财务比较不能取代质量、声誉和长期能力判断；不能把所有固定成本都当作无关。",
+      "scenario_seed": "一条账面亏损的业务线应继续、自制改外包还是关闭。"
+    },
+    {
+      "id": "S08",
+      "title": "7.3 Prepare Financial Budgets",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-managerial-accounting/pages/7-3-prepare-financial-budgets",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_accounting",
+        "business_daily"
+      ],
+      "mechanism_notes": "按现金收付款时间编排预算，识别账面盈利期间仍可能出现的现金缺口。",
+      "boundaries": "预测依赖账期、回款率和支付安排；利润表不能替代现金预算。",
+      "scenario_seed": "订单增长且利润为正，但预付采购和延迟回款造成工资支付压力。"
+    },
+    {
+      "id": "S09",
+      "title": "14.3 Process Theories of Motivation",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-management/pages/14-3-process-theories-of-motivation",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_organization"
+      ],
+      "mechanism_notes": "努力能否改善绩效、绩效能否换来奖励、奖励是否被重视，是不同的激励链条。",
+      "boundaries": "这是分析框架而非预测每个员工行为的定律；公平感和工作条件也需调查。",
+      "scenario_seed": "涨奖金后产出仍无变化，究竟是能力、流程瓶颈还是奖励规则问题。"
+    },
+    {
+      "id": "S10",
+      "title": "9.4 Strategic Objectives and Levels of Strategy",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-management/pages/9-4-strategic-objectives-and-levels-of-strategy",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_strategy"
+      ],
+      "mechanism_notes": "目标需落到相应层级的行动；单业务经营策略应与采购、服务、运营安排一致。",
+      "boundaries": "框架不是具体扩张方案的收益证明；不能直接把多业务组合工具套给单店。",
+      "scenario_seed": "一家服务工作室要增长，改套餐、开分店还是购并别的业务。"
+    },
+    {
+      "id": "S11",
+      "title": "8.6 Competition, Strategy, and Competitive Advantage",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-management/pages/8-6-competition-strategy-and-competitive-advantage",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_strategy"
+      ],
+      "mechanism_notes": "成本领先、差异化和聚焦需要相应资源与活动安排。",
+      "boundaries": "贴上策略名称不证明竞争优势；低价格不等于具有低成本。",
+      "scenario_seed": "小品牌计划同时主打最低价与高强度定制服务，资源如何取舍。"
+    },
+    {
+      "id": "S12",
+      "title": "8.4 A Firm's Micro Environment: Porter's Five Forces",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-management/pages/8-4-a-firms-micro-environment-porters-five-forces",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_strategy"
+      ],
+      "mechanism_notes": "行业内竞争、进入者、替代品、买方与供应商力量影响获利空间。",
+      "boundaries": "行业边界和实际证据必须明确；五力分析不直接给出单个企业的成功概率。",
+      "scenario_seed": "表面竞争者很少的细分服务为何仍难留住利润。"
+    },
+    {
+      "id": "S13",
+      "title": "Class 3: Capacity Lecture",
+      "publisher": "MIT OpenCourseWare / Jérémie Gallien",
+      "url": "https://ocw.mit.edu/courses/15-760b-introduction-to-operations-management-spring-2004/16dde953a29f89a4d2018361900ce886_lec3_capacity.pdf",
+      "verified_on": "2026-10-14",
+      "verification": "pdf_text_read_22_pages",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_operations"
+      ],
+      "mechanism_notes": "先画流程并辨认容量瓶颈；随机波动下等待时间与利用率呈非线性关系。",
+      "boundaries": "Little 定律需平衡且统计口径一致；平均率不足以推出精确尾部等待时间。",
+      "scenario_seed": "接待台明明每天有空闲，忙时顾客却排很久，是否应加人。"
+    },
+    {
+      "id": "S14",
+      "title": "Analysis of Inventory Models with Limited Demand Information",
+      "publisher": "MIT OpenCourseWare / David Simchi-Levi",
+      "url": "https://ocw.mit.edu/courses/esd-273j-logistics-and-supply-chain-management-fall-2009/7c024f2f9223e821089500803d96f580_MITESD_273JF09_lec07.pdf",
+      "verified_on": "2026-10-14",
+      "verification": "pdf_text_read_22_pages_with_extraction_noise",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_operations"
+      ],
+      "mechanism_notes": "预测更新、订货策略和交付提前期可放大上游订单波动。",
+      "boundaries": "课件中的模型依赖需求分布与订货规则；不是所有缺货都由牛鞭效应造成。",
+      "scenario_seed": "零售销量较平稳，供应商却反复收到大起大落的补货订单。"
+    },
+    {
+      "id": "S15",
+      "title": "Session 5: Reward Systems & Incentives",
+      "publisher": "MIT OpenCourseWare / John Van Maanen",
+      "url": "https://ocw.mit.edu/courses/15-322-leading-organizations-ii-fall-2003/e81c2fabfea1ab50bb1db94060a6d6b1_ses5_lincoln_electric.pdf",
+      "verified_on": "2026-10-14",
+      "verification": "pdf_text_read_6_pages_with_extraction_noise",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_organization"
+      ],
+      "mechanism_notes": "外部奖励可能带来短期服从，也可能影响内在动机，需要结合组织环境判断。",
+      "boundaries": "课件引用的历史调查和收费案例不能当作已读取案例正文或当前行业事实；奖励并非必然有害。",
+      "scenario_seed": "给客服按处理件数发奖后，协作和复杂问题处理意愿发生变化。"
+    },
+    {
+      "id": "S16",
+      "title": "Three Key Checklists and Remedies for Trustworthy Analysis of Online Controlled Experiments at Scale",
+      "publisher": "Microsoft Research / Fabijan et al. / ICSE-SEIP 2019",
+      "url": "https://www.microsoft.com/en-us/research/publication/three-key-checklists-and-remedies-for-trustworthy-analysis-of-online-controlled-experiments-at-scale/",
+      "verified_on": "2026-10-14",
+      "verification": "landing_and_linked_pdf_text_read_10_pages",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_analytics"
+      ],
+      "mechanism_notes": "先验证数据与分流质量，再解读效果；同时检查成功、功能、护栏和数据质量指标。",
+      "boundaries": "不能凭单个显著指标宣布上线；SRM 排查、实验时长和效果持续性需结合具体系统。",
+      "scenario_seed": "新页面转化率显著提升，但两组人数比例异常，是否可以宣布获胜。",
+      "verification_detail": {
+        "linked_pdf_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2020/06/2019-FabijanDmitrievOlssonBoschVermeerLewis_Three-Key-Checklists_ICSE_SEIP.pdf",
+        "locations": [
+          "PDF p. 5: metric groups",
+          "PDF p. 6: sample ratio mismatch",
+          "PDF p. 7: novelty effects"
+        ]
+      }
+    },
+    {
+      "id": "S17",
+      "title": "Patterns of Trustworthy Experimentation: Pre-Experiment Stage",
+      "publisher": "Microsoft Research / Experimentation Platform",
+      "url": "https://www.microsoft.com/en-us/research/articles/patterns-of-trustworthy-experimentation-pre-experiment-stage/",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_analytics"
+      ],
+      "mechanism_notes": "随机化单位要适配稳定身份、跨用户影响和组织部署约束，并考虑样本量。",
+      "boundaries": "按用户随机并非对所有功能有效；存在干扰时改分组也需要重新定义估计对象与分析。",
+      "scenario_seed": "团队共享折扣或协作功能的实验能否按个人随机分组。"
+    },
+    {
+      "id": "S18",
+      "title": "5.3.3.2. Randomized block designs",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/pri/section3/pri332.htm",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_analytics"
+      ],
+      "mechanism_notes": "把可控制的重要干扰因素组织为区组，在区组内比较处理并保留随机化。",
+      "boundaries": "区组不能修复所有偏差；不能把星期一投 A、星期二投 B 自动称为有效随机对照。",
+      "scenario_seed": "不同门店与时段客流差异很大，如何比较两种服务流程。"
+    },
+    {
+      "id": "S19",
+      "title": "Plan your business — Market research and competitive analysis",
+      "publisher": "U.S. Small Business Administration",
+      "url": "https://www.sba.gov/counseling/plan-your-business/",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read_redirect_confirmed",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_daily"
+      ],
+      "mechanism_notes": "用需求、市场范围、位置、替代选择与竞争情况组织小企业的初步市场验证。",
+      "boundaries": "美国机构方法可参考；本地需求、统计、税务、许可和平台规则必须另查，不照搬。",
+      "scenario_seed": "在小区开预约服务，先查哪些事实才能决定是否签长租。",
+      "verification_detail": {
+        "requested_url": "https://www.sba.gov/business-guide/plan-your-business/market-research-competitive-analysis",
+        "final_url": "https://www.sba.gov/counseling/plan-your-business/",
+        "relevant_heading": "Market research and competitive analysis"
+      }
+    },
+    {
+      "id": "S20",
+      "title": "How to Estimate Starting Costs",
+      "publisher": "U.S. Small Business Administration / Tim Berry",
+      "url": "https://www.sba.gov/blog/2017/2017-01/how-estimate-starting-costs/",
+      "verified_on": "2026-10-14",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_daily"
+      ],
+      "mechanism_notes": "启动资金包括开业前费用、需要配置的非现金资产和早期经营缺口所需现金。",
+      "boundaries": "2017 方法文不是当前开店报价或法规；不同支出分类不能导致重复计算。",
+      "scenario_seed": "准备做上门服务，已有设备但账上现金少，应如何估计启动资金。"
+    }
+  ],
+  "mechanisms": [
+    {
+      "id": "B01",
+      "subdirection": "business_marketing",
+      "title": "同一类人也可能需要不同服务",
+      "mechanism": "有用的细分应连接可观察的需求差异、可接触方式和相应方案，而不是只换人口标签。",
+      "assumptions": [
+        "已说明顾客行为或需求差异",
+        "有能力提供不同方案"
+      ],
+      "limits": [
+        "不能从年龄或职业直接断言购买偏好",
+        "细分方案需要当地验证"
+      ],
+      "source_ids": [
+        "S01"
+      ],
+      "scenario_seed": "自习空间的周内短时用户与周末长时用户该如何安排套餐。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B02",
+      "subdirection": "business_marketing",
+      "title": "涨价不只看收入",
+      "mechanism": "价格变化同时影响数量和贡献毛益；以明确经营目标比较方案。",
+      "assumptions": [
+        "有价格与需求反应的情景数据",
+        "成本口径和比较期一致"
+      ],
+      "limits": [
+        "不能假设需求不变",
+        "收入上升不等于利润上升"
+      ],
+      "source_ids": [
+        "S02",
+        "S06"
+      ],
+      "scenario_seed": "维修服务涨价后单量变少、总收入增加，是否继续执行新价。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B03",
+      "subdirection": "business_marketing",
+      "title": "问卷支持不等于会付费",
+      "mechanism": "先辨认决定成败的需求假设，再选择匹配样本和验证方法；表达兴趣与真实购买行为是不同证据。",
+      "assumptions": [
+        "已定义目标人群和实际决策",
+        "说明预算、时间与样本来源"
+      ],
+      "limits": [
+        "不能以朋友点赞比例外推市场需求",
+        "有购买意愿也不能无条件推出规模化盈利"
+      ],
+      "source_ids": [
+        "S03"
+      ],
+      "scenario_seed": "社团同学都说喜欢预约打印服务，应怎样在租设备前进一步验证。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B04",
+      "subdirection": "business_operations",
+      "title": "新增资源要投到约束处",
+      "mechanism": "总产出受流程瓶颈和步骤间依赖限制，给非瓶颈增加资源可能不改善最终交付。",
+      "assumptions": [
+        "流程步骤和处理时间可辨认",
+        "返工和并行关系已说明"
+      ],
+      "limits": [
+        "不能只用平均工时找到任何情形下的瓶颈",
+        "需求不足时扩产不一定增加销售"
+      ],
+      "source_ids": [
+        "S13"
+      ],
+      "scenario_seed": "咖啡店收银很快、出杯慢，老板想再加一个收银员。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B05",
+      "subdirection": "business_operations",
+      "title": "有空闲仍会排队",
+      "mechanism": "相同平均需求下，波动与接近满负荷可放大等待；应区分总产能不足与时段拥堵。",
+      "assumptions": [
+        "已说明到达或服务存在随机波动",
+        "容量、队列边界和观测时段明确"
+      ],
+      "limits": [
+        "不能从平均利用率直接算精确等待分位数",
+        "排队改进也要考虑成本与服务体验"
+      ],
+      "source_ids": [
+        "S13"
+      ],
+      "scenario_seed": "预约工作室平均只用掉八成工时，但用户经常等很久。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B06",
+      "subdirection": "business_operations",
+      "title": "销量与订货不是同一条信号",
+      "mechanism": "上游订单包含下游预测修订和库存调整；提前期等因素可使订单波动大于终端需求。",
+      "assumptions": [
+        "存在多阶段补货",
+        "可获得销量、库存、在途或订货信息"
+      ],
+      "limits": [
+        "不能见到波动就认定牛鞭效应",
+        "共享信息未必消除所有供需风险"
+      ],
+      "source_ids": [
+        "S14"
+      ],
+      "scenario_seed": "批发商看到订单暴增要求扩产，但门店实际销售变化很小。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B07",
+      "subdirection": "business_accounting",
+      "title": "关业务看能省掉什么",
+      "mechanism": "方案比较应纳入会变化的未来收支与机会成本；已发生投入与仍要承担的费用分开处理。",
+      "assumptions": [
+        "决策时限和可选方案明确",
+        "能区分可避免和不可避免成本"
+      ],
+      "limits": [
+        "不能用分摊后的亏损直接判断应关闭",
+        "长期能力和顾客影响需要另评估"
+      ],
+      "source_ids": [
+        "S07"
+      ],
+      "scenario_seed": "工作室某项服务分摊房租后亏损，停掉它是否真的改善整体收益。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B08",
+      "subdirection": "business_accounting",
+      "title": "跨过产能门槛就要重算",
+      "mechanism": "成本在一定业务量内近似固定或线性，越过加人、加班或设备门槛后应分段比较。",
+      "assumptions": [
+        "产能门槛与新增支出已明确",
+        "订单或需求规模可比"
+      ],
+      "limits": [
+        "不能把旧单位平均成本无限外推",
+        "固定成本在长期也可改变"
+      ],
+      "source_ids": [
+        "S05"
+      ],
+      "scenario_seed": "烘焙店有一张批量订单，接单后必须多租一天设备。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B09",
+      "subdirection": "business_accounting",
+      "title": "有利润也可能付不出钱",
+      "mechanism": "应按回款与付款时点估计现金余额和缺口，而不是以收入确认或账面利润替代现金。",
+      "assumptions": [
+        "已给出账期、期初现金与支出日程",
+        "比较窗口覆盖主要收付款"
+      ],
+      "limits": [
+        "不能只算全年利润判断下月是否缺钱",
+        "融资成本和坏账假设需明确"
+      ],
+      "source_ids": [
+        "S08"
+      ],
+      "scenario_seed": "企业客户下单增加但六十天后付款，材料商要求提前付款。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B10",
+      "subdirection": "business_organization",
+      "title": "激励链条断在哪里",
+      "mechanism": "把努力能否改善绩效、绩效能否带来奖励、奖励是否受重视分开诊断。",
+      "assumptions": [
+        "有任务条件和规则证据",
+        "不预先把动机差当作事实"
+      ],
+      "limits": [
+        "不能保证加薪或公开排名一定有效",
+        "个体反应与公平感需另验证"
+      ],
+      "source_ids": [
+        "S09"
+      ],
+      "scenario_seed": "客服奖金翻倍但积压未减少，系统权限和审批是否限制了处理。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B11",
+      "subdirection": "business_organization",
+      "title": "奖励要看短期与长期行为",
+      "mechanism": "外部奖励可以改变具体行为，但可能伴随内在动机、协作和持久承诺的代价。",
+      "assumptions": [
+        "说明奖励针对何种行为",
+        "能够观察相关副作用"
+      ],
+      "limits": [
+        "不能推出所有奖金都有害",
+        "不能直接照搬历史企业案例的效果"
+      ],
+      "source_ids": [
+        "S15"
+      ],
+      "scenario_seed": "维修团队按完工单数发奖后，大家回避困难工单和帮助新人。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B12",
+      "subdirection": "business_analytics",
+      "title": "随机化单位要跟影响范围一致",
+      "mechanism": "若处理影响同事或共同资源，按个人分组可能出现组间干扰；应重新设计分组和估计对象。",
+      "assumptions": [
+        "说明用户之间或资源之间的联系",
+        "知道处理实际部署范围"
+      ],
+      "limits": [
+        "聚类随机不自动消除所有干扰",
+        "需重新考虑功效和推断单位"
+      ],
+      "source_ids": [
+        "S17"
+      ],
+      "scenario_seed": "门店导购共享库存和折扣权限，还能给每位顾客单独随机测试吗。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B13",
+      "subdirection": "business_analytics",
+      "title": "先查实验能不能信",
+      "mechanism": "分流人数、数据缺失、埋点和护栏先过关，再判断业务指标；同时评估效果是否持续。",
+      "assumptions": [
+        "已定义分流比例、指标与基本检查",
+        "数据覆盖比较对象"
+      ],
+      "limits": [
+        "单个 p 值不能推出可上线",
+        "SRM 本身不告诉你偏差方向"
+      ],
+      "source_ids": [
+        "S16"
+      ],
+      "scenario_seed": "新版页面转化率显著更高，但计划等分的两组人数明显失衡。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B14",
+      "subdirection": "business_analytics",
+      "title": "用区组减少可解释的波动",
+      "mechanism": "让主要干扰条件相近的对象组成区组，在区组内比较处理并实施随机化。",
+      "assumptions": [
+        "干扰因素可记录或控制",
+        "每区组含可比较处理"
+      ],
+      "limits": [
+        "时间先后比较不是天然随机试验",
+        "区组不能弥补数据造假或系统性漏记"
+      ],
+      "source_ids": [
+        "S18"
+      ],
+      "scenario_seed": "三家门店客流不同，怎样比较新旧排班而不是比较门店生意好坏。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B15",
+      "subdirection": "business_strategy",
+      "title": "定位必须有相应活动支撑",
+      "mechanism": "经营策略要和目标顾客、资源配置、采购与服务安排一致，识别不可同时满足的承诺。",
+      "assumptions": [
+        "有明确客群与有限资源",
+        "已给出服务成本或能力约束"
+      ],
+      "limits": [
+        "策略标签不能证明优势",
+        "不能只靠一种通用框架算出最优商业模式"
+      ],
+      "source_ids": [
+        "S10",
+        "S11"
+      ],
+      "scenario_seed": "一家两人工作室想同时承诺最低价、无限修改和当天交付。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B16",
+      "subdirection": "business_daily",
+      "title": "启动资金还要覆盖早期缺口",
+      "mechanism": "开办费用、资产配置和初期净现金流缺口应按时间整合，避免漏项和重复计算。",
+      "assumptions": [
+        "说明已有资产与新增支出",
+        "至少有一个保守收入情景"
+      ],
+      "limits": [
+        "不是当前地区报价或法规意见",
+        "不能用够开业推断够生存"
+      ],
+      "source_ids": [
+        "S20",
+        "S08"
+      ],
+      "scenario_seed": "朋友已有相机，计划接商业摄影，预算是否还应留给押金与回款等待期。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B17",
+      "subdirection": "business_strategy",
+      "title": "竞争者少也可能赚不到钱",
+      "mechanism": "先明确顾客的替代选择、买方与供应商议价能力及进入约束，再判断价值能否被企业保留。",
+      "assumptions": [
+        "行业或市场边界明确",
+        "已给出实际替代与交易关系"
+      ],
+      "limits": [
+        "五力不是成功概率模型",
+        "不能把不在同一行业的所有企业都当成直接竞争者"
+      ],
+      "source_ids": [
+        "S12"
+      ],
+      "scenario_seed": "本地几乎没有同类工作室，但顾客可以自己做、延期做或找线上服务。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B18",
+      "subdirection": "business_daily",
+      "title": "先验证最可能推翻计划的事实",
+      "mechanism": "围绕客户、实际需求、替代选择与触达范围收集证据，再做不可逆投入。",
+      "assumptions": [
+        "存在具体经营计划",
+        "说明当前不知道的事实与验证成本"
+      ],
+      "limits": [
+        "全国行业增长不能代替本地需求",
+        "不能把美国办事指南当成本地合规流程"
+      ],
+      "source_ids": [
+        "S19",
+        "S03"
+      ],
+      "scenario_seed": "准备在居民区做周末课程，签一年租约前应该先验证什么。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    }
+  ]
+}

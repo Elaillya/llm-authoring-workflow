@@ -1,5 +1,6 @@
 """Synthetic manual replies only; no official UI or paid-model acceptance claim."""
 import copy
+import json
 from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
 from pathlib import Path
@@ -24,6 +25,9 @@ class ManualTests(unittest.TestCase):
         self.workspace = Path(self.temp.name) / 'workspace'
         create_workspace(self.workspace)
         self.root = self.workspace / 'task'
+        # Preserve the v3 request format as a backwards-compatibility fixture.
+        request=json.loads((self.root/'REQUEST.json').read_text());request.pop('selection_schema',None)
+        (self.root/'REQUEST.json').write_text(json.dumps(request))
         choose_domain(self.root, '计算机科学')
         choose_type(self.root, '分析决策类')
         self.q = question(); self.q['task_id'] = 'question-001'

@@ -78,6 +78,18 @@ def freeze(root, q):
     selected=question_domain(root,request)
     require(selected is not None,'先询问并记录用户选择的领域，再冻结题目')
     require(q['domain']==selected,'题目领域与用户选择不一致；已冻结题目换领域请新建题目')
+    if (root/'CURRENT.json').is_file():
+        previous=active_question(root)
+        if previous['question_sha256']==hash_json(q):return previous
+    if request.get('selection_schema')==2:
+        from .quality import reserve
+        return reserve(root,q,freeze_writer=lambda:freeze_record(root,q))
+    return freeze_record(root,q)
+
+
+def freeze_record(root,q):
+    """Write an already validated candidate; new-policy callers hold the memory lock."""
+    root=Path(root)
     revs=root/'revisions';revs.mkdir(exist_ok=True)
     value={'question':q,'prompt_sha256':hash_json(q['prompt']),'rubric_sha256':hash_json(q['points']),
            'question_sha256':hash_json(q)}
@@ -86,9 +98,17 @@ def freeze(root, q):
         previous=active_question(root)
         if previous['question_sha256']==value['question_sha256']: return previous
     index=max([int(p.name[1:]) for p in revs.iterdir() if re.fullmatch(r'r\d{4}',p.name)]+[0])+1
-    name=f'r{index:04d}'; directory=revs/name;directory.mkdir()
+    name=f'r{index:04d}';directory=revs/name
     value.update({'revision':name,'frozen_at':now()})
-    write_json(directory/'question.json',value)
+    staging=Path(tempfile.mkdtemp(prefix='.freeze-'+name+'-',dir=revs))
+    try:
+        write_json(staging/'question.json',value)
+        require(not directory.exists(),'冻结版本已存在，请重新读取当前版本后重试')
+        staging.rename(directory)
+    finally:
+        if staging.exists():shutil.rmtree(staging)
+    # If this write fails, retain the complete version as recoverable evidence;
+    # sibling tasks can still read it. Never publish an incomplete rNNNN folder.
     write_json(current,{'revision':name})
     return value
 
