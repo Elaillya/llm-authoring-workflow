@@ -17,7 +17,7 @@ class Reply(io.BytesIO):
 class ClientTests(unittest.TestCase):
     def test_fixed_origin_rejects_exfiltration_and_header_injection(self):
         for change in ({'endpoint':'https://other.invalid/invoke'},{'referer':'https://other.invalid/'},
-                       {'user_agent':'bad\r\nCookie: injected'},{'timeout_seconds':30}):
+                       {'user_agent':'bad\r\nCookie: injected'}):
             with self.assertRaises(Error):validated_config({**config(),**change})
     def test_private_cookie_slot_and_existing_configuration_preserved(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -43,9 +43,22 @@ class ClientTests(unittest.TestCase):
             request=opener.return_value.open.call_args.args[0]
             self.assertEqual(request.get_header('Agw-js-conv'),'str')
             self.assertEqual(request.get_header('Cookie'),'sid=TEST-ONLY-CREDENTIAL')
-            self.assertEqual(opener.return_value.open.call_args.kwargs['timeout'],360)
+            self.assertIsNone(opener.return_value.open.call_args.kwargs['timeout'])
             opener.return_value.open.assert_called_once()
             self.assertNotIn('TEST-ONLY-CREDENTIAL',json.dumps(result))
+    def test_legacy_timeout_cannot_reintroduce_a_wait_limit(self):
+        for value in (None,30,360,900):
+            self.assertIsNone(validated_config({**config(),'timeout_seconds':value})['timeout_seconds'])
+        with patch('llm_authoring.platform_client.build_opener') as opener:
+            opener.return_value.open.return_value=Reply(b'completed')
+            call({**config(),'timeout_seconds':360},{},'sid=TEST-ONLY')
+            self.assertIsNone(opener.return_value.open.call_args.kwargs['timeout'])
+    def test_setup_legacy_timeout_is_idempotent_without_rewriting_private_config(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'local').mkdir();result=setup(root,config())
+            target=Path(result['service_file']);old={**config(),'timeout_seconds':360};target.write_text(json.dumps(old))
+            original=target.read_bytes();setup(root,old)
+            self.assertEqual(target.read_bytes(),original)
     def test_credentials_echo_and_exception_text_are_not_logged(self):
         with patch('llm_authoring.platform_client.build_opener') as opener:
             opener.return_value.open.return_value=Reply(b'sid=TEST-ONLY-CREDENTIAL')

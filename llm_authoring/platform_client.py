@@ -43,8 +43,8 @@ def validated_config(value):
     referer=value.get('referer','https://aidp.bytedance.com/')
     parsed=urlsplit(referer)
     require(parsed.scheme=='https' and parsed.netloc=='aidp.bytedance.com' and not parsed.fragment,'Referer须为同站HTTPS地址')
-    timeout=value.get('timeout_seconds',360)
-    require(type(timeout) is int and 360<=timeout<=900,'检查超时须在360到900秒间，不自动重试')
+    # Existing private configs may contain the old numeric limit. Normalize it
+    # without changing those files; a healthy check must be allowed to finish.
     agent=value.get('user_agent','Mozilla/5.0')
     require(isinstance(agent,str) and agent and not any(c in agent+referer for c in '\r\n'),'请求头格式不合法')
     domains=value.get('domain_labels',{'计算机科学':'计算机与数理科学','商科':'商科'})
@@ -52,7 +52,7 @@ def validated_config(value):
     require(isinstance(domains,dict) and isinstance(types,dict)
             and all(isinstance(k,str) and isinstance(v,str) and v.strip() for mapping in (domains,types) for k,v in mapping.items()),'平台标签映射须为非空文本')
     return {'schema_version':1,'endpoint':ENDPOINT,'task_id':task,'checks':checked,'referer':referer,
-            'timeout_seconds':timeout,'user_agent':agent,'domain_labels':domains,'type_labels':types}
+            'timeout_seconds':None,'user_agent':agent,'domain_labels':domains,'type_labels':types}
 
 
 def config_from_har(path):
@@ -80,7 +80,7 @@ def config_from_har(path):
 def setup(workspace,config):
     directory=private_directory(workspace);config=validated_config(config);target=directory/'service.json'
     if target.exists():
-        require(read_json(target)==config,'已有平台配置，保留原件；确认新任务配置后由助手显式编辑')
+        require(validated_config(read_json(target))==config,'已有平台配置，保留原件；确认新任务配置后由助手显式编辑')
     else:write_json(target,config)
     target.chmod(0o600)
     return {'service_file':str(target),'cookie_file':str(directory/'cookie.txt'),

@@ -17,6 +17,7 @@ from .quality import candidate_check,review_template,reserve
 from .references import business_context
 from . import platform_checks as qa
 from . import platform_client
+from . import platform_polish
 
 
 def main(argv=None):
@@ -42,11 +43,13 @@ def main(argv=None):
     br=subs.add_parser('business-references');br.add_argument('--subdirection')
     qs=subs.add_parser('qa-setup');sources=qs.add_mutually_exclusive_group(required=True)
     sources.add_argument('--har',type=Path);sources.add_argument('--config',type=Path)
-    qr=subs.add_parser('qa-run');qr.add_argument('stage',choices=list(platform_client.KEYS))
+    qr=subs.add_parser('qa-run');qr.add_argument('stage',choices=[*platform_client.KEYS,'models'])
     qr.add_argument('--question',type=Path);qr.add_argument('--evaluation',type=Path);qr.add_argument('--refresh',action='store_true')
     qst=subs.add_parser('qa-status');qst.add_argument('--evaluation',type=Path)
-    qdt=subs.add_parser('qa-disagreement-template');qdt.add_argument('stage',choices=['criteria','attainment']);qdt.add_argument('output',type=Path);qdt.add_argument('--evaluation',type=Path,required=True)
-    qd=subs.add_parser('qa-disagree');qd.add_argument('decision',type=Path);qd.add_argument('--evaluation',type=Path,required=True)
+    qdt=subs.add_parser('qa-disagreement-template');qdt.add_argument('stage',choices=list(platform_client.KEYS));qdt.add_argument('output',type=Path);qdt.add_argument('--evaluation',type=Path);qdt.add_argument('--question',type=Path)
+    qd=subs.add_parser('qa-disagree');qd.add_argument('decision',type=Path);qd.add_argument('--evaluation',type=Path);qd.add_argument('--question',type=Path)
+    for command in ('qa-polish-template','qa-polish'):
+        qp=subs.add_parser(command);qp.add_argument('file',type=Path);qp.add_argument('--evaluation',type=Path,required=True)
     f=subs.add_parser('freeze');f.add_argument('question',type=Path)
     c=subs.add_parser('collect');c.add_argument('role',choices=ROLES);c.add_argument('--allow-live',action='store_true');c.add_argument('--retry-reason',default='');c.add_argument('--max-output',type=int);c.add_argument('--seed-evaluation',type=Path)
     r=subs.add_parser('recover');r.add_argument('role',choices=ROLES);r.add_argument('attempt',type=Path)
@@ -77,7 +80,7 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型和判断齐备后按Skill做考点质检和达成性质检，合理问题自主修订复检；错误意见登记证据异议，明确告诉我不认同并给出表单备注。平台和三模型门禁满足后创建Arena两份Markdown文件，等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后按Skill并行考点和达成性质检，正常请求等待至完成、不设客户端时限；合理不通过自主返修，错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
@@ -98,12 +101,21 @@ def main(argv=None):
             elif args.command=='qa-setup':result=platform_client.setup(workspace,platform_client.config_from_har(args.har) if args.har else read_json(args.config))
             elif args.command=='qa-run':
                 q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
-                result=qa.run(root,args.stage,q=q,evaluation=read_json(args.evaluation) if args.evaluation else None,refresh=args.refresh)
+                evaluation=read_json(args.evaluation) if args.evaluation else None
+                result=qa.run_models(root,evaluation,refresh=args.refresh) if args.stage=='models' else qa.run(root,args.stage,q=q,evaluation=evaluation,refresh=args.refresh)
             elif args.command=='qa-status':result=qa.status(root,read_json(args.evaluation) if args.evaluation else None)
             elif args.command=='qa-disagreement-template':
                 require(not args.output.exists(),'保留旧异议记录，使用新的文件名')
-                write_json(args.output,qa.disagreement_template(root,args.stage,read_json(args.evaluation)));result={'output':str(args.output),'next':'助手核对证据，填写理由和表单备注，再qa-disagree；不要求用户审批'}
-            elif args.command=='qa-disagree':result=qa.disagree(root,read_json(args.decision),read_json(args.evaluation))
+                q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
+                write_json(args.output,qa.disagreement_template(root,args.stage,read_json(args.evaluation) if args.evaluation else None,q=q));result={'output':str(args.output),'next':'助手核对证据，填写理由和表单备注，再qa-disagree；不要求用户审批'}
+            elif args.command=='qa-disagree':
+                decision=read_json(args.decision)
+                q=read_json(args.question or root/'drafts/question.json') if decision.get('stage')=='question' else None
+                result=qa.disagree(root,decision,read_json(args.evaluation) if args.evaluation else None,q=q)
+            elif args.command=='qa-polish-template':
+                require(not args.file.exists(),'保留旧优化记录，使用新文件名')
+                write_json(args.file,platform_polish.template(root,read_json(args.evaluation)));result={'output':str(args.file),'next':'先发Arena链接，再填写表达优化与依据；不重复调用平台质检'}
+            elif args.command=='qa-polish':result=platform_polish.apply(root,read_json(args.evaluation),read_json(args.file))
             elif args.command=='freeze':
                 require(begin(root,workspace)['ready'],'先选大方向、子方向和题型，再设计、查重与冻结')
                 result=freeze(root,read_json(args.question))
@@ -147,7 +159,7 @@ def main(argv=None):
                 path=find_authoring_evaluation(root)
                 platform=qa.status(root,read_json(path) if path else None);result['platform_checks']=platform
                 if platform.get('required') and result['ready'] and not platform.get('ready_for_arena'):
-                    result['stage']=platform['stage'];result['next']='按平台检查状态补齐题目检查、考点质检和达成性质检；有证据异议须向用户说明并提供表单备注'
+                    result['stage']=platform['stage'];result['next']='按状态补齐题目检查；三模型原文、判断及备注齐备后qa-run models并行质检，正常请求等至完成；异议给可复制备注'
             else:raise Error('未知命令')
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:

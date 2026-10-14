@@ -114,6 +114,8 @@ def submission_markdown(fields):
                   '前三份回复包含历史API原文；两份Arena回复为用户提供的Markdown。历史API渲染图不等于官方网页截图，网页截图由用户单独提交。'])
     if fields.get('platform_checks',{}).get('form_notes'):
         lines.extend(['\n## 平台质检异议及表单备注\n',fields['platform_checks']['form_notes']])
+    if fields.get('postpass_polish'):
+        lines.extend(['\n## 平台通过后表达优化说明\n',fields['postpass_polish']['notice']])
     return '\n'.join(lines) + '\n'
 
 
@@ -159,6 +161,8 @@ def export_complete(root, evaluation, review, ranking, output):
                                          'source_kind': 'arena_manual', 'screenshot_submission': 'user_submits_separately'}
             fields['models'][role].update({'attained': stat['attained'], 'attainment_notes': attainment_notes(stat),
                                          'reply_file': paths[role], 'decisive_met': stat['decisive_met'], 'total_met': stat['total_met']})
+        from .platform_polish import export as export_polish
+        export_polish(root,evaluation,fields,result['models'],package)
         (package / '提交信息.md').write_text(submission_markdown(fields), encoding='utf-8')
         write_json(package / 'fields.json', fields)
         write_json(package / 'authoring-evaluation.json', authoring)

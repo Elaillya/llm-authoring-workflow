@@ -1,6 +1,7 @@
 """Version-bound platform checks, evidence-based disagreement, and Arena gates."""
 from pathlib import Path
 from contextlib import contextmanager
+from concurrent.futures import ThreadPoolExecutor,as_completed
 import copy,json,re,shutil,time,uuid
 from .core import Error,ROLES,active_question,hash_json,now,read_json,read_response,require,sha,write_json
 from . import platform_client as client
@@ -127,7 +128,7 @@ def latest(root,request):
 def question_gate(root,q):
     if not required(root):return None
     request,_,_=descriptor(root,'question',q=q);result=latest(root,request)
-    require(result and result['state']=='passed','先执行qa-run question，按反馈修订题面/Insight后检查通过，再冻结与收Seed')
+    require(result and result['accepted'],'先执行qa-run question，按反馈修订题面/Insight后检查通过，或登记可核对的证据异议，再冻结与收Seed')
     return result
 
 
@@ -144,52 +145,99 @@ def final_gate(root,evaluation):
 
 
 def run(root,stage,q=None,evaluation=None,refresh=False):
+    return run_checks(root,(stage,),q=q,evaluation=evaluation,refresh=refresh)[stage]
+
+
+def run_models(root,evaluation,refresh=False):
+    checks=run_checks(root,('criteria','attainment'),evaluation=evaluation,refresh=refresh)
+    return {'stage':'three_model_platform_checks','checks':checks,
+            'ready_for_arena':status(root,evaluation)['ready_for_arena'],
+            'next':'核对两项独立反馈；合理不通过返修，有证据异议给可复制备注；门禁满足后先发Arena填写链接，再处理通过建议'}
+
+
+def cached_result(previous):
+    return {**previous,'cached':True,'next':'复用同版结果；不通过时先据专业依据修改，不对相同内容盲目重发'}
+
+
+def call_attempt(directory,request,config,cookie):
+    transport=client.call(config,request['payload'],cookie)
+    record={'schema_version':1,'binding':request['binding'],'request_sha256':hash_json(request),
+            'response_sha256':hash_json(transport),'transport':transport,
+            'parsed':parse_response(request['stage'],transport),'completed_at':now()}
+    write_json(directory/'result.json',record)
+
+
+def run_checks(root,stages,q=None,evaluation=None,refresh=False):
     root=Path(root).resolve()
-    if stage!='question':
+    q=copy.deepcopy(q);evaluation=copy.deepcopy(evaluation)
+    if stages!=('question',):
         question_gate(root,active_question(root)['question'])
-        if stage=='attainment':stage_gate(root,'criteria',evaluation)
-    request,config,cookie_path=descriptor(root,stage,q=q,evaluation=evaluation)
-    previous=latest(root,request)
-    if previous and not refresh and previous['state'] in ('passed','failed','disputed'):
-        return {**previous,'cached':True,'next':'复用同版结果；不通过时先据专业依据修改，不对相同内容盲目重发'}
-    cookie=client.load_cookie(cookie_path)
+    descriptions={stage:descriptor(root,stage,q=q,evaluation=evaluation) for stage in stages}
+    if len(stages)>1:
+        first=descriptions[stages[0]][0];second=descriptions[stages[1]][0]
+        shared=set(first['payload']['params'])&set(second['payload']['params'])
+        require(first['binding']['question_sha256']==second['binding']['question_sha256']
+                and descriptions[stages[0]][1:]==descriptions[stages[1]][1:]
+                and all(first['payload']['params'][key]==second['payload']['params'][key] for key in shared),
+                '准备期间题目或三模型原文已变化，保留版本，重新核对同一输入快照')
+    # Preflight every stage before sending either request, including unknown attempts.
+    previous={stage:latest(root,item[0]) for stage,item in descriptions.items()}
+    reusable=lambda result:result and not refresh and result['state'] in ('passed','failed','disputed')
+    if all(reusable(item) for item in previous.values()):
+        return {stage:cached_result(item) for stage,item in previous.items()}
     base=records_directory(root)
     with check_lock(root):
-        # A second writer may have finished after the first cache lookup.
-        previous=latest(root,request)
-        if previous and not refresh and previous['state'] in ('passed','failed','disputed'):
-            return {**previous,'cached':True,'next':'复用同版结果，不重复发送'}
-        directory=base/f'{stage}-{time.time_ns()}-{uuid.uuid4().hex[:8]}';directory.mkdir(mode=0o700)
-        write_json(directory/'request.json',request)
-        write_json(directory/'intent.json',{'started_at':now(),'state':'one_attempt_no_retry','request_sha256':hash_json(request),'timeout_seconds':config['timeout_seconds']})
-        transport=client.call(config,request['payload'],cookie)
-        record={'schema_version':1,'binding':request['binding'],'request_sha256':hash_json(request),
-                'response_sha256':hash_json(transport),'transport':transport,'parsed':parse_response(stage,transport),'completed_at':now()}
-        write_json(directory/'result.json',record)
-    result=latest(root,request)
-    result.update(cached=False,cookie_file=str(cookie_path),next=('请填写/更新Cookie后继续，不把登录问题记为题目不合格' if result['state']=='needs_cookie'
-                  else '按原始反馈修订后复检；疑似错误意见先核对证据并登记异议' if not result['accepted'] else '继续下一阶段'))
-    return result
+        previous={stage:latest(root,item[0]) for stage,item in descriptions.items()}
+        pending=[stage for stage in stages if not reusable(previous[stage])]
+        if pending:
+            cookie=client.load_cookie(descriptions[pending[0]][2]);jobs=[]
+            for stage in pending:
+                request,config,_=descriptions[stage]
+                directory=base/f'{stage}-{time.time_ns()}-{uuid.uuid4().hex[:8]}';directory.mkdir(mode=0o700)
+                write_json(directory/'request.json',request)
+                write_json(directory/'intent.json',{'started_at':now(),'state':'one_attempt_no_retry',
+                           'request_sha256':hash_json(request),'timeout_seconds':None})
+                jobs.append((directory,request,config,cookie))
+            if len(jobs)==1:call_attempt(*jobs[0])
+            else:
+                errors=[]
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    futures=[pool.submit(call_attempt,*job) for job in jobs]
+                    for future in as_completed(futures):
+                        try:future.result()
+                        except Exception as error:errors.append(error)
+                # Successful peers have already persisted, even if one write failed.
+                if errors:raise errors[0]
+        results={}
+        for stage,(request,_,cookie_path) in descriptions.items():
+            if reusable(previous[stage]):results[stage]=cached_result(previous[stage]);continue
+            result=latest(root,request)
+            result.update(cached=False,cookie_file=str(cookie_path),next=('请填写/更新Cookie后继续，不把登录问题记为题目不合格' if result['state']=='needs_cookie'
+                          else '按原始反馈修订后复检；疑似错误意见先核对证据并登记异议' if not result['accepted'] else '继续下一阶段'))
+            results[stage]=result
+    return results
 
 
-def disagreement_template(root,stage,evaluation):
-    require(stage in ('criteria','attainment'),'异议仅用于收齐三模型后的两项内容质检')
-    request,_,_=descriptor(root,stage,evaluation=evaluation);result=latest(root,request)
+def disagreement_template(root,stage,evaluation=None,q=None):
+    require(stage in client.KEYS,'异议仅用于三项实际内容质检')
+    request,_,_=descriptor(root,stage,q=q,evaluation=evaluation);result=latest(root,request)
     require(result and result['state']=='failed','只对当前实际不通过的内容检查登记异议，服务错误或旧结果不能绕过')
     _,record=verified_record(Path(result['attempt']),stage)
-    return {'schema_version':1,'phase':'platform_disagreement','stage':stage,'binding':request['binding'],
+    return {'schema_version':1,'phase':'platform_disagreement','notes_format_version':2,'stage':stage,'binding':request['binding'],
             'response_sha256':record['response_sha256'],'reviewer':'','reason':'',
             'evidence':[{'source':'feedback','quote':''},{'source':'input','field':'','quote':''}],
             'form_notes':'','notification':'向用户明确说明不认同该不通过结论，并给出表单备注；不新增用户审批'}
 
 
 def validate_disagreement(request,record,decision):
-    require(request['stage'] in ('criteria','attainment') and record['parsed']['state']=='failed'
+    require(request['stage'] in client.KEYS and record['parsed']['state']=='failed'
             and decision.get('schema_version')==1 and decision.get('phase')=='platform_disagreement'
             and decision.get('stage')==request['stage'] and decision.get('binding')==request['binding']
             and decision.get('response_sha256')==record['response_sha256'],'异议不属于当前失败返回或输入已变化')
     for key in ('reviewer','reason','form_notes'):
         require(isinstance(decision.get(key),str) and decision[key].strip(),'异议需要实际执行者、证据理由及可复制表单备注')
+    require(type(decision.get('notes_format_version',1)) is int and decision.get('notes_format_version',1) in (1,2),
+            '异议备注版本不受支持，保留原件')
     evidence=decision.get('evidence',[]);sources=set()
     require(isinstance(evidence,list) and len(evidence)>=2,'异议须同时引用质检反馈及实际输入/模型原文')
     for item in evidence:
@@ -199,12 +247,12 @@ def validate_disagreement(request,record,decision):
     require({'feedback','input'}<=sources,'异议须比较本次反馈与输入，不能只写不同意')
 
 
-def disagree(root,decision,evaluation):
-    with check_lock(root):return record_disagreement(root,decision,evaluation)
+def disagree(root,decision,evaluation=None,q=None):
+    with check_lock(root):return record_disagreement(root,decision,evaluation,q=q)
 
 
-def record_disagreement(root,decision,evaluation):
-    stage=decision.get('stage');request,_,_=descriptor(root,stage,evaluation=evaluation);result=latest(root,request)
+def record_disagreement(root,decision,evaluation=None,q=None):
+    stage=decision.get('stage');request,_,_=descriptor(root,stage,q=q,evaluation=evaluation);result=latest(root,request)
     require(result and result['state']=='failed','先核实当前失败的质检记录')
     path=Path(result['attempt']);_,record=verified_record(path,stage);validate_disagreement(request,record,decision)
     target=path/('disagreement-'+uuid.uuid4().hex+'.json')
@@ -222,7 +270,14 @@ def record_disagreement(root,decision,evaluation):
 
 
 def disagreement_notes(decision):
-    return '# 平台质检异议\n\n不认同该不通过结论。\n\n'+decision['reason']+'\n\n## 建议填写到表单的备注\n\n'+decision['form_notes']+'\n'
+    # Old workspaces can already contain these verified notes. Preserve their
+    # exact representation while including explicit evidence in new notes.
+    if decision.get('notes_format_version',1)==1:
+        return '# 平台质检异议\n\n不认同该不通过结论。\n\n'+decision['reason']+'\n\n## 建议填写到表单的备注\n\n'+decision['form_notes']+'\n'
+    evidence='\n\n'.join(('质检反馈' if item['source']=='feedback' else '实际输入：'+item['field'])+'\n\n'+item['quote'] for item in decision['evidence'])
+    return ('# 平台质检异议\n\n不认同该不通过结论。\n\n'+decision['reason']+
+            '\n\n## 核对依据\n\n'+evidence+'\n\n## 建议填写到表单的备注\n\n'+decision['form_notes']+
+            '\n\n优先复制到平台质检异议或返修说明栏；平台原始不通过保留。\n')
 
 
 def status(root,evaluation=None):

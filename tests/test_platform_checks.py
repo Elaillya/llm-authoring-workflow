@@ -91,9 +91,9 @@ class PlatformTests(unittest.TestCase):
         self.frozen()
         with self.assertRaises(Error):self.run_check('criteria')
         self.assertFalse(list((self.root/'platform-checks').glob('criteria-*')))
-    def test_failed_criteria_blocks_attainment_and_arena(self):
+    def test_failed_criteria_does_not_block_attainment_but_blocks_arena(self):
         self.frozen();ev=self.three();self.run_check('criteria',ev=ev,decision='不通过',details='缺少题面约束考点。')
-        with self.assertRaisesRegex(Error,'criteria'):self.run_check('attainment',ev=ev)
+        self.assertEqual(self.run_check('attainment',ev=ev)[0]['state'],'passed')
         with self.assertRaisesRegex(Error,'criteria'):prepare_arena(self.root,ev)
     def test_judgment_notes_change_invalidates_only_attainment(self):
         ev=self.completed();ev['models']['gpt']['points']['D1']['reason']+='补充解释。'
@@ -113,6 +113,11 @@ class PlatformTests(unittest.TestCase):
         checks=qa.final_gate(self.root,ev);self.assertEqual(checks['attainment']['state'],'disputed')
         self.assertEqual(checks['attainment']['server_conclusion'],'不通过')
         self.assertTrue(qa.status(self.root,ev)['ready_for_arena'])
+    def test_legacy_disagreement_notes_remain_valid_without_rewriting(self):
+        ev,decision=self.disputed();decision.pop('notes_format_version')
+        result=qa.disagree(self.root,decision,ev);original=Path(result['notes_file']).read_bytes()
+        self.assertEqual(qa.final_gate(self.root,ev)['attainment']['state'],'disputed')
+        self.assertEqual(Path(result['notes_file']).read_bytes(),original)
     def test_disagreement_needs_exact_feedback_and_input_evidence(self):
         ev,decision=self.disputed();decision['evidence'][1]['quote']='不存在的原文'
         with self.assertRaisesRegex(Error,'准确原文'):qa.disagree(self.root,decision,ev)
@@ -121,7 +126,7 @@ class PlatformTests(unittest.TestCase):
         ev,decision=self.disputed();ev['models']['claude']['points']['D1']['reason']+='新解释。'
         with self.assertRaises(Error):qa.disagree(self.root,decision,ev)
         self.assertEqual(qa.parse_response('attainment',{'http_status':403,'response_text':''})['state'],'needs_cookie')
-        with self.assertRaises(Error):qa.disagreement_template(self.root,'question',ev)
+        with self.assertRaises(Error):qa.disagreement_template(self.root,'question',ev,q=self.q)
     def test_import_requires_current_evaluation_and_rechecks_gates(self):
         ev=self.completed();fill_slots(self.root,ev)
         with self.assertRaisesRegex(Error,'显式提供'):import_arena(self.root)

@@ -6,6 +6,6 @@ lab check evaluations/three-rNNNN.json验证Seed未全部决定性达成、GPT/C
 
 有旧delivery检查点直接保留。需要中途保存时用lab checkpoint --evaluation evaluations/three-rNNNN.json --self-review evaluations/self-review-rNNNN.json --output delivery/v001。检查点只有三模型，不是最终完成；继续references/arena-rank.md。
 
-新任务在检查点及Arena之前按platform-checks.md完成考点与达成性质检。合理反馈自主返修；错误意见登记本次输入/返回绑定的证据异议并向用户给出表单备注。该门禁由命令校验，不能只凭三模型区分度通过就进入Arena。
+新任务在三模型原文、判断及备注齐备后按platform-checks.md并行质检考点与达成性；正常请求等待至完成。合理不通过自主返修；错误意见登记输入/返回绑定的证据异议并向用户给可复制备注。门禁由命令校验。三项实际通过的优化建议先保留，Arena填写链接发出后再离线改写表达、免复检；最终提交说明其通过依据与未复检状态。
 
 题面改变获取新回复，考点改变统一重评全部已获取模型。旧原件和交付始终保留。
