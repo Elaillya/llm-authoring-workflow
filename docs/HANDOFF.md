@@ -14,8 +14,8 @@ workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评
 
 新任务 REQUEST.domain/domain_confirmed/question_type 为空或未确认，必须由用户选择；旧冻结题目沿用冻结领域。rename 只改显示名和目录，冻结 ID 与旧入口保留。重置现有任务需用户明确指定；先将整个目录（含未提交和忽略文件、Git历史）归档并校验，再建立空白同名任务；其他任务保持原件。
 
-## 下一版设计入口（独立草稿）
+## 3.1.0 工作流入口
 
-新建任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行考点/达成性质检，正常请求等待至完成；合理不通过返修、错误意见证据异议并给备注。门禁满足后先发Arena链接，三项实际通过的表达建议此后离线优化免复检。导入须--evaluation当前判断；Cookie填已有私有文件，模型生成API禁用。分支见Skill的references/platform-checks.md，2026-10-15变更见QA_REFINEMENTS_SPEC.md。已有任务TASK保持原合同，此草稿本轮不部署、不推送。
+新建任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行考点/达成性质检，正常请求等待至完成；合理不通过返修、错误意见证据异议并给备注。门禁满足后先发Arena链接，三项实际通过的表达建议此后离线优化免复检。导入须--evaluation当前判断；Cookie填已有私有文件，模型生成API禁用。分支见Skill的references/platform-checks.md，2026-10-15变更见QA_REFINEMENTS_SPEC.md。更新先备份侧栏说明，保留已有任务合同及题目证据。
 
-3.1.0-dev的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。
+3.1.0的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。
