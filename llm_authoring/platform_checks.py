@@ -7,6 +7,9 @@ from .core import Error,ROLES,active_question,hash_json,now,read_json,read_respo
 from . import platform_client as client
 from .text import insight_text,valid_insight
 
+THREE_MODEL_REJECTION=('当前候选不合格：Seed须未达成全部决定性核心考点，且GPT或Claude至少一个全部达成。'
+    '保留当前题面、原回复和判断，标记失败并重新选题生成新prompt；不调用考点质检或达成性质检。')
+
 
 def required(root):
     task=Path(root)/'TASK.json'
@@ -171,6 +174,9 @@ def call_attempt(directory,request,config,cookie):
 def run_checks(root,stages,q=None,evaluation=None,refresh=False):
     root=Path(root).resolve()
     q=copy.deepcopy(q);evaluation=copy.deepcopy(evaluation)
+    if any(stage in ('criteria','attainment') for stage in stages):
+        _,stats=authoring_evaluation(root,evaluation)
+        require(stats['three_model_gate'],THREE_MODEL_REJECTION)
     if stages!=('question',):
         question_gate(root,active_question(root)['question'])
     descriptions={stage:descriptor(root,stage,q=q,evaluation=evaluation) for stage in stages}
@@ -287,6 +293,11 @@ def status(root,evaluation=None):
     try:initial_question(root,q)
     except Error:return {'required':True,'stage':'draft_prompt_insight','ready_for_arena':False}
     try:
+        if evaluation is not None:
+            _,stats=authoring_evaluation(root,evaluation)
+            if not stats['three_model_gate']:
+                return {'required':True,'stage':'candidate_rejected','three_model_gate':False,
+                        'ready_for_arena':False,'next':THREE_MODEL_REJECTION}
         request,_,cookie=descriptor(root,'question',q=q);question=latest(root,request)
         checks={'question':question or {'state':'pending','accepted':False}}
         if evaluation is not None:

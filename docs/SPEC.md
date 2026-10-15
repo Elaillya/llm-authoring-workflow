@@ -7,6 +7,7 @@
 - 先导入 Seed，按全部决定性点判断。model-prepare 和 model-import gpt/claude 必须各自验证当前冻结版本的 Seed 判断；未判定、过期、Seed全部达成都阻断。未全部达成后才创建 GPT-5.6 sol.md 与 Claude Opus 4.6.md。五份发送文字逐字节等于冻结prompt，不追加格式指令或换行，不发送 Insight/考点。GPT/Claude 要求中高推理，官方页面不能确认规定型号时缺材料，不替代型号。
 - 准备重复执行不覆盖已填写内容；导入同一原件幂等，已有不同回复不可覆盖。原始输入缺失或被修改、哈希不符、版本错配时不能进入评估。题面不变而考点或Insight修订时复用回复、统一重评，题面改变重新获取。
 - 三模型门槛为 Seed 未全部达成且 GPT 或 Claude 至少一个全部达成，三份完整原文均须保存。逐点 met 为布尔值、reason 具体，满足必须有准确原文 quotes；缺证据不是 false。作者自查保留，不插入独立质检阶段。
+- 后两项质检发送前必须在本地通过同版三模型门槛：Seed未全部决定性达成且GPT或Claude至少一个全部达成。完整但不合格的判断直接转candidate_rejected，保留负结果并重新选题，不读Cookie、不发请求、不新增尝试；models、单项及--refresh共用拦截，缓存不能绕过。详见THREE_MODEL_QA_GATE_SPEC.md。
 - 新任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行检查考点与达成性，正常请求等待到完成、没有客户端上限；合理不通过返修。三项实际通过后先发Arena链接，再记录不改变含义及判定的表达优化，最终交付使用优化文字并说明未复检。错误内容意见给证据异议和可复制备注，保留原结论。Cookie私有。协议见PLATFORM_SPEC.md；本轮变更以QA_REFINEMENTS_SPEC.md为准，执行分支见Skill的references/platform-checks.md。
 - 平台门禁及三模型门槛通过后创建Arena填写文件；准备、导入和导出均重新校验，导入需当前evaluation。Arena仍只收用户原Markdown及实际型号，截图另交。旧任务续作不强迫补检查；workspace-update不自动修改旧TASK合同。
 - 五模型统一判断全部决定性与非决定性点。排序先按全部决定性达成性分梯队，同梯队按全部考点满足数降序，相同并列；没有品牌、文风或长度权重。排序和备注使用真实型号；简洁说明五模型具体考点差异及原因，不设字数下限，并绑定评估哈希。

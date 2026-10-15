@@ -80,7 +80,7 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后按Skill并行考点和达成性质检，正常请求等待至完成、不设客户端时限；合理不通过自主返修，错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学还是商科，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），才按Skill并行考点和达成性质检；若GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；合理不通过自主返修，错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
@@ -105,7 +105,9 @@ def main(argv=None):
                 q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
                 evaluation=read_json(args.evaluation) if args.evaluation else None
                 result=qa.run_models(root,evaluation,refresh=args.refresh) if args.stage=='models' else qa.run(root,args.stage,q=q,evaluation=evaluation,refresh=args.refresh)
-            elif args.command=='qa-status':result=qa.status(root,read_json(args.evaluation) if args.evaluation else None)
+            elif args.command=='qa-status':
+                evaluation_path=args.evaluation or find_authoring_evaluation(root,require_gate=False)
+                result=qa.status(root,read_json(evaluation_path) if evaluation_path else None)
             elif args.command=='qa-disagreement-template':
                 require(not args.output.exists(),'保留旧异议记录，使用新的文件名')
                 q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
@@ -150,18 +152,22 @@ def main(argv=None):
                     for role in ALL_ROLES:
                         try:r=read_response(root,role);result['responses'][role]={'complete':True,'display_name':r['meta'].get('display_name'),'screenshot':r['meta'].get('screenshot_kind','user_submits_separately' if role not in ROLES or r['meta'].get('source_kind')=='official_manual' else 'missing')}
                         except Error:result['responses'][role]={'complete':False,'status':'evidence_missing_or_incomplete'}
-                    result['authoring_evaluation']=str(path) if (path:=find_authoring_evaluation(root)) else None
+                    result['authoring_evaluation']=str(path) if (path:=find_authoring_evaluation(root,require_gate=False)) else None
                     missing=[role for role,value in result['responses'].items() if not value['complete']]
                     result.update(manual_status(root))
-                    if all(result['responses'][role]['complete'] for role in ROLES) and result['authoring_evaluation']:
+                    if path:
+                        result['three_model_gate']=check_three(root,read_json(path))['three_model_gate']
+                        if not result['three_model_gate']:
+                            result.update(stage='candidate_rejected',next=qa.THREE_MODEL_REJECTION)
+                    if all(result['responses'][role]['complete'] for role in ROLES) and result.get('three_model_gate'):
                         result['stage']='awaiting_arena_markdown' if missing else 'five_model_evaluation_and_ranking'
                         result['next']='三模型门槛已通过；创建或填写 Arena 两份Markdown' if missing else '统一评估五模型全部考点，生成并校验排序，然后导出新的完整提交版'
                     if (root/'arena-input'/result['revision']).exists():
                         result['arena_input_files']=[str(root/'arena-input'/result['revision']/f'model-{index}.md') for index in (4,5)]
-                path=find_authoring_evaluation(root)
+                path=find_authoring_evaluation(root,require_gate=False)
                 platform=qa.status(root,read_json(path) if path else None);result['platform_checks']=platform
                 if platform.get('required') and result['ready'] and not platform.get('ready_for_arena'):
-                    result['stage']=platform['stage'];result['next']='按状态补齐题目检查；三模型原文、判断及备注齐备后qa-run models并行质检，正常请求等至完成；异议给可复制备注'
+                    result['stage']=platform['stage'];result['next']=platform.get('next','先完成三模型判断并确认门槛通过，再qa-run models并行质检；正常请求等至完成，异议给可复制备注')
             else:raise Error('未知命令')
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:
