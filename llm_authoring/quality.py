@@ -5,7 +5,7 @@ import re
 import unicodedata
 from .core import hash_json, read_json, require, sha, validate_question
 from .memory import records, remember, snapshot, sync_locked, task_key, topic_index, transaction
-from .references import LIBRARY, validate_business_references
+from .references import LIBRARY, LIFESTYLE_LIBRARY, validate_business_references, validate_lifestyle_references
 from .selection import validate_selection
 from .text import insight_text
 
@@ -84,16 +84,21 @@ def report_locked(root,q,items):
     neighbors=high+ordinary[:max(0,8-len(high))]
     notes=Path(root)/'drafts/sources.md'
     require(notes.is_file() and not notes.is_symlink() and notes.read_text().strip(),'先保存本题来源、设定和边界到drafts/sources.md')
-    return {'schema_version':1,'question_sha256':hash_json(q),'source_notes_sha256':sha(notes),
+    report={'schema_version':1,'question_sha256':hash_json(q),'source_notes_sha256':sha(notes),
             'business_library_sha256':sha(LIBRARY) if q.get('domain')=='商科' else None,
             'memory_snapshot_sha256':snapshot(items,key),'naturalness_signals':naturalness_signals(q),
             'neighbors':neighbors,'hard_duplicates':hard,'topic_index':topic_index(items,key),
             'comparison_scope':'all_other_task_versions_in_this_workspace',
             'limits':'本地分数仅召回近似文本和标签；作者必须结合原题语义比较场景、机制和评分要求，不能据低分声称语义绝不重复'}
+    if q.get('domain')=='生活爱好类':
+        report['lifestyle_library_sha256']=sha(LIFESTYLE_LIBRARY)
+        supplement=Path(root)/'drafts/lifestyle-supplement.json'
+        report['lifestyle_supplement_sha256']=sha(supplement) if supplement.exists() else None
+    return report
 
 
 def prepare_candidate(root,q):
-    validate_question(q);validate_selection(root,q);validate_profile(q);validate_business_references(q)
+    validate_question(q);validate_selection(root,q);validate_profile(q);validate_business_references(q);validate_lifestyle_references(root,q)
     require(read_json(Path(root)/'TASK.json')['task_id']==q['task_id'],'候选题目ID不属于本任务')
 
 

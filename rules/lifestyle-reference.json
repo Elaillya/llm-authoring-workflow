@@ -1,0 +1,4747 @@
+{
+  "schema_version": 1,
+  "domain": "生活爱好类",
+  "checked_date": "2026-10-15",
+  "description": "已阅读的一手资料索引、原创机制卡与构造情境；不是已验证模型区分度或项目方验收合格的题库。",
+  "acceptance_status": "unvalidated_scenario_seeds",
+  "source_count": 50,
+  "mechanism_count": 73,
+  "scenario_seed_count": 73,
+  "topic_node_count": 92,
+  "leaf_count": 61,
+  "directly_covered_leaf_count": 43,
+  "uncovered_leaf_ids": [
+    "life_music_listening",
+    "life_visual_color",
+    "life_literature_writing",
+    "life_literature_poetry",
+    "life_photo_editing",
+    "life_ball_badminton",
+    "life_ball_tennis",
+    "life_ball_basketball",
+    "life_games_learning",
+    "life_gather_friends",
+    "life_travel_culture",
+    "life_storage_objects",
+    "life_digital_information",
+    "life_goals_hobby",
+    "life_balance_recovery",
+    "life_changes_independent",
+    "life_learning_habits",
+    "life_exams_multiple"
+  ],
+  "coverage_note": "目录表示可选范围；资料只在匹配节点与所列条件下适用。空白节点和本地时效信息由助手先研究、补入本题私有supplement，再设计；不要求用户编造经历。",
+  "exclusions": [
+    "失败打开、403、验证码及仅搜索摘要不记为已读。",
+    "机构研究摘要不冒充完整论文；教学指南不冒充因果实验。",
+    "英国票制、美国流程及本地法律或气候不跨地域套用。",
+    "没有真实模型回复、截图、平台质检或验收结论。"
+  ],
+  "sources": [
+    {
+      "id": "LH-A-S01",
+      "title": "Practice Journal: Practice Tips & Techniques",
+      "url": "https://pulse.berklee.edu/content/practicepalooza/journal/PracticeTips.pdf",
+      "organization": "Berklee PULSE",
+      "source_type": "official_teaching_material",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF 第 1—2 页：练习目标、难点定位、练习日志与长短练习安排；未逐项检验所有技术练习。"
+      },
+      "supported_claims": [
+        "练习应设定明确目标并处理困难段落。",
+        "教材建议使用短时、规律练习和日志记录。"
+      ],
+      "limitations": [
+        "教学建议，不是随机对照试验。",
+        "不能据此承诺固定天数或强制所有乐器采用相同练习时长。"
+      ]
+    },
+    {
+      "id": "LH-A-S02",
+      "title": "Centre for Performance Science researchers identify links between memorisation and virtuosity",
+      "url": "https://www.rcm.ac.uk/about/news/all/2018-12-20cpsmemorisationandvirtuosity.aspx",
+      "organization": "Royal College of Music",
+      "source_type": "first_party_research_summary",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "第一方研究说明正文：一名大提琴演奏者两年练习及十次公演、表演线索与记忆恢复；未读取链接中的完整研究论文。"
+      },
+      "supported_claims": [
+        "演奏者可在练习中形成有音乐意义的表演线索，作为记忆恢复的地标。"
+      ],
+      "limitations": [
+        "材料是研究机构自己的摘要，不是完整论文。",
+        "个案和教学迁移说明不能证明对所有乐器和学习者有相同效果。"
+      ]
+    },
+    {
+      "id": "LH-A-S03",
+      "title": "Ensemble Courses",
+      "url": "https://college.berklee.edu/ensemble/ensemble-courses",
+      "organization": "Berklee College of Music",
+      "source_type": "official_course_catalog",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "ENCF-100、ENCF-121、ENCF-122、摇滚合奏基础课程说明：角色、曲式、倾听、节奏与动态。"
+      },
+      "supported_claims": [
+        "合奏教学重视乐器角色、共同结构、相互倾听和实时沟通。",
+        "摇滚合奏课程强调节奏一致、发音和动态控制。"
+      ],
+      "limitations": [
+        "课程目标不等于某一种排练方法已有因果实验验证。",
+        "风格和审美不能被写成唯一正确答案。"
+      ]
+    },
+    {
+      "id": "LH-A-S04",
+      "title": "Hearing Protection",
+      "url": "https://musiciansunion.org.uk/health-safety-wellbeing/health-and-safety/key-health-and-safety-issues/hearing-health/hearing-protection",
+      "organization": "Musicians’ Union",
+      "source_type": "professional_association_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Hearing Protection 正文，尤其是先减少噪声暴露、再考虑个人听力防护的控制层级。"
+      },
+      "supported_claims": [
+        "音乐活动组织者应优先探索减少噪声暴露的方法，不能仅依赖耳塞。"
+      ],
+      "limitations": [
+        "英国职业音乐环境的指导；不将其中雇主义务当成中国法律。",
+        "仅用于排练组织与一般风险控制，不用于听力诊断或防护器材处方。"
+      ]
+    },
+    {
+      "id": "LH-A-S05",
+      "title": "Understanding Formal Analysis: Principles of Design",
+      "url": "https://www.getty.edu/education/teachers/building_lessons/formal_analysis2.html",
+      "organization": "J. Paul Getty Museum",
+      "source_type": "museum_education",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Balance、Emphasis、Movement 三节及其说明文字，未独立测量图片中的注意分布。"
+      },
+      "supported_claims": [
+        "大小、色彩等对比可用于突出视觉焦点。",
+        "视觉引导可以由线条、边缘、形状等共同形成。"
+      ],
+      "limitations": [
+        "构图概念不能保证所有观众有同一审美偏好。",
+        "需要题目给出明确传播目标和可观察证据。"
+      ]
+    },
+    {
+      "id": "LH-A-S06",
+      "title": "Light, ultraviolet and infrared",
+      "url": "https://www.canada.ca/en/conservation-institute/services/agents-deterioration/light.html",
+      "organization": "Canadian Conservation Institute",
+      "source_type": "government_conservation_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "阅读光照剂量定义、可见光与 UV 的区分、保存和观看的权衡及材料敏感性讨论；不把表中寿命估计用于个人藏品定年。"
+      },
+      "supported_claims": [
+        "照度乘以时间可用于估计累计光照剂量。",
+        "过滤 UV 不等于消除了可见光引起的褪色。",
+        "材料的光敏感性存在明显差异。"
+      ],
+      "limitations": [
+        "剂量比较需要限定同一材料、可比光谱等前提。",
+        "不可据此给未知颜料承诺保存年限，也不能把单一照度当作永久安全线。"
+      ]
+    },
+    {
+      "id": "LH-A-S07",
+      "title": "Close Reading a Text and Avoiding Pitfalls",
+      "url": "https://owl.purdue.edu/owl/subject_specific_writing/writing_in_literature/writing_about_fiction/index.html",
+      "organization": "Purdue University OWL",
+      "source_type": "university_writing_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Close Reading 与 Avoiding Pitfalls 正文，尤其是解释需与全文和具体文本证据相核验。"
+      },
+      "supported_claims": [
+        "文学解释需要具体文本依据，并接受全文的检验。",
+        "复述情节本身不足以完成文学分析。"
+      ],
+      "limitations": [
+        "可有多个得到支持的解释；不把出题人的审美当标准答案。",
+        "使用自拟短文本或可合法引用的小片段，避免搬运完整受版权保护作品。"
+      ]
+    },
+    {
+      "id": "LH-A-S08",
+      "title": "Image Stabilization",
+      "url": "https://www.nikon.com/company/technology/technology_fields/software_and_systems/image_stabilization/",
+      "organization": "Nikon Corporation",
+      "source_type": "manufacturer_technical_explanation",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Technology Overview：通过传感器检测相机运动并移动镜片/传感器补偿；没有将产品的标称档数泛化。"
+      },
+      "supported_claims": [
+        "光学防抖针对相机运动造成的模糊。"
+      ],
+      "limitations": [
+        "防抖不是主体运动冻结功能。",
+        "不同机身、镜头与模式能力不同；不从厂商示例推断所有器材的实际性能。"
+      ]
+    },
+    {
+      "id": "LH-A-S09",
+      "title": "What Is Aperture in Photography?",
+      "url": "https://www.usa.canon.com/learning/training-articles/training-articles-list/what-is-aperture",
+      "organization": "Canon U.S.A.",
+      "source_type": "manufacturer_educational_material",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "文章正文：光圈与入光量、景深、Av 模式自动选择快门；未采用商品广告和优惠信息。"
+      },
+      "supported_claims": [
+        "大光圈增加进光量但会缩小景深。",
+        "Av 模式由用户选光圈，相机为曝光选择快门。"
+      ],
+      "limitations": [
+        "景深还取决于距离、焦距与成片要求；没有统一的合照光圈数值。",
+        "不能把 f/16 或 f/22 的示例当成所有合影的固定答案。"
+      ]
+    },
+    {
+      "id": "LH-A-S10",
+      "title": "Measuring Physical Activity Intensity",
+      "url": "https://www.cdc.gov/physicalactivity/basics/measuring/index.html",
+      "organization": "U.S. Centers for Disease Control and Prevention",
+      "source_type": "government_public_health_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Moderate Intensity 与 Vigorous Intensity 两节：谈话测试和相对强度。"
+      },
+      "supported_claims": [
+        "谈话测试可用于粗略理解个人活动的相对强度。"
+      ],
+      "limitations": [
+        "页面有导航 SSI 报错，但正文已实际读取。",
+        "只用于一般活动规划；不能用说话能力诊断疾病或替代个体医疗建议。"
+      ]
+    },
+    {
+      "id": "LH-A-S11",
+      "title": "Get running with Couch to 5K",
+      "url": "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/",
+      "organization": "NHS Better Health",
+      "source_type": "government_public_health_programme",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "计划概述、每周三次且间隔休息日、跑走交替、九周或更长及启动时的健康边界。"
+      },
+      "supported_claims": [
+        "初学计划安排跑步之间的休息日。",
+        "计划可根据个人情况延长，不要求按日历强行补课。"
+      ],
+      "limitations": [
+        "特定入门计划，不是所有跑者的通用训练处方。",
+        "有健康顾虑或运动不适时应寻求合适专业帮助，不由题目诊断。"
+      ]
+    },
+    {
+      "id": "LH-A-S12",
+      "title": "ITTF Statutes 2026: Laws of Table Tennis",
+      "url": "https://db.ittf.com/sites/default/files/public/2026-02/2026_Statutes_v1_consolidated_clean.pdf",
+      "organization": "International Table Tennis Federation",
+      "source_type": "official_sport_rules",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF 第 41—45 印刷页附近：2.6 发球、2.8 击球顺序、2.13 发接发顺序、2.14 顺序错误处理；未审阅全书其他规则。"
+      },
+      "supported_claims": [
+        "常规双打中四人按规定次序轮流击球。",
+        "发接发顺序错误发现后按当前比分纠正，已得分保留。",
+        "发球过程不能向接球者遮挡球。"
+      ],
+      "limitations": [
+        "仅按本次已读的 2026 规则；出题时重新核对版本。",
+        "轮椅等特殊规则有例外，不外推为所有比赛通用。"
+      ]
+    },
+    {
+      "id": "LH-A-S13",
+      "title": "Law 11: Offside",
+      "url": "https://www.theifab.com/laws/latest/offside/",
+      "organization": "The IFAB",
+      "source_type": "official_sport_rules",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "11.1—11.3 与关于 deliberate play、deflection、save 的说明和相邻 FAQ；未独立裁判任何真实比赛视频。"
+      },
+      "supported_claims": [
+        "越位位置本身不等于越位犯规，仍需判断参与比赛。",
+        "有控制可能的主动处理球与受限触球/折射需区分。",
+        "主动救球有独立例外。"
+      ],
+      "limitations": [
+        "适用采用 IFAB 越位规则的足球赛，不能套用于另有简化规则的休闲赛。",
+        "latest 地址会更新，出题须记录采用的赛季和具体条款。"
+      ]
+    },
+    {
+      "id": "LH-A-S14",
+      "title": "Bicycle Safety",
+      "url": "https://www.nhtsa.gov/road-safety/bicycle-safety",
+      "organization": "National Highway Traffic Safety Administration",
+      "source_type": "government_road_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Prepare Before Heading Out 与 Drive Defensively：选路线、设备可用性、日夜可见性。"
+      },
+      "supported_claims": [
+        "路线选择应考虑交通量和车速，而不只看距离。",
+        "白天醒目衣物、夜间主动灯光和反光装备作用不同。"
+      ],
+      "limitations": [
+        "一般安全原则，不将美国道路规则当成本地法规。",
+        "实际路线、施工、灯具法规需出题时重新核实。"
+      ]
+    },
+    {
+      "id": "LH-A-S15",
+      "title": "Trip Planning Guide",
+      "url": "https://www.nps.gov/subjects/healthandsafety/trip-planning-guide.htm",
+      "organization": "U.S. National Park Service",
+      "source_type": "government_outdoor_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "出行前、抵达、途中三个阶段：活动能力匹配、备用活动、装备、联系计划、改变行程与返程。"
+      },
+      "supported_claims": [
+        "备用活动应在条件变动时能实际启用。",
+        "行程及变更需要让不随行的可信联系人知道。",
+        "手机不替代全部必要装备和备用导航。"
+      ],
+      "limitations": [
+        "只支撑低风险规划，不提供技术登山、涉水或冒险路线建议。",
+        "开放状态、许可、天气、交通和当地救援方式必须当时再查。"
+      ]
+    },
+    {
+      "id": "LH-A-S16",
+      "title": "Lightning Safety and Outdoor Sports Activities",
+      "url": "https://www.weather.gov/safety/lightning-sports",
+      "organization": "NOAA National Weather Service",
+      "source_type": "government_weather_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "停止活动、避险场所、恢复条件、专人监测和授权职责等正文。"
+      },
+      "supported_claims": [
+        "活动方案应预先规定停止活动的条件与避险位置。",
+        "撤离所需时间需要纳入停止活动的决策。",
+        "监测天气的人应有明确决策权限。"
+      ],
+      "limitations": [
+        "仅讨论取消、迁移和提前避险，不提供危险环境中的冒险操作。",
+        "实际天气和地方预警需当时查询；普通遮雨棚不是雷暴安全场所。"
+      ]
+    },
+    {
+      "id": "LH-A-S17",
+      "title": "Put crowd controls in place",
+      "url": "https://www.hse.gov.uk/event-safety/crowd-management-controls.htm",
+      "organization": "UK Health and Safety Executive",
+      "source_type": "government_event_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "进入离开、分时到场、排队和楼梯等正文；未采用站外交通工程或密度上限计算。"
+      },
+      "supported_claims": [
+        "排队应有退出路径，不能堵住应急通道。",
+        "错峰到场和离场可以减少同步人流压力。"
+      ],
+      "limitations": [
+        "适度规模的活动组织原则，不能据此自行认证场馆安全容量。",
+        "大型活动和当地法定责任需要专业及现场核验。"
+      ]
+    },
+    {
+      "id": "LH-A-S18",
+      "title": "Eating Outdoors: Handling Food Safely",
+      "url": "https://www.fda.gov/media/79871/download",
+      "organization": "U.S. Food and Drug Administration",
+      "source_type": "government_food_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF 第 1—4 页的运送、冷藏、分开生熟食与器具、时间温度控制；不提供治疗建议。"
+      },
+      "supported_claims": [
+        "冷藏控制需贯穿运送和摆放阶段。",
+        "低温保存不能替代生熟食及器具隔离。",
+        "室外高温下易腐食品的可放置时限更短。"
+      ],
+      "limitations": [
+        "2017 年官方教育材料；新题使用明确数值前再核对现行本地指导。",
+        "不用于判断具体食物已受污染的概率，也不以气味外观证明安全。"
+      ]
+    },
+    {
+      "id": "LH-A-S19",
+      "title": "Split Train Tickets",
+      "url": "https://www.nationalrail.co.uk/tickets-railcards-and-offers/buying-a-ticket/split-train-tickets/",
+      "organization": "National Rail",
+      "source_type": "official_transport_ticket_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "一般 split ticket 的停站条件、每段车次限制、可不下车、座位可能需更换及 Season/area ticket 例外 FAQ。"
+      },
+      "supported_claims": [
+        "通常的分段车票组合要求列车在分票站停站。",
+        "是否需要换乘与是否需要更换座位是不同问题。",
+        "票种可能触发例外，不能省略有效性核查。"
+      ],
+      "limitations": [
+        "只适用英国 National Rail 指定票种与版本，不套用中国高铁或航空。",
+        "票价、车次、条款动态变化，新题必须重新核对。"
+      ]
+    },
+    {
+      "id": "LH-A-S20",
+      "title": "Fertilizing and watering container plants",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/fertilizing-and-watering-container-plants",
+      "organization": "University of Minnesota Extension",
+      "source_type": "university_extension_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Quick facts、Fertilize regularly、Maintain even moisture、Watch out for soggy soil，网页标注 Reviewed in 2026。"
+      },
+      "supported_claims": [
+        "容器大小和温度会影响浇水需求。",
+        "长时间积水与保持均匀湿润不同。",
+        "重复浇水可能带走养分，但施肥仍须遵守标签。"
+      ],
+      "limitations": [
+        "主要是容器种植的一般建议；不是所有植物固定每日浇水的依据。",
+        "不凭黄叶单一症状诊断病虫害，也不提出农药配方。"
+      ]
+    },
+    {
+      "id": "LH-A-S21",
+      "title": "Gauge Swatch 101: How to Make and Measure Your Swatch",
+      "url": "https://www.lionbrand.com/community/blog/gauge-swatch-101-how-to-make-and-measure-your-swatch/",
+      "organization": "Lion Brand Yarn",
+      "source_type": "manufacturer_craft_tutorial",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Step 1—5：按项目针法织样片、分别量横纵、按将来方式洗护和整形、复测；未依赖评论区。"
+      },
+      "supported_claims": [
+        "针目密度应在与成品一致的洗护和整形状态下测量。",
+        "横向针密度与纵向行密度需要分别记录。"
+      ],
+      "limitations": [
+        "样片不是对所有纤维变形的精确预测；复杂结构可能还需额外验证。",
+        "品牌教程不作为推荐采购指定品牌的依据。"
+      ]
+    },
+    {
+      "id": "LH-A-S22",
+      "title": "Adult Activity: An Overview",
+      "url": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html",
+      "organization": "U.S. Centers for Disease Control and Prevention",
+      "source_type": "government_public_health_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "成人活动建议及三个例子：有氧活动与肌肉强化分别列出；不读取为个体训练处方。"
+      },
+      "supported_claims": [
+        "一般成人活动建议同时包含有氧与肌肉强化两类活动。",
+        "活动可以分散到一周和更短时间段。"
+      ],
+      "limitations": [
+        "人群级指导，不是竞技训练、康复或个体剂量处方。",
+        "有慢性病、伤痛或其他健康限制时不能直接套用。"
+      ]
+    },
+    {
+      "id": "LH-B-S01",
+      "title": "Preventing Wasted Food At Home",
+      "url": "https://www.epa.gov/recycle/preventing-wasted-food-home",
+      "organization": "US Environmental Protection Agency",
+      "source_type": "government_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "正文 Planning and Shopping Tips、Storage Tips、Cooking and Preparation Tips；未把页面美国总体浪费统计用于构造数据。"
+      },
+      "supported_claims": [
+        "先盘点库存，再按真正会在家吃的餐次采购。",
+        "大包装只有能及时用完才可能省钱。",
+        "分装、标记内容与日期有助于使用库存。"
+      ],
+      "limitations": [
+        "面向家庭的实务建议，不是对任何家庭都有效的随机试验。",
+        "储存方式受食物类别影响；案例需给出实际标签、容量及保鲜条件。"
+      ]
+    },
+    {
+      "id": "LH-B-S02",
+      "title": "Are You Storing Food Safely?",
+      "url": "https://www.fda.gov/consumers/consumer-updates/are-you-storing-food-safely",
+      "organization": "US Food and Drug Administration",
+      "source_type": "government_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Storage Basics、Refrigeration Tips、Freezer Facts；未使用停电段落中较复杂的例外。"
+      },
+      "supported_claims": [
+        "需冷藏食物应及时冷藏；普通环境两小时、超过90°F时一小时的家用指导适用。",
+        "冰箱温度应受监测，气味正常不能证明安全。",
+        "冷冻不能杀灭大多数细菌，不能挽救此前的不当存放。"
+      ],
+      "limitations": [
+        "仅限文中家庭食品保存边界，不能推广到婴儿配方、疾病人群或商业餐饮规程。",
+        "题面须说明食物、时间、温度与标签；不凭气味建议食用。"
+      ]
+    },
+    {
+      "id": "LH-B-S03",
+      "title": "Clothes Captioning: Complying with the Care Labeling Rule",
+      "url": "https://www.ftc.gov/business-guidance/resources/clothes-captioning-complying-care-labeling-rule",
+      "organization": "US Federal Trade Commission",
+      "source_type": "government_label_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Instructions and Warnings、Reasonable Basis、Washing Instructions五要素及相关FAQ。"
+      },
+      "supported_claims": [
+        "整件衣物的配件和染色也影响可用洗护方法。",
+        "明确的分洗、禁漂、禁烘等警示不能用面料的一般耐受性替代。"
+      ],
+      "limitations": [
+        "页面包含美国法规历史信息；本库仅采洗护标签解释，不提供法律判断。",
+        "案例须直接给出衣物标签或实测条件，不自行推断未知面料耐受性。"
+      ]
+    },
+    {
+      "id": "LH-B-S04",
+      "title": "When and How to Clean and Disinfect Your Home",
+      "url": "https://www.cdc.gov/hygiene/about/when-and-how-to-clean-and-disinfect-your-home.html",
+      "organization": "US Centers for Disease Control and Prevention",
+      "source_type": "government_safety_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Definitions、Cleaning、Disinfecting，特别是标签接触时间及使用禁忌。"
+      },
+      "supported_claims": [
+        "先去除污物，再按需要消毒。",
+        "消毒剂的标签接触时间要求表面保持湿润。",
+        "一般家庭常规清洁与需要额外消毒的情形应区分。"
+      ],
+      "limitations": [
+        "不向清洁剂自行加料，不混用产品，不指导危险化学配方。",
+        "具体产品、材料、通风与标签优先；不承诺无菌或诊疗结果。"
+      ]
+    },
+    {
+      "id": "LH-B-S05",
+      "title": "How to Preserve Family Archives: Storing Family Papers and Photographs",
+      "url": "https://www.archives.gov/preservation/family-archives/storing",
+      "organization": "US National Archives and Records Administration",
+      "source_type": "public_institution_preservation_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "存放环境、避水虫鼠、容器尺寸与材料、相册装裱、应避免的材料各段。"
+      },
+      "supported_claims": [
+        "温湿环境和漏水位置影响纸质档案保存。",
+        "合适尺寸、稳定材料的盒袋与非黏胶固定有助于减少损伤。"
+      ],
+      "limitations": [
+        "专指家庭纸张与照片，不外推到全部家具衣物。",
+        "已受潮霉变或珍贵文物的修复不作为默认操作题。"
+      ]
+    },
+    {
+      "id": "LH-B-S06",
+      "title": "Personal Archiving: Digital Photographs",
+      "url": "https://www.digitalpreservation.gov/personalarchiving/photos.html",
+      "organization": "Library of Congress",
+      "source_type": "public_institution_preservation_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Archiving Tips全部四组建议；未观看视频及下载另附PDF。"
+      },
+      "supported_claims": [
+        "照片需要可理解的组织与描述。",
+        "重要文件副本应分开存放，并定期验证可读。"
+      ],
+      "limitations": [
+        "页面含较早存储介质例子；不把五年换盘视为任何硬件的寿命保证。",
+        "本卡关注用户可验证的副本和检索，不假设云同步等于独立备份。"
+      ]
+    },
+    {
+      "id": "LH-B-S07",
+      "title": "Creating a cash flow budget tool",
+      "url": "https://files.consumerfinance.gov/f/documents/cfpb_your-money-your-goals_cash_flow_budget_tool_2018-11_ADA.pdf",
+      "organization": "Consumer Financial Protection Bureau",
+      "source_type": "government_educational_tool",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF四页：逐周余额步骤、跨周结转表与用途说明。"
+      },
+      "supported_claims": [
+        "预算需追踪收支发生时间，逐期结转余额；月总额为正不足以证明每周都够用。"
+      ],
+      "limitations": [
+        "只使用日常收支算术，不推荐投资、借贷或金融产品。",
+        "美国福利项目和金额不移植为中国制度；案例均自造收支。"
+      ]
+    },
+    {
+      "id": "LH-B-S08",
+      "title": "Bill calendar tool",
+      "url": "https://files.consumerfinance.gov/f/documents/cfpb_your-money-your-goals_bill_calendar_tool_2018-11_ADA.pdf",
+      "organization": "Consumer Financial Protection Bureau",
+      "source_type": "government_educational_tool",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF三页：GETTING STARTED、填表步骤与说明。"
+      },
+      "supported_claims": [
+        "应记录实际需要支付或扣款的日期，而不只记录账单到期日。"
+      ],
+      "limitations": [
+        "文中邮寄和线上提前天数是该工具的建议；本库案例另给实际处理时间。",
+        "不假定某地支付平台、宽限期或违约后果。"
+      ]
+    },
+    {
+      "id": "LH-B-S09",
+      "title": "Planning for life events and large purchases tool",
+      "url": "https://files.consumerfinance.gov/f/documents/cfpb_your-money-your-goals_events-purchases_tool_2018-11.pdf",
+      "organization": "Consumer Financial Protection Bureau",
+      "source_type": "government_educational_tool",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF三页：时间、费用、相关费用与筹资分解步骤及工具表。"
+      },
+      "supported_claims": [
+        "生活转变的计划需要列出附带费用与发生时间，不能只看主商品价格。"
+      ],
+      "limitations": [
+        "只支持明确给定成本的预算，不推测通胀、税务、贷款批准或家庭资助。"
+      ]
+    },
+    {
+      "id": "LH-B-S10",
+      "title": "Revising goals handout",
+      "url": "https://files.consumerfinance.gov/f/documents/cfpb_your-money-your-goals_revising_goals_handout_2018-11.pdf",
+      "organization": "Consumer Financial Protection Bureau",
+      "source_type": "government_educational_tool",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF两页中条件变化、储蓄进度不足、优先级与目标价值变化段落。"
+      },
+      "supported_claims": [
+        "条件或优先级改变时，可调整目标金额、期限或放弃已不重要的目标。"
+      ],
+      "limitations": [
+        "案例只比较题面明确的目标与资源，不把持之以恒或及时放弃设为普适答案。"
+      ]
+    },
+    {
+      "id": "LH-B-S11",
+      "title": "Does Monitoring Goal Progress Promote Goal Attainment? A Meta-Analysis of the Experimental Evidence",
+      "url": "https://eprints.whiterose.ac.uk/id/eprint/91437/8/3_PDFsam_Does%20monitoring%20goal.pdf",
+      "organization": "Harkin et al.; White Rose Research Online, University of Sheffield",
+      "source_type": "primary_research_meta_analysis",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "作者接受稿PDF摘要（PDF第3页）、监测定义（PDF第6页）、指标维度（PDF第11至13页）、局限（PDF第41至43页）；未逐一核验138项原研究。"
+      },
+      "supported_claims": [
+        "随机干预研究汇总显示，增加进度监测平均有助于目标达成。",
+        "目标进度需与参照值比较；研究承认领域覆盖及调节分析的限制。"
+      ],
+      "limitations": [
+        "不保证某个人或任意生活目标有效；很多研究涉及健康行为。",
+        "公开汇报或记录的调节关联不能写成对所有人的强制条件。"
+      ]
+    },
+    {
+      "id": "LH-B-S12",
+      "title": "Studying 101: Study Smarter Not Harder",
+      "url": "https://learningcenter.unc.edu/tips-and-tools/studying-101-study-smarter-not-harder/",
+      "organization": "University of North Carolina at Chapel Hill Learning Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Reading is not studying、技术课练习、解释步骤、学习环境、分散练习与分心段落。"
+      },
+      "supported_claims": [
+        "技术课练习应能解释步骤为何成立。",
+        "学习环境需结合任务与个人实际表现。",
+        "对文本内容的理解可用自己的解释与论据联系检验，而不能只统计阅读动作。"
+      ],
+      "limitations": [
+        "这是学习中心指南，不是单一策略对所有学生有效的实验。",
+        "不使用页面固定时长、普适音乐优劣或保证提分的说法。"
+      ]
+    },
+    {
+      "id": "LH-B-S13",
+      "title": "What To Do With Practice Exams",
+      "url": "https://lsc.cornell.edu/how-to-study/studying-for-and-taking-exams/what-to-do-with-practice-exams/",
+      "organization": "Cornell University Learning Strategies Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "正文Taking practice exams及Testing effect；未观看嵌入视频。"
+      },
+      "supported_claims": [
+        "模拟题应尽量匹配正式考试的时间和允许资源。",
+        "可用不同试卷对比起点与复习后的表现。"
+      ],
+      "limitations": [
+        "指南不能证明重复熟题成绩等于迁移能力；案例须给出新题表现或保留题。"
+      ]
+    },
+    {
+      "id": "LH-B-S14",
+      "title": "What To Do When You Get Your Graded Test or Essay Back",
+      "url": "https://lsc.cornell.edu/how-to-study/studying-for-and-taking-exams/what-to-do-when-you-get-your-graded-test-or-essay-back/",
+      "organization": "Cornell University Learning Strategies Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "正文按读题失误、遗忘、不熟悉迁移及未明白原因分类的建议。"
+      },
+      "supported_claims": [
+        "失分原因不同，对应的后续练习也应不同；有疑问可带具体问题求助。"
+      ],
+      "limitations": [
+        "不凭一次分数诊断学习能力或注意力问题。",
+        "不能把所有错误自动归为粗心；案例应提供原解答或新题证据。"
+      ]
+    },
+    {
+      "id": "LH-B-S15",
+      "title": "Managing Time",
+      "url": "https://lsc.cornell.edu/managing-time/",
+      "organization": "Cornell University Learning Strategies Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "学期日历、周日历、固定承诺、各课时间需求与平衡活动段落；未进入Canvas模块。"
+      },
+      "supported_claims": [
+        "学期日历用于发现集中截止期；周日历需先计入固定承诺，再分配可用时段。"
+      ],
+      "limitations": [
+        "课外时间倍数只是指南估算，不设为硬规则。",
+        "睡眠、休息、照护等实际需求由情境给定，不给所有人相同标准。"
+      ]
+    },
+    {
+      "id": "LH-B-S16",
+      "title": "What are best practices for designing group projects?",
+      "url": "https://www.cmu.edu/teaching/designteach/design/instructionalstrategies/groupprojects/design.html",
+      "organization": "Carnegie Mellon University Eberly Center",
+      "source_type": "university_teaching_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Create interdependence、分工与中期截止、整合协调、individual accountability。"
+      },
+      "supported_claims": [
+        "协作任务需要安排依赖与整合，不能默认各自完成即能拼合。",
+        "小组作品与个人理解程度是不同的评估对象。"
+      ],
+      "limitations": [
+        "主要面向教师的设计指南；学生建议不能改写课程既定评分规则。",
+        "不把岗位、轮换、同伴评分视为所有小组的唯一解。"
+      ]
+    },
+    {
+      "id": "LH-B-S17",
+      "title": "Spacing effects in learning: A temporal ridgeline of optimal retention",
+      "url": "https://escholarship.org/content/qt0kp5q19x/qt0kp5q19x.pdf",
+      "organization": "Cepeda et al.; UC San Diego eScholarship",
+      "source_type": "primary_research_experiment",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF第2页摘要、第4至5页方法、第5至6页结果与讨论；材料为事实回忆，未复算统计。"
+      },
+      "supported_claims": [
+        "复习间隔与目标保持时间相互作用；该实验中不是间隔越长越好。"
+      ],
+      "limitations": [
+        "不能把实验最优比例当作所有课程、技能和个体的固定复习公式。",
+        "需区分记忆事实与复杂技能迁移。"
+      ]
+    },
+    {
+      "id": "LH-B-S18",
+      "title": "Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention",
+      "url": "https://learninglab.psych.purdue.edu/downloads/2006/2006_Roediger_Karpicke_PsychSci.pdf",
+      "organization": "Roediger and Karpicke; Purdue Cognition and Learning Lab",
+      "source_type": "primary_research_experiment",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "PDF第1至5页：摘要、两项大学生短文实验、即刻与延迟测试结果；未逐条追溯参考文献。"
+      },
+      "supported_claims": [
+        "重复阅读的即时表现和信心可能高于检索练习，但延迟回忆的排序可反转。"
+      ],
+      "limitations": [
+        "该实验主要为短文回忆；不直接证明任何考试、编程项目或运动技能均同样受益。",
+        "不能把检索失败本身当成有效学习，案例需包含核对或后续证据。"
+      ]
+    },
+    {
+      "id": "LH-B-S19",
+      "title": "Management Standards: Demands",
+      "url": "https://www.hse.gov.uk/stress/standards/demands.htm",
+      "organization": "UK Health and Safety Executive",
+      "source_type": "government_workplace_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "正文工作负荷、工作模式、约定工时内可达要求与反映问题机制。"
+      },
+      "supported_claims": [
+        "工作要求需与实际工时、能力和资源匹配；环境问题需要被回应。"
+      ],
+      "limitations": [
+        "用于识别工作量可行性，不提供英国或其他地区劳动法律意见。",
+        "不把过量任务归咎于个人自律不足，也不诊断心理或职业疾病。"
+      ]
+    },
+    {
+      "id": "LH-B-S20",
+      "title": "How to change your address",
+      "url": "https://www.usa.gov/change-address",
+      "organization": "US General Services Administration / USAGov",
+      "source_type": "government_process_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Postal Service地址更新与其他联邦州服务分别更新段落；未打开链接中的具体办理流程。"
+      },
+      "supported_claims": [
+        "邮寄转寄与其他服务地址更新属于分别处理的事项。"
+      ],
+      "limitations": [
+        "美国情境专用；其他国家地区必须核对自己的机构规则。",
+        "不搬用收费、法定期限或具体表单；构造题需明确给出各服务的更新机制。"
+      ]
+    },
+    {
+      "id": "LH-B-S21",
+      "title": "Start Strong!",
+      "url": "https://lsc.cornell.edu/consult-with/start-strong/",
+      "organization": "Cornell University Learning Strategies Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "公开正文中的学期准备、syllabus、资源定位、新生术语和office hours；未访问仅校内Canvas课程。"
+      },
+      "supported_claims": [
+        "新学期应核对本课程纲要和可用帮助，而不是仅沿用上一阶段经验。"
+      ],
+      "limitations": [
+        "学费、教材项目、校历等本校信息不外推。",
+        "不将升学选择价值判断或特定大学制度设为普适事实。"
+      ]
+    },
+    {
+      "id": "LH-B-S22",
+      "title": "How to Use Office Hours",
+      "url": "https://lsc.cornell.edu/help-with-classes/how-to-use-office-hours/",
+      "organization": "Cornell University Learning Strategies Center",
+      "source_type": "university_learning_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "公开正文的准备、职责、带尝试记录与具体卡点、可替代求助资源。"
+      },
+      "supported_claims": [
+        "带已经尝试的过程与具体疑问，有助于教师定位卡点。"
+      ],
+      "limitations": [
+        "办公时间规则依课程而变；不保证教师代做作业或即时答复。"
+      ]
+    },
+    {
+      "id": "LH-B-S23",
+      "title": "Booking Spaces & Equipment",
+      "url": "https://studentsunionucl.org/how-to/clubs-and-societies/booking-spaces-equipment",
+      "organization": "Students Union UCL",
+      "source_type": "first_party_venue_policy",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "场地容量表、预约仍为临时状态、无障碍、设备申请与外部场地截止提醒。"
+      },
+      "supported_claims": [
+        "订到房间不等于活动已获全部批准。",
+        "容量、设备、可达性和准备需求均影响场地是否可用。"
+      ],
+      "limitations": [
+        "当地且可变的场地规则，使用前重查。",
+        "不照搬页面未注明年份的学期截止日；以题面给定容量和流程为准。"
+      ]
+    },
+    {
+      "id": "LH-B-S24",
+      "title": "Organising Activities & Events",
+      "url": "https://studentsunionucl.org/how-to/clubs-and-societies/organising-activities-events",
+      "organization": "Students Union UCL",
+      "source_type": "first_party_event_policy",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "Planning中按活动类型的时间表、Budget、核心与额外风险评估适用范围。"
+      },
+      "supported_claims": [
+        "不同活动规模与类型的准备周期不同。",
+        "常规活动已有批准不一定涵盖新增的一次性活动。"
+      ],
+      "limitations": [
+        "页面正文支出阈值与流程图金额不一致，本库不采用金额门槛作为事实。",
+        "只用于说明核对适用范围与前置批准；不把UCL流程当作普适校园政策。"
+      ]
+    },
+    {
+      "id": "LH-C-S01",
+      "title": "Watering Indoor Plants",
+      "url": "https://extension.umd.edu/resource/watering-indoor-plants",
+      "organization": "University of Maryland Extension",
+      "source_type": "university_extension_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "正文浇水判断、土壤湿度、花盆重量、萎蔫与排水段落；不使用文末静置水去矿物质的说法。"
+      },
+      "supported_claims": [
+        "固定日期不能替代实际含水状态；相似萎蔫可能来自过干或过湿。"
+      ],
+      "limitations": [
+        "物种、介质与环境影响需水；不凭外观诊断病害，不覆盖仙人掌等全部植物。"
+      ]
+    },
+    {
+      "id": "LH-C-S02",
+      "title": "Growing Vegetables in Containers and Salad Tables",
+      "url": "https://www.extension.umd.edu/resource/growing-vegetables-containers-and-salad-tables",
+      "organization": "University of Maryland Extension",
+      "source_type": "university_extension_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "容器排水、底部碎石、容器材质、介质与根系空间；了解自浇水容器结构，未采用马里兰州播种月历。"
+      },
+      "supported_claims": [
+        "普通盆底加石不能补偿排水问题；介质与容器需兼顾水、空气和根系空间。"
+      ],
+      "limitations": [
+        "美国当地季节表不能直接移植；带溢流和隔板的自浇水容器与普通积水盆不同。"
+      ]
+    },
+    {
+      "id": "LH-C-S03",
+      "title": "Ticket to Ride — Rules (US, 2015)",
+      "url": "https://ncdn0.daysofwonder.com/tickettoride/en/img/tt_rules_2015_en.pdf",
+      "organization": "Days of Wonder",
+      "source_type": "official_game_rulebook",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "四页规则正文，重点读目的地票正负分、双线路人数限制、回合动作与终局触发。"
+      },
+      "supported_claims": [
+        "未完成目的地票扣分；二至三人局的双线路容量不同于四至五人局。"
+      ],
+      "limitations": [
+        "限所列美国基础版规则；情境必须给出版本与相关规则，不据此宣称某策略必胜。"
+      ]
+    },
+    {
+      "id": "LH-C-S04",
+      "title": "Paper Conservation Lab",
+      "url": "https://americanart.si.edu/art/conservation/center/paper",
+      "organization": "Smithsonian American Art Museum",
+      "source_type": "museum_conservation_guidance",
+      "checked_date": "2026-10-15",
+      "verification": {
+        "status": "read",
+        "method": "web_open",
+        "scope": "纸质藏品预防性装裱与存放、压敏胶带及劣质衬垫风险；未把专业修复流程转成DIY教程。"
+      },
+      "supported_claims": [
+        "接触材料会影响纸作品长期保存；纸张与照片等材料不能一概处理。"
+      ],
+      "limitations": [
+        "用于预防性存放选择，不用于贵重作品修复、清洗或化学处理。"
+      ]
+    }
+  ],
+  "mechanisms": [
+    {
+      "id": "LH-A-M01",
+      "title": "练习总时长与具体薄弱环节脱节",
+      "node_ids": [
+        "life_music_instruments"
+      ],
+      "source_ids": [
+        "LH-A-S01"
+      ],
+      "decisive_factor": "能否在有限练习时间里修复真正导致失误的连接段，而非增加已经熟练部分的重复次数。",
+      "mechanism": "把录音中的失误位置映射到短练习目标，重新测试上下文中的连接；总练习时间相同仍可有不同有效覆盖。",
+      "applicability": [
+        "业余乐器练习有固定演出目标。",
+        "已提供错误位置记录和可用时间。"
+      ],
+      "boundaries": [
+        "不声称特定慢速练法对所有技巧最优。",
+        "无法从练习日志独立诊断动作伤病。"
+      ],
+      "common_mistakes": [
+        "每天从头弹到尾即等于有效针对性练习。",
+        "把熟练段的成功率当作整曲准备度。"
+      ],
+      "point_targets": [
+        "练习计划覆盖记录中的高频失误段。",
+        "安排对连接前后文的复测。",
+        "保留可比较的练习记录。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "课后只有二十分钟的吉他练习",
+          "constructed": true,
+          "situation": "社团成员独奏都弹得顺，却每次在副歌转桥段时停顿；一周后要合练。",
+          "goal": "安排这一周有限的练习时间。",
+          "constraints": [
+            "每晚最多二十分钟。",
+            "不能增加授课或购置设备。"
+          ],
+          "observable_evidence": [
+            "三次录音的失误小节表。",
+            "整曲其他段落稳定完成的记录。"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "难点是从错误分布找出训练瓶颈，再给出可检验的调整；不能只回答多练或坚持。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M02",
+      "title": "背谱连锁记忆缺少可恢复地标",
+      "node_ids": [
+        "life_music_instruments"
+      ],
+      "source_ids": [
+        "LH-A-S02"
+      ],
+      "decisive_factor": "中断后是否存在经过练习、可独立进入的音乐线索。",
+      "mechanism": "连续背下全曲与中途恢复是不同能力；对结构与表达线索进行定点进入测试，可暴露只靠顺序链条的脆弱性。",
+      "applicability": [
+        "题面提供背谱和中断重启的不同表现。"
+      ],
+      "boundaries": [
+        "研究摘要支撑思路，不保证固定训练收益。",
+        "不把单一记忆模型当作所有人真实心理过程。"
+      ],
+      "common_mistakes": [
+        "全曲连续弹成功一次就足以证明能应对舞台中断。",
+        "只把重启失败解释为紧张。"
+      ],
+      "point_targets": [
+        "识别连续成功不能证明中途可恢复。",
+        "提出从多个已标记位置独立开始的检验。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "钢琴背谱遇到中断",
+          "constructed": true,
+          "situation": "一位学生在家完整弹过十次，但老师随机打断后只能从开头重来。",
+          "goal": "为下周小型分享会调整准备方法。",
+          "constraints": [
+            "不改变曲目。",
+            "每天可练三十分钟。"
+          ],
+          "observable_evidence": [
+            "三处中断点的恢复结果。",
+            "乐谱已有段落和乐句标记。"
+          ],
+          "question_types": [
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要区分表面熟练与恢复能力，设计不等同于再完整弹一遍的证据。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M03",
+      "title": "乐队个体正确与合奏共同参照不一致",
+      "node_ids": [
+        "life_music_rock",
+        "life_music_ensemble"
+      ],
+      "source_ids": [
+        "LH-A-S03"
+      ],
+      "decisive_factor": "成员能否共享段落结构、节奏参照和当下主次角色。",
+      "mechanism": "每人正确演奏自己的版本仍可能在段落边界、动态或留白上冲突；排练需针对共同参照比较分轨与合奏表现。",
+      "applicability": [
+        "提供合奏录音、段落标记或各成员版本差异。"
+      ],
+      "boundaries": [
+        "这是根据合奏课程目标构造的诊断框架，不是排除技术原因的普遍定律。",
+        "允许多种风格，判定依照题面约定的版本。"
+      ],
+      "common_mistakes": [
+        "给所有成员增加独奏练习就自动解决合奏。",
+        "一味提高音量以便听见自己。"
+      ],
+      "point_targets": [
+        "检查成员对段落边界的约定。",
+        "按共同参照复测同一连接段。",
+        "主次安排以题面的表达目标为依据。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "摇滚社团总在尾奏散掉",
+          "constructed": true,
+          "situation": "鼓手与贝斯独练无误，吉他按直播版多弹两小节，主唱按录音室版进入尾奏。",
+          "goal": "制定下一次四十分钟合练的重点。",
+          "constraints": [
+            "四人无法提前单独约练。",
+            "选定一个共同演出版本即可。"
+          ],
+          "observable_evidence": [
+            "各自练习所用版本。",
+            "尾奏出错的合奏时间点。"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "需从多人局部正确中找到协调失败的因果，不能用谁更厉害作裁决。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M04",
+      "title": "摇滚排练的防护层级",
+      "node_ids": [
+        "life_music_rock",
+        "life_music_ensemble"
+      ],
+      "source_ids": [
+        "LH-A-S04"
+      ],
+      "decisive_factor": "是否先评估声源与排练条件中可降低噪声暴露的安排，而非把控制责任全部交给个人耳塞。",
+      "mechanism": "仅增加个人防护而不检查声源与排练条件，会保留组织层面的问题；来源支持先探索降低噪声暴露，再考虑个人听力防护。",
+      "applicability": [
+        "一般排练组织。",
+        "题面不要求诊断听力损伤。"
+      ],
+      "boundaries": [
+        "不推荐具体医疗器材或给出个人安全剂量。",
+        "不能据英国职业指导推定本地法律责任。",
+        "来源没有提供本场景的声级剂量或某种器材的降噪效果，不能自行填入或据此保证安全。"
+      ],
+      "common_mistakes": [
+        "人人发耳塞就可以保持原来的音量和安排。",
+        "把听得清自己和全体安全视为同一目标。"
+      ],
+      "point_targets": [
+        "先评估可降低噪声暴露的组织措施。",
+        "不以发放耳塞代替上述评估。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "排练室只能预约两小时",
+          "constructed": true,
+          "situation": "学生摇滚团准备购买耳塞后仍全程用最高音量合练；房间很小且没有分段安排。",
+          "goal": "提出下次排练可实施的改进。",
+          "constraints": [
+            "不能改造场地。",
+            "不要求诊断任何成员。"
+          ],
+          "observable_evidence": [
+            "音箱与成员的布置图。",
+            "两小时排练内容表。"
+          ],
+          "question_types": [
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "难点是选择控制层级而非器材清单；答案可有多个实施方案。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M05",
+      "title": "宣传画的焦点冲突与任务目标",
+      "node_ids": [
+        "life_visual_drawing"
+      ],
+      "source_ids": [
+        "LH-A-S05"
+      ],
+      "decisive_factor": "视觉突出程度是否服务于观众需要先获取的信息。",
+      "mechanism": "当装饰和关键文字争夺对比度与位置，海报可以很热闹却无法完成先看日期地点的传播任务。",
+      "applicability": [
+        "题面规定信息优先级并给出画面说明或可读图像。"
+      ],
+      "boundaries": [
+        "不设唯一艺术风格。",
+        "无观察数据时不能断言所有观众必定按同一路径阅读。"
+      ],
+      "common_mistakes": [
+        "增加更多强调色就能让所有信息都突出。",
+        "把自己的颜色偏好当成客观失误。"
+      ],
+      "point_targets": [
+        "指出视觉焦点与题面信息优先级的冲突。",
+        "修改建议针对具体对比关系。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "班级小型画展海报",
+          "constructed": true,
+          "situation": "海报中插画占中心且反差最大，日期地点用浅灰小字贴在边角；测试同学记住了画却答不出时间。",
+          "goal": "在保留插画主题的前提下改善传播。",
+          "constraints": [
+            "不能扩大纸张。",
+            "不增加总字数。"
+          ],
+          "observable_evidence": [
+            "三名同学观看五秒后的回忆。",
+            "海报布局描述或用户自制图。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "用任务完成证据评价构图，而不是要求模型背设计术语或裁定美丑。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M06",
+      "title": "藏画展示的累计光照剂量",
+      "node_ids": [
+        "life_visual_preservation"
+      ],
+      "source_ids": [
+        "LH-A-S06"
+      ],
+      "decisive_factor": "比较的是同一材料的累计照度时间，而非某一刻看起来有多暗。",
+      "mechanism": "在材料与光谱可比的题设里，长期低照度也可能累积更多剂量；展示时长与位置要联合决策。",
+      "applicability": [
+        "给出同一物件、可比照明和展示时长。"
+      ],
+      "boundaries": [
+        "剂量仅为比较依据，不预言确切褪色寿命。",
+        "历史艺术品保护应咨询专业人员。",
+        "UV 过滤是来源支持的独立背景事实；当前情境不以未提供的过滤配置设核心考点。"
+      ],
+      "common_mistakes": [
+        "低于一个亮度数值便可以无限期展示。",
+        "UV 过滤后可不控制可见光暴露。"
+      ],
+      "point_targets": [
+        "用照度乘以展示时间比较累计光照剂量。",
+        "不根据这个比较承诺作品的确切褪色寿命。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "水彩原作放客厅还是短期展出",
+          "constructed": true,
+          "situation": "同一幅自绘水彩有两个位置：较暗但全年照明，较亮但每周只展出两小时；题面给出测得照度。",
+          "goal": "选择更符合长期保存目标的展示方案。",
+          "constraints": [
+            "照明光谱按题设视为可比。",
+            "不计算作品寿命。"
+          ],
+          "observable_evidence": [
+            "各位置照度记录。",
+            "每周和全年亮灯时长。"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要把强度与时间合并比较，并说明材料和测量边界。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M07",
+      "title": "文学解读中的局部引文与全文反证",
+      "node_ids": [
+        "life_literature_reading"
+      ],
+      "source_ids": [
+        "LH-A-S07"
+      ],
+      "decisive_factor": "解释能否同时容纳题面给出的关键段落与反例。",
+      "mechanism": "一条醒目引文只能支持局部判断；解释若被同一文本后段否定，需收窄或修改，而不是堆更多相似词句。",
+      "applicability": [
+        "使用自拟文本或有权使用的短片段。",
+        "允许多种有证据的解读。"
+      ],
+      "boundaries": [
+        "不评文学品位。",
+        "不把任一种叙事解释设为出题人的隐秘标准答案。"
+      ],
+      "common_mistakes": [
+        "复述情节等于完成解释。",
+        "只挑支持自己观点的句子。"
+      ],
+      "point_targets": [
+        "明确处理与主张相冲突的文本事实。",
+        "最终解释的范围与证据相符。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "读书会对人物动机有争议",
+          "constructed": true,
+          "situation": "自拟短篇前段人物说不在意比赛，后段却匿名补报名；两位读者分别断言他完全洒脱和完全虚伪。",
+          "goal": "提出能经受全文检验的讨论结论。",
+          "constraints": [
+            "只使用提供的四段自拟文本。",
+            "不借作者生平替代文本证据。"
+          ],
+          "observable_evidence": [
+            "前后行为与话语。",
+            "叙述者明确知道和不知道的信息。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "难点是证据一致性与主张范围，接受多个合理结论，不以审美定成败。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M08",
+      "title": "防抖无法消除主体运动",
+      "node_ids": [
+        "life_photo_shooting"
+      ],
+      "source_ids": [
+        "LH-A-S08"
+      ],
+      "decisive_factor": "模糊来自相机运动还是被摄对象在曝光中移动。",
+      "mechanism": "只补偿相机位移不会让运动的人停下来；背景清晰而人物拖影的差异可帮助定位问题。",
+      "applicability": [
+        "提供静物和运动主体的对照照片或文字观察。"
+      ],
+      "boundaries": [
+        "不能仅凭单张缩略图排除失焦等其他原因。",
+        "不承诺特定器材的防抖档数。",
+        "来源直接说明防抖补偿范围；根据背景与人物的差异定位主要原因属于待用对照证据检验的设计推论。"
+      ],
+      "common_mistakes": [
+        "开防抖后就能无限放慢快门拍运动。",
+        "背景清晰便证明整个画面不存在运动模糊。"
+      ],
+      "point_targets": [
+        "明确防抖所补偿的是相机运动。",
+        "不根据防抖开启状态排除主体运动造成的模糊。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "室内给打球的朋友拍照",
+          "constructed": true,
+          "situation": "同一机位拍椅子很清楚，拍正在挥拍的朋友手臂拖影；相机已开防抖。",
+          "goal": "先定位最值得调整的拍摄条件。",
+          "constraints": [
+            "不更换机身。",
+            "提供原始快门参数和两张对照。"
+          ],
+          "observable_evidence": [
+            "椅子、背景与手臂清晰度差异。",
+            "快门速度记录。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "根据防抖的技术范围分析对照现象，定位尚未被控制的因素；不要求给出来源未支持的统一快门数值。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M09",
+      "title": "合照的景深覆盖与大光圈冲突",
+      "node_ids": [
+        "life_photo_shooting"
+      ],
+      "source_ids": [
+        "LH-A-S09"
+      ],
+      "decisive_factor": "题面要清晰的所有人是否落在足够的景深范围内。",
+      "mechanism": "增大光圈虽然有利于进光与背景虚化，却可能使前后排不能同时清楚；对齐人物距离和调整光圈解决的是同一覆盖约束。",
+      "applicability": [
+        "多人前后排合影。",
+        "题面明确全员面部清晰优先于背景虚化。"
+      ],
+      "boundaries": [
+        "不提供统一光圈数值。",
+        "焦距、距离与输出尺度未知时保留条件。"
+      ],
+      "common_mistakes": [
+        "对焦识别到一张脸就会让所有人清楚。",
+        "最贵的大光圈镜头必然最适合所有合照。"
+      ],
+      "point_targets": [
+        "识别前后排距离差带来的清晰范围需求。",
+        "建议的景深方向与全员清晰目标一致。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "毕业前宿舍合照",
+          "constructed": true,
+          "situation": "单人照背景很好看，改成三排同学后只有第一排清晰；大家希望一张照片人人都能认出来。",
+          "goal": "选择站位与拍摄参数的调整方向。",
+          "constraints": [
+            "不改变房间。",
+            "没有额外灯具。"
+          ],
+          "observable_evidence": [
+            "前后排距离。",
+            "现有光圈与焦点位置。"
+          ],
+          "question_types": [
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要在两个真实目标间确定优先级，不靠背固定 f 值。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M10",
+      "title": "半自动曝光模式掩盖了被改变的变量",
+      "node_ids": [
+        "life_photo_shooting"
+      ],
+      "source_ids": [
+        "LH-A-S08",
+        "LH-A-S09"
+      ],
+      "decisive_factor": "缩小光圈后相机实际自动选择的快门，是否破坏了运动清晰度目标。",
+      "mechanism": "在光线与其他条件约定不变时，Av 模式可能用更长曝光补偿光圈变化；只改变一个旋钮并不代表只有一个成片变量变化。",
+      "applicability": [
+        "同场景可比较参数记录。",
+        "题面说明 ISO 是否锁定。"
+      ],
+      "boundaries": [
+        "若自动 ISO 或闪光介入，应重新分析，不能机械套因果。",
+        "各相机具体自动策略需查手册。"
+      ],
+      "common_mistakes": [
+        "Av 是自动曝光，所以不存在运动模糊取舍。",
+        "把缩小光圈后变糊完全归咎于镜头变差。"
+      ],
+      "point_targets": [
+        "读取两次拍摄实际快门差异。",
+        "指出曝光补偿改变了主体运动记录。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "社团演出照片越收光圈越糊",
+          "constructed": true,
+          "situation": "拍摄者为让多人都清晰把光圈缩小，ISO 锁定，快门自动延长，舞台人物拖影更明显。",
+          "goal": "解释结果并制定一次最小的对照测试。",
+          "constraints": [
+            "舞台灯光暂时稳定。",
+            "不使用闪光。"
+          ],
+          "observable_evidence": [
+            "两张照片的实际光圈、快门和 ISO。",
+            "静止布景与人物清晰度。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求理解自动控制下的联动变量，比单独问光圈定义更有推理空间。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M11",
+      "title": "同一配速不是同一相对强度",
+      "node_ids": [
+        "life_running_routine",
+        "life_sports_cycling"
+      ],
+      "source_ids": [
+        "LH-A-S10"
+      ],
+      "decisive_factor": "活动对参与者的实际相对负担，而不是大家显示相同配速。",
+      "mechanism": "能力不同的人在同速时可能有不同谈话表现；低风险团体活动需以成员体验和能力匹配来调整。",
+      "applicability": [
+        "一般成人休闲活动。",
+        "无病痛或异常症状的诊断请求。",
+        "这里的跨节点适用仅限跑步、骑行等有氧活动的相对强度，不外推为力量训练的强度测量。"
+      ],
+      "boundaries": [
+        "谈话测试是粗略工具。",
+        "不能借此给出疾病排除结论或强制个人训练处方。"
+      ],
+      "common_mistakes": [
+        "照最强成员配速跑就公平。",
+        "慢就一定是低强度。"
+      ],
+      "point_targets": [
+        "区分绝对速度与个人相对强度。",
+        "调整方案处理最吃力成员的参与条件。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "朋友约轻松跑却有人说不出整句话",
+          "constructed": true,
+          "situation": "三人约定轻松聊天跑，手表配速相同，一人一路能说话，另一人每次只说几个字。",
+          "goal": "调整下次聚跑安排，让目标与实际负担一致。",
+          "constraints": [
+            "目的为一起轻松活动。",
+            "不以竞速排名为目标。"
+          ],
+          "observable_evidence": [
+            "各人途中谈话表现。",
+            "相同路线和配速记录。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "冲突来自目标和指标不匹配，需要决定以什么证据重设安排。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M12",
+      "title": "初学跑步补课不能只按总次数合并",
+      "node_ids": [
+        "life_running_beginner"
+      ],
+      "source_ids": [
+        "LH-A-S11"
+      ],
+      "decisive_factor": "改日历后是否仍保留入门计划要求的跑次间隔。",
+      "mechanism": "漏掉的跑次不是可无成本堆到周末的作业；若限定跟随该计划，需要延长时间而不是破坏它的恢复结构。",
+      "applicability": [
+        "题面明确选择 NHS C25K 类型入门计划。"
+      ],
+      "boundaries": [
+        "不推导所有运动都不能连续两天。",
+        "不诊断疼痛或保证不会受伤。"
+      ],
+      "common_mistakes": [
+        "每周总次数够了，连续三天补跑也完全等价。",
+        "必须在九个自然周内完成。"
+      ],
+      "point_targets": [
+        "保留所选计划的跑次间隔。",
+        "允许因现实日程延后进度。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "入门跑者错过两次训练",
+          "constructed": true,
+          "situation": "一位初学者平日被考试打乱，只剩周五到周日，想连续补完三次，赶上软件中的周数。",
+          "goal": "安排接下来一周的日历。",
+          "constraints": [
+            "按已选择的入门计划执行。",
+            "不要求重新开具训练处方。"
+          ],
+          "observable_evidence": [
+            "本周实际完成记录。",
+            "下周可用时段。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "考的是跨日约束而非简单加总次数，结论需解释为什么可以推迟。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M13",
+      "title": "乒乓球双打回合内的击球顺序",
+      "node_ids": [
+        "life_ball_table_tennis"
+      ],
+      "source_ids": [
+        "LH-A-S12"
+      ],
+      "decisive_factor": "该次击球是否由轮到的那名队员完成，而非由谁距离球最近决定。",
+      "mechanism": "常规双打的轮流击球限制会改变合理站位和救球选择；一人连续包办可能救到球却不符合规则。",
+      "applicability": [
+        "题面采用 2026 ITTF 常规双打规则。",
+        "双方均不适用轮椅特殊条款。"
+      ],
+      "boundaries": [
+        "新题需核对规则版本。",
+        "不把休闲自定规则称为正式规则。"
+      ],
+      "common_mistakes": [
+        "一对选手可像网球双打一样自由分配每一拍。"
+      ],
+      "point_targets": [
+        "按给出的起始顺序确定下一击球人。",
+        "不让同一人连续替搭档击球。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "学院双打比赛的救球复盘",
+          "constructed": true,
+          "situation": "A 发球、C 接球、B 回球后，C 又抢在 D 前回球；四人只凭谁离得近来争论。",
+          "goal": "判断回合并据此调整配合练习。",
+          "constraints": [
+            "完整击球次序已提供。",
+            "采用常规双打规则。"
+          ],
+          "observable_evidence": [
+            "按时间排序的击球名单。",
+            "场上站位图。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "应把规则映射到事件序列和站位方案，不能只背一句轮流击球。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M14",
+      "title": "乒乓球发接发顺序纠错与已得分分离",
+      "node_ids": [
+        "life_ball_table_tennis"
+      ],
+      "source_ids": [
+        "LH-A-S12"
+      ],
+      "decisive_factor": "发现顺序错误时恢复正确顺序，并保留已得比分。",
+      "mechanism": "规则把从当前状态纠正和抹除历史得分分开；公平直觉不等于允许重赛所有已打回合。",
+      "applicability": [
+        "已给出最初顺序、当前比分与错误发现时点。"
+      ],
+      "boundaries": [
+        "仅讨论顺序纠错，不处理作弊或故意不服从裁判。",
+        "新题核对条款 2.14。"
+      ],
+      "common_mistakes": [
+        "顺序错误就从头重赛。",
+        "不想重赛便继续错序直到本局结束。"
+      ],
+      "point_targets": [
+        "保留发现错误前的得分。",
+        "从当前比分恢复应有的发接发顺序。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "社团赛记分员发现错序",
+          "constructed": true,
+          "situation": "比赛进行多分后才发现某人发接发轮次不对，有人要求把后面所有分数撤销。",
+          "goal": "拟定裁判现在应执行的处理。",
+          "constraints": [
+            "开局顺序和逐分记录齐全。",
+            "无其他违规争议。"
+          ],
+          "observable_evidence": [
+            "开局确定的顺序。",
+            "当前比分和错误记录。"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要同时追溯应有状态和界定纠错效力，不能用个人公平偏好替代明文规则。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M15",
+      "title": "乒乓球发球可见性独立于抛球高度",
+      "node_ids": [
+        "life_ball_table_tennis"
+      ],
+      "source_ids": [
+        "LH-A-S12"
+      ],
+      "decisive_factor": "从发球开始到击球的球是否向接球者可见。",
+      "mechanism": "满足抛球高度不能补偿遮挡；判定需看接球者视角和遮挡时间，而不是只看发球者正面镜头。",
+      "applicability": [
+        "题面提供足够视角或明确承认视角缺失。"
+      ],
+      "boundaries": [
+        "遮挡事实不明时应补证据，不凭远景断言。",
+        "特殊放宽条款需另行说明。"
+      ],
+      "common_mistakes": [
+        "抛得足够高便必定合法。",
+        "观众能看到球就证明接球者能看到。"
+      ],
+      "point_targets": [
+        "把遮挡作为独立的发球合法性条件。",
+        "证据不足时指出需补的接球者视角。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "球社发球争议只有侧面手机录像",
+          "constructed": true,
+          "situation": "录像能量到球抛得够高，却无法确认身体是否遮住接球者视线。",
+          "goal": "决定目前能判定什么、还需补什么证据。",
+          "constraints": [
+            "不要求猜测真实裁判判罚。",
+            "可以补拍模拟站位。"
+          ],
+          "observable_evidence": [
+            "现有摄像机位置。",
+            "发球人与接球者相对位置。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "核心是多条件规则与证据范围，不能把单一指标通过当整体通过。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M16",
+      "title": "足球越位位置与实际参与分开判断",
+      "node_ids": [
+        "life_ball_football"
+      ],
+      "source_ids": [
+        "LH-A-S13"
+      ],
+      "decisive_factor": "传球时位置满足条件后，是否又发生规则列出的参与比赛行为。",
+      "mechanism": "只看一张越位线截图会漏掉之后是否触球或影响对手；反之没触球也不能自动排除干扰。",
+      "applicability": [
+        "完整动作链明确。",
+        "采用 IFAB 越位规则。"
+      ],
+      "boundaries": [
+        "不代替真实裁判识别模糊视频。",
+        "规则版本和小场简化约定需明确。"
+      ],
+      "common_mistakes": [
+        "站在越位位置就立刻犯规。",
+        "没有碰球就必定不越位。"
+      ],
+      "point_targets": [
+        "区分位置判断与参与比赛判断。",
+        "依据题面事实判断对手是否受干扰。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "看球群只截了一张越位线",
+          "constructed": true,
+          "situation": "进攻者没有触球，但镜头说明其挡住门将看球的视线；另一个片段中同位置球员远离球和防守者。",
+          "goal": "分别解释为什么不能只用位置截图下结论。",
+          "constraints": [
+            "两个片段事实由题面完整给出。",
+            "不猜摄影角度。"
+          ],
+          "observable_evidence": [
+            "队友传球时位置。",
+            "之后的触球或干扰行为。"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "用对照事件分离两个判断层次，需说明改变结论的是哪一行为。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M17",
+      "title": "足球防守者碰球不一定重置越位判断",
+      "node_ids": [
+        "life_ball_football"
+      ],
+      "source_ids": [
+        "LH-A-S13"
+      ],
+      "decisive_factor": "防守者是否有控制机会而主动处理球，还是受限触球或折射；主动救球另有例外。",
+      "mechanism": "接触事实本身不足以决定后续资格，需结合来球、观察和协调身体的机会辨别处理性质。",
+      "applicability": [
+        "题面明确球速、距离、身体准备与控制机会。"
+      ],
+      "boundaries": [
+        "事实不足则不能硬判主动处理。",
+        "采用当前已核对规则，不能省略救球例外。"
+      ],
+      "common_mistakes": [
+        "只要碰到防守者就肯定不越位。",
+        "只要解围失误就不算主动处理。"
+      ],
+      "point_targets": [
+        "不把所有防守触球视为主动处理。",
+        "用控制机会解释题面中的触球性质。",
+        "保留主动救球的例外。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "两段解围失误为何结论不同",
+          "constructed": true,
+          "situation": "一段是近距离大力传球突然擦到防守者，另一段是远处缓慢来球、防守者从容准备却踢偏。",
+          "goal": "比较两段后续进球的越位逻辑。",
+          "constraints": [
+            "其他越位条件相同。",
+            "不涉及球门前救球。"
+          ],
+          "observable_evidence": [
+            "来球时间与距离描述。",
+            "防守者调整动作机会。"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "必须使用因果条件而非碰过球这一表层线索；允许用具体条款核验。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M18",
+      "title": "休闲骑行路线的距离目标与暴露约束",
+      "node_ids": [
+        "life_sports_cycling"
+      ],
+      "source_ids": [
+        "LH-A-S14"
+      ],
+      "decisive_factor": "路线的车流与车速暴露，而不是最短公里数。",
+      "mechanism": "较短路线可能把初学者放进更复杂的交通环境；路线评价应先满足能力和安全约束，再在可行路线里比较时长。",
+      "applicability": [
+        "提供路线车流、道路类型与参与者能力。"
+      ],
+      "boundaries": [
+        "不是任何较长路线都更安全。",
+        "不在未核实的真实道路上给出安全认证。"
+      ],
+      "common_mistakes": [
+        "导航最短路线就是最佳新手路线。",
+        "以熟练者通勤经验代替初学者能力。"
+      ],
+      "point_targets": [
+        "比较路线包含的交通暴露差异。",
+        "把参与者能力纳入可行性判断。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "带刚学会骑车的朋友去公园",
+          "constructed": true,
+          "situation": "导航推荐近路穿越快速车流路段，另一条更远但大部分是已确认开放的独立骑行道。",
+          "goal": "选这次休闲骑行方案。",
+          "constraints": [
+            "不以打卡最快为目标。",
+            "交通信息作为题设已给出。"
+          ],
+          "observable_evidence": [
+            "分路段车速与车流描述。",
+            "朋友过去可稳定控制的骑行环境。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要重新排列可行性与距离的优先级，而非简单说绕远路。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M19",
+      "title": "自行车夜间可见性不是只穿亮色",
+      "node_ids": [
+        "life_sports_cycling"
+      ],
+      "source_ids": [
+        "LH-A-S14"
+      ],
+      "decisive_factor": "在低照明条件下让别人看见与自己看清道路的不同需求。",
+      "mechanism": "亮色、反光、主动前后灯的工作条件不同；白天外观醒目不能证明夜间已经满足可见性。",
+      "applicability": [
+        "低风险骑行前的装备与路线准备。"
+      ],
+      "boundaries": [
+        "具体灯光规格和当地法律须重新查询。",
+        "任何装备都不能使危险路线自动可行。"
+      ],
+      "common_mistakes": [
+        "买了亮色外套就不需要灯。",
+        "能看清路就等于其他交通参与者看得见自己。"
+      ],
+      "point_targets": [
+        "区分照亮道路与让别人看到的目标。",
+        "夜间方案包含主动灯光的检查。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "天黑前来不及骑到家",
+          "constructed": true,
+          "situation": "两人外套很亮，车上只有一个反光片，原计划会在天黑后经过无照明路段。",
+          "goal": "在出发前调整返程方案。",
+          "constraints": [
+            "可以更换时间或交通方式。",
+            "不要求勉强完成骑行。"
+          ],
+          "observable_evidence": [
+            "预计日落与返程时间。",
+            "灯光实际可用清单。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "答案需要把环境变化与设备作用对应，可通过改时间或交通方式满足目标。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M20",
+      "title": "徒步备用方案必须真正可启用",
+      "node_ids": [
+        "life_hiking_day"
+      ],
+      "source_ids": [
+        "LH-A-S15"
+      ],
+      "decisive_factor": "主方案失效时，备用方案是否还依赖同一个失效条件。",
+      "mechanism": "天气、关闭和能力限制可以同时影响多个看似不同的景点；有效备用活动需避开引发放弃主方案的原因。",
+      "applicability": [
+        "普通步道和低风险出游规划。",
+        "来源范围是公园及类似普通自然活动，不作为航空、签证或城市交通备用方案的直接依据。"
+      ],
+      "boundaries": [
+        "不建议冒险路线作为备用。",
+        "天气、许可、开放状态与交通须当时再查。"
+      ],
+      "common_mistakes": [
+        "多列两个景点就等于有备用方案。",
+        "因为已经订房便必须完成原路线。"
+      ],
+      "point_targets": [
+        "备用方案避开主方案的已知失效原因。",
+        "明确启用备用方案的触发条件。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "朋友周末徒步怕下雨",
+          "constructed": true,
+          "situation": "三条候选路线都在同一片暴露山脊，只是长度不同；朋友把其中一条标成雨天备用。",
+          "goal": "重做这次出游的主备安排。",
+          "constraints": [
+            "允许转成室内活动或延期。",
+            "不在雷暴中完成路线。"
+          ],
+          "observable_evidence": [
+            "各路线共同地形暴露。",
+            "当地官方预报与可核查开放信息。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "识别看似多样但相关失效的方案，需要找真正不同的备选而非扩充清单。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M21",
+      "title": "徒步行程变更使原有联系计划失效",
+      "node_ids": [
+        "life_hiking_day",
+        "life_hiking_group"
+      ],
+      "source_ids": [
+        "LH-A-S15"
+      ],
+      "decisive_factor": "不随行的联系人掌握的是否仍是当前实际行程。",
+      "mechanism": "备用路线启用后若只有队内知道，外部联系人仍会沿旧计划判断和协助；备选的可行性还包含信息同步。",
+      "applicability": [
+        "一般低风险出行。",
+        "有可信联系人安排。",
+        "行程联系机制限定普通户外活动，不据此扩展为所有旅行手续的规则。"
+      ],
+      "boundaries": [
+        "不替代应急服务或导航技能。",
+        "失联环境中的具体求救须用当地官方流程。"
+      ],
+      "common_mistakes": [
+        "发过一次路线就永久完成了报备。",
+        "手机在身上就不需要备用导航。"
+      ],
+      "point_targets": [
+        "变更后同步可信联系人。",
+        "提供与当前路线一致的预计返回安排。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "到公园后临时换步道",
+          "constructed": true,
+          "situation": "同学发现原步道关闭，改去另一入口；家中联系人只保存了旧路线和原返程时间。",
+          "goal": "指出出发前还缺的关键步骤。",
+          "constraints": [
+            "允许在有信号的游客中心先处理。",
+            "不要求使用具体社交软件。"
+          ],
+          "observable_evidence": [
+            "旧计划内容。",
+            "新路线、入口与预计用时。"
+          ],
+          "question_types": [
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "关键不在装备数量而是信息新旧一致性，考点可独立核验。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M22",
+      "title": "户外活动暂停阈值必须包含撤离时间和权限",
+      "node_ids": [
+        "life_events_outdoor"
+      ],
+      "source_ids": [
+        "LH-A-S16"
+      ],
+      "decisive_factor": "在风险到达前全员进入可靠避险场所所需的时间，以及谁有权触发暂停。",
+      "mechanism": "只等活动现场开始下雨才作决定可能来不及；预设监测、授权与撤离安排可减少现场完成活动的压力。",
+      "applicability": [
+        "取消、延期、移入室内等低风险组织决策。"
+      ],
+      "boundaries": [
+        "不设计雷暴中继续活动的方案。",
+        "实际预警和场所必须当时核查。"
+      ],
+      "common_mistakes": [
+        "看到雨才需要行动。",
+        "有普通雨棚便可继续室外活动。",
+        "所有人都负责监测因此不需指定人。"
+      ],
+      "point_targets": [
+        "停止条件考虑全员到达避险点所需时间。",
+        "天气监测者拥有明确暂停权限。",
+        "不把普通遮雨棚当作雷暴安全避险点。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "班级露天音乐分享会",
+          "constructed": true,
+          "situation": "活动点到可容纳全员的室内场所需步行十五分钟，主持人又负责表演又被默认负责看天气。",
+          "goal": "在活动前制定简洁的天气变更安排。",
+          "constraints": [
+            "可提前转室内或延期。",
+            "不以必须演完为硬目标。"
+          ],
+          "observable_evidence": [
+            "场所容量与步行时间。",
+            "官方预报与人员分工。"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要从时间和职责上消除失效路径，不能仅写注意天气。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M23",
+      "title": "排队整齐不能证明出入口仍可用",
+      "node_ids": [
+        "life_events_small"
+      ],
+      "source_ids": [
+        "LH-A-S17"
+      ],
+      "decisive_factor": "队列是否切断正常退出、应急通道或与来往人流冲突。",
+      "mechanism": "队列可在局部有序但在整体空间形成堵点；安排需看退出路径和相交动线，而非只看排得直不直。",
+      "applicability": [
+        "小型活动有清楚场地图。"
+      ],
+      "boundaries": [
+        "不据此给大型场馆认证安全容量。",
+        "现场容量和应急要求需合适人员核验。"
+      ],
+      "common_mistakes": [
+        "蛇形围栏能容下所有人就算安排完成。",
+        "让工作人员劝大家不要挤即可替代动线调整。"
+      ],
+      "point_targets": [
+        "识别队列对出口或其他通道的阻断。",
+        "提出可实际退出队列的路径。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "校园兴趣市集入口排队",
+          "constructed": true,
+          "situation": "主办方用隔离带排出整齐长队，但末端挡住展厅唯一出口，退出队列只能逆行。",
+          "goal": "调整入场方案并说明最关键原因。",
+          "constraints": [
+            "不能扩大大厅。",
+            "提供平面图和入口处理速度。"
+          ],
+          "observable_evidence": [
+            "队列与出口的相交位置。",
+            "中途退出需要经过的路径。"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "区分局部秩序与整体可通行性，可用具体空间路径判定。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M24",
+      "title": "活动结束时间相同造成离场峰值",
+      "node_ids": [
+        "life_events_small"
+      ],
+      "source_ids": [
+        "LH-A-S17"
+      ],
+      "decisive_factor": "短时间到达出口或交通点的人数，而不是全天总人数。",
+      "mechanism": "相同总人数在不同时间分布下对瓶颈产生不同压力；错峰结束与吸引停留可改变峰值而不减少总参与。",
+      "applicability": [
+        "提供简化的已知离场人数和通道处理能力。",
+        "此卡讨论活动人流分布；接驳班次是构造题设，不是 HSE 对具体交通线路的验证。"
+      ],
+      "boundaries": [
+        "计算是题设模型，不视为真实场馆容量评估。",
+        "实际大型活动应由专业人员确认。"
+      ],
+      "common_mistakes": [
+        "全天平均人数低于每小时通行量就不会堵。",
+        "只增加活动前的检票人员就能解决结束后的瓶颈。"
+      ],
+      "point_targets": [
+        "按短时峰值而非全天均值比较。",
+        "方案改变出口前的到达时间分布。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "音乐社和舞蹈社共用出入口",
+          "constructed": true,
+          "situation": "两场活动原本同时结束，绝大多数观众要赶同一班接驳车，白天其余时段很空。",
+          "goal": "在不减少观众的条件下改善散场。",
+          "constraints": [
+            "可以调整节目结束时间。",
+            "不擅自扩大出口容量。"
+          ],
+          "observable_evidence": [
+            "两个节目散场人数。",
+            "接驳班次与出口服务能力的题设。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要把时序分布映射到瓶颈，适合少量计算加组织设计。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M25",
+      "title": "野餐冷链必须覆盖运输与取用全过程",
+      "node_ids": [
+        "life_gather_meal"
+      ],
+      "source_ids": [
+        "LH-A-S18"
+      ],
+      "decisive_factor": "易腐食品在实际时间线上是否一直处于合适温度控制中。",
+      "mechanism": "出门前冷藏并不能抵消途中和摆桌后的失控；饮料频繁开箱也会改变食物箱的温控条件。",
+      "applicability": [
+        "普通朋友聚餐的低风险准备。",
+        "时间温度数值须在出题时查现行指导。"
+      ],
+      "boundaries": [
+        "不根据气味猜测安全。",
+        "不将旧材料中的数值当作跨地区永远不变的规则。"
+      ],
+      "common_mistakes": [
+        "带了冰袋就默认全程合格。",
+        "只计算坐下吃饭后的时间。"
+      ],
+      "point_targets": [
+        "时间线包含运输和等待。",
+        "温控判断依赖实际温度而非容器名称。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "公园野餐还要先逛展",
+          "constructed": true,
+          "situation": "朋友准备鸡肉沙拉，上午从冰箱拿出后先搭车、排队看展，再下午摆野餐；保冷箱里还放了人人频繁拿取的饮料。",
+          "goal": "重新安排菜单或携带方式。",
+          "constraints": [
+            "允许换成无需冷藏的食品。",
+            "不以尝一口判断安全。"
+          ],
+          "observable_evidence": [
+            "从取出到食用的时间表。",
+            "冰箱与保冷箱的测温记录或缺失。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要重建完整过程并识别缺失证据，不能以设备清单代替结果。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M26",
+      "title": "聚餐生熟隔离不能用冷藏替代",
+      "node_ids": [
+        "life_gather_meal"
+      ],
+      "source_ids": [
+        "LH-A-S18"
+      ],
+      "decisive_factor": "已经烹熟或即食食物是否仍接触了生食污染途径。",
+      "mechanism": "低温控制和交叉污染控制解决不同问题；熟肉重新放上盛过生肉的盘子会重新引入一条风险路径。",
+      "applicability": [
+        "一般食材收纳与器具安排。"
+      ],
+      "boundaries": [
+        "不给具体患病概率或治疗建议。",
+        "缺少处理记录时不声称食物已经确定有害。"
+      ],
+      "common_mistakes": [
+        "全程放在冷箱中就可共用生熟器具。",
+        "烧熟一次便意味着后续不再有风险。"
+      ],
+      "point_targets": [
+        "识别题面中生熟接触的具体路径。",
+        "切断该路径而不只重复降温要求。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "朋友烤肉只带一个大盘",
+          "constructed": true,
+          "situation": "所有食材温控都做了记录，但烤熟的肉又被夹回之前盛生肉的大盘。",
+          "goal": "修改有限器具条件下的操作分工。",
+          "constraints": [
+            "可以增加干净小容器或清洗步骤。",
+            "不建议靠口尝判断。"
+          ],
+          "observable_evidence": [
+            "器具使用顺序。",
+            "生肉到熟肉的流转图。"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "从已经做对的一项控制中识别另一独立条件，避免把多种风险混为一谈。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M27",
+      "title": "旅行分票节省必须先满足票种与停站约束",
+      "node_ids": [
+        "life_travel_itinerary"
+      ],
+      "source_ids": [
+        "LH-A-S19"
+      ],
+      "decisive_factor": "具体票种和所乘列车是否使这组分段票有效。",
+      "mechanism": "起终点连续不代表任意列车都能使用；普通分票组合还受停站与各票限制影响，且无需下车不等于无需停站。",
+      "applicability": [
+        "仅限英国 National Rail 指定版本与票种的分段车票；不能套用中国铁路、航空或其他运输系统。",
+        "明确在英国 National Rail 规则情境。",
+        "给出普通票或例外票种。"
+      ],
+      "boundaries": [
+        "票种例外必须核查，不能一概强制停站。",
+        "实际价格、车次和条款需出题时重查。",
+        "没有英国分票专属叶节点，故归入行程叶节点；检索命中不代表该地域规则适用于其他旅行题。"
+      ],
+      "common_mistakes": [
+        "票面路线连得上就一定能乘任何经过列车。",
+        "不换乘便不用检查分票站是否停站。"
+      ],
+      "point_targets": [
+        "依照所乘列车停站表核验题面普通票的分票站。",
+        "不把无需下车理解为无需停站。",
+        "是否更换座位依照分段座位预订核验。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "英国旅行看到更便宜的分票",
+          "constructed": true,
+          "situation": "朋友找到 A—B 与 B—C 两张普通车票，计划乘从 A 到 C 但不停 B 的快车；另一个方案多花少量费用但全程有效。",
+          "goal": "核对预算方案，而不让价格掩盖有效性。",
+          "constraints": [
+            "明确两张都不是季票或区域票。",
+            "所有价格为构造数据。"
+          ],
+          "observable_evidence": [
+            "具体停站表。",
+            "每段票的车次和时间限制。"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求在便宜方案里找先决条件，并处理看似相似的概念和例外。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M28",
+      "title": "阳台园艺的均匀湿润与积水不是一回事",
+      "node_ids": [
+        "life_garden_container"
+      ],
+      "source_ids": [
+        "LH-A-S20"
+      ],
+      "decisive_factor": "根部实际水分状态和排水条件，而非固定浇水日历。",
+      "mechanism": "天气变热可增加失水，但托盘长期蓄水也可能形成另一问题；不核验状态就同时加水加肥会掩盖原因。",
+      "applicability": [
+        "普通容器植物。",
+        "有浇水、排水和环境记录。"
+      ],
+      "boundaries": [
+        "不凭单一黄叶症状诊断病因。",
+        "不将一套时程套在所有植物或气候上。"
+      ],
+      "common_mistakes": [
+        "看见黄叶就必定缺水。",
+        "每天浇同量是唯一科学方法。"
+      ],
+      "point_targets": [
+        "浇水判断应核实介质实际含水状态。",
+        "托盘积水应按所用容器结构判断，而非一概当作储水功能。",
+        "调整理由对应实际环境变化。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "出差前给阳台盆栽加满托盘",
+          "constructed": true,
+          "situation": "两盆同种植物一盆干得快，另一盆托盘长期有水，主人打算统一每日双倍浇水。",
+          "goal": "为短期离家制定有依据的照看安排。",
+          "constraints": [
+            "不使用农药。",
+            "可由朋友少量代查。"
+          ],
+          "observable_evidence": [
+            "盆材、大小和托盘积水记录。",
+            "天气与土壤状态观察。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "必须区分同一表面症状下的相反状态，答案保留未排除原因而非硬诊断。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M29",
+      "title": "编织成品尺寸取决于洗护后的横纵密度",
+      "node_ids": [
+        "life_crafts_fiber"
+      ],
+      "source_ids": [
+        "LH-A-S21"
+      ],
+      "decisive_factor": "样片是否与成品的针法和最终洗护状态一致。",
+      "mechanism": "照抄针数不能保证照抄尺寸；横向与纵向密度不同，洗护后变化也可能只在一个方向显著。",
+      "applicability": [
+        "有样片的原始与洗后测量。",
+        "使用同一针法和材料进行比较。",
+        "仅限编织和钩织等纤维手工，不能把针目密度公式套到纸艺、木工等其他工艺。"
+      ],
+      "boundaries": [
+        "不承诺小样能准确预测复杂结构全部变形。",
+        "需要尊重材料洗护说明。"
+      ],
+      "common_mistakes": [
+        "只要用同一号针就会得到同一尺寸。",
+        "横向密度匹配就证明衣长也匹配。"
+      ],
+      "point_targets": [
+        "采用与成品相同洗护后的密度。",
+        "以横向密度核对成品宽度。",
+        "以纵向密度核对成品长度。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "第一次织毛衣不想拆线",
+          "constructed": true,
+          "situation": "样片未洗时接近教程，洗后宽度变化小、长度变化明显；新手准备按原行数直接织。",
+          "goal": "决定开工前还应如何验证和调整。",
+          "constraints": [
+            "不改变所用线材。",
+            "有明确目标尺寸。"
+          ],
+          "observable_evidence": [
+            "同一针数行数的洗前洗后尺寸。",
+            "将来实际洗护方式。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "结合状态一致性和二维缩放，避免把手工题变成单个术语定义。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-A-M30",
+      "title": "活动计划中的有氧与肌肉强化是两条目标轴",
+      "node_ids": [
+        "life_sports_strength"
+      ],
+      "source_ids": [
+        "LH-A-S22"
+      ],
+      "decisive_factor": "所选活动是否覆盖约定的不同类型目标，而不只是累积一个总时长。",
+      "mechanism": "达到有氧活动的时间目标并不能自动证明完成肌肉强化目标；反过来训练次数也不能直接替代有氧分钟数。",
+      "applicability": [
+        "一般成人低风险生活安排。",
+        "题面目标按核对过的官方人群建议明确写出。",
+        "采用题面明确约定的一般成人有氧与肌肉强化双目标；不把人群建议宣称为某位参与者必须完成的个体处方。"
+      ],
+      "boundaries": [
+        "不提供个体负重、动作或康复处方。",
+        "有疾病、伤痛等限制时应改为信息整理和就医沟通问题。"
+      ],
+      "common_mistakes": [
+        "运动累计时间够长就代表所有活动目标都达成。",
+        "一次性把所有活动挤在一起总比拆分更有效。"
+      ],
+      "point_targets": [
+        "核验有氧活动目标是否被覆盖。",
+        "单独核验肌肉强化目标是否被覆盖。",
+        "不给未提供的活动类型自动计入目标。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "工作日只有零碎时间的人想更规律活动",
+          "constructed": true,
+          "situation": "一位健康成人每周有多次快走但没有肌肉强化安排，朋友说总时长够了就不需再考虑其他类型。",
+          "goal": "在现有日程内比较两套低风险活动安排。",
+          "constraints": [
+            "不制定私人训练剂量。",
+            "允许拆分活动时间。"
+          ],
+          "observable_evidence": [
+            "活动类型和一周日历。",
+            "题面明确的两类人群级规划目标。"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求将同名运动时间拆回不同目标覆盖，方案可多样，不以一种生活方式为唯一正确。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M01",
+      "title": "采购量取决于真实用餐日历",
+      "node_ids": [
+        "life_cooking_workflow"
+      ],
+      "source_ids": [
+        "LH-B-S01"
+      ],
+      "decisive_factor": "保质期内真正能消费的餐次，而不是一周有七天。",
+      "mechanism": "库存和已确定的外食会压缩可消费量；按菜单机械乘七可能重复采购。",
+      "applicability": [
+        "给出家庭库存、菜单耗量和在家用餐日历。"
+      ],
+      "boundaries": [
+        "不假设临时聚餐或未承诺的他人帮忙消耗。"
+      ],
+      "common_mistakes": [
+        "按包装推荐份数推算需求，漏掉外食。"
+      ],
+      "point_targets": [
+        "计算实际在家用餐的次数。",
+        "识别已经覆盖需求的库存。",
+        "指出采购超过保质期内消耗的品类。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "每周备菜遇到两晚外食",
+          "constructed": true,
+          "situation": "一人准备周一至周五晚餐，已有两份冷冻饭；周二、周四确定外食，周三需十分钟内吃完。",
+          "goal": "选出最小可行采购与用餐安排。",
+          "constraints": [
+            "新鲜蔬菜周三前用完",
+            "每份菜用量给定",
+            "冷冻饭当天可加热"
+          ],
+          "observable_evidence": [
+            "库存清单",
+            "日历",
+            "包装标注"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求联立餐次、库存和时限；不能仅输出通用健康菜单。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M02",
+      "title": "大包装便宜取决于可用量",
+      "node_ids": [
+        "life_cooking_workflow",
+        "life_plan_budget"
+      ],
+      "source_ids": [
+        "LH-B-S01"
+      ],
+      "decisive_factor": "实际消费的单位成本，而非标价每克成本。",
+      "mechanism": "不能及时用完且无法保存的部分会使优惠落空。",
+      "applicability": [
+        "给出两种包装价格、需求及保存能力。"
+      ],
+      "boundaries": [
+        "消费偏好和临时需求须明示，不能凭空增加。"
+      ],
+      "common_mistakes": [
+        "看到大包装单价低就判定省钱。"
+      ],
+      "point_targets": [
+        "计算可实际使用的份数。",
+        "按实际使用份数计算成本。",
+        "将可冷冻保存作为有条件的可行项。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "合租酸奶团购",
+          "constructed": true,
+          "situation": "小包装六杯24元，大包装十六杯48元；两名室友离开前总共最多喝十杯，冰箱不允许存放超过本周。",
+          "goal": "判断该买哪种组合。",
+          "constraints": [
+            "不能送人",
+            "两人需求上限确定",
+            "包装均在本周期内安全食用"
+          ],
+          "observable_evidence": [
+            "价格",
+            "需求记录",
+            "存放约定"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "以离散包装和需求上限形成可判定比较，不把节省金额等同营养建议。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M03",
+      "title": "冰箱冷不冷需要测量",
+      "node_ids": [
+        "life_cooking_storage"
+      ],
+      "source_ids": [
+        "LH-B-S02"
+      ],
+      "decisive_factor": "实际温度记录与食品标签，而非冰箱档位或食物气味。",
+      "mechanism": "档位和气味不能代替储存温度证据。",
+      "applicability": [
+        "家用需冷藏食品，给出温度测量和标签。"
+      ],
+      "boundaries": [
+        "不根据不完整温度史判定食物可食用；必要时明确证据不足。"
+      ],
+      "common_mistakes": [
+        "摸起来凉或闻着正常就认为保存可靠。"
+      ],
+      "point_targets": [
+        "指出档位不能证明实际储存温度。",
+        "把气味正常与安全结论区分。",
+        "提出用温度记录验证储存条件。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "租房冰箱档位争论",
+          "constructed": true,
+          "situation": "同一冰箱上层温度计多次显示7°C，下层3°C，室友认为最大制冷档一定够冷。",
+          "goal": "判断先调整采购量还是先验证并改善存放条件。",
+          "constraints": [
+            "仅讨论普通冷藏食品",
+            "题面附标签",
+            "不要求判断某一份食物能否吃"
+          ],
+          "observable_evidence": [
+            "上下层温度记录",
+            "摆放图",
+            "标签"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "区分代理信号与直接证据，并把安全约束放在省事偏好之前。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M04",
+      "title": "冷藏不会清零此前的室温暴露",
+      "node_ids": [
+        "life_cooking_storage",
+        "life_daily_errands"
+      ],
+      "source_ids": [
+        "LH-B-S02"
+      ],
+      "decisive_factor": "需冷藏物品在无温控环境中的经历，而非最后放进冰箱的时刻。",
+      "mechanism": "家用食品的及时冷藏约束不能用后来的低温补写成一直合规。",
+      "applicability": [
+        "已知需冷藏食物与连续室温暴露时间，普通环境。"
+      ],
+      "boundaries": [
+        "不得把复杂重复冷热循环概括成精确风险概率。"
+      ],
+      "common_mistakes": [
+        "以重新冷藏为新的零点。"
+      ],
+      "point_targets": [
+        "保留此前无温控的暴露记录。",
+        "指出后续冷藏不能抹去既有不当保存。",
+        "按给定时温约束安排采购顺序。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "周末三处办事顺序",
+          "constructed": true,
+          "situation": "超市到家二十分钟，办证排队九十分钟，取书三十分钟；冷藏品包装要求及时冷藏，途中没有保温设备。",
+          "goal": "安排可行顺序。",
+          "constraints": [
+            "先办证或先取书均可",
+            "超市营业时间给定",
+            "不能凭空引入冰袋"
+          ],
+          "observable_evidence": [
+            "各段耗时",
+            "营业时间",
+            "商品标签"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要把普通办事顺序与保存约束联立；不以运气或气味兜底。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M05",
+      "title": "冷冻储存不能挽救先前的不当保存",
+      "node_ids": [
+        "life_cooking_storage"
+      ],
+      "source_ids": [
+        "LH-B-S02"
+      ],
+      "decisive_factor": "进入冷冻前是否满足处理条件。",
+      "mechanism": "冷冻抑制生长并不等于杀灭多数细菌；其作用依赖之前的处理。",
+      "applicability": [
+        "给出完整处理流程，用于比较流程而非诊断病因。"
+      ],
+      "boundaries": [
+        "不推导杀菌率或食用风险，不涉及自制罐头等高风险保存。"
+      ],
+      "common_mistakes": [
+        "把冷冻当作通用灭菌。"
+      ],
+      "point_targets": [
+        "指出冷冻不是通用杀菌步骤。",
+        "把进入冷冻前的合规处理列为前提。",
+        "区分质量下降与安全判断。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "备餐流程复盘",
+          "constructed": true,
+          "situation": "两份新做餐食，一份按标签及时分装冷冻，另一份在台面放置一夜后冷冻；有人称最终都是冻硬的，流程等价。",
+          "goal": "说明两条保存流程为何不能等价。",
+          "constraints": [
+            "仅评估保存流程",
+            "不要求品尝或试吃",
+            "不提出补救配方"
+          ],
+          "observable_evidence": [
+            "操作时间线",
+            "冷冻温度",
+            "包装说明"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "核心在前置条件不可逆，不堆叠烹饪百科知识。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M06",
+      "title": "整件衣物的标签决定洗护边界",
+      "node_ids": [
+        "life_clean_laundry"
+      ],
+      "source_ids": [
+        "LH-B-S03"
+      ],
+      "decisive_factor": "整件成衣的标签，特别是里衬、饰件与烘干限制。",
+      "mechanism": "主面料耐受某种处理，不代表所有部件都能承受。",
+      "applicability": [
+        "提供清晰、完整的衣物洗护标签。"
+      ],
+      "boundaries": [
+        "不推断未知材质，不指导昂贵衣物的试错处理。"
+      ],
+      "common_mistakes": [
+        "只看纯棉或涤纶字样决定整件处理。"
+      ],
+      "point_targets": [
+        "依据整件标签选择处理方式。",
+        "识别饰件限制不能被主面料信息覆盖。",
+        "将烘干限制与洗涤限制分开判断。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "公共洗衣房最后一小时",
+          "constructed": true,
+          "situation": "三件衣服主面料相同，但一件有禁烘标签，一件只可平铺干燥；洗衣房只剩一小时。",
+          "goal": "给出可执行的处理分组。",
+          "constraints": [
+            "所有标签直接附题",
+            "允许带回晾干",
+            "不能新增未标明洗护兼容性"
+          ],
+          "observable_evidence": [
+            "三件衣物标签",
+            "设备程序"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "标签冲突决定分组；不能只给统一低温洗的笼统建议。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M07",
+      "title": "分洗要求是跨衣物约束",
+      "node_ids": [
+        "life_clean_laundry"
+      ],
+      "source_ids": [
+        "LH-B-S03"
+      ],
+      "decisive_factor": "某件衣物可能影响同批其他衣物，而非只损伤自身。",
+      "mechanism": "分洗警示使共同洗涤不满足条件，即使每件单独都能机洗。",
+      "applicability": [
+        "题面给出分洗或同色洗警示以及批次成本。"
+      ],
+      "boundaries": [
+        "不声称洗衣袋能隔离染料，不虚构标签。"
+      ],
+      "common_mistakes": [
+        "把每件可机洗错误合成为可一起洗。"
+      ],
+      "point_targets": [
+        "指出分别可机洗不等于同批兼容。",
+        "按明确分洗警示划分批次。",
+        "计算由分批产生的时间或费用。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "赶上自助洗衣最后班次",
+          "constructed": true,
+          "situation": "白衬衣与新深色外套都可冷水机洗，后者标注单独洗；只剩一台机器。",
+          "goal": "在明天要穿白衬衣的目标下安排批次。",
+          "constraints": [
+            "不能假设不掉色",
+            "程序时长给定",
+            "明日只有白衬衣必需"
+          ],
+          "observable_evidence": [
+            "标签",
+            "时段",
+            "衣物需求"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "考察个体可行与组合可行的差别，排序由明确需求决定。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M08",
+      "title": "清洁在消毒之前",
+      "node_ids": [
+        "life_clean_home"
+      ],
+      "source_ids": [
+        "LH-B-S04"
+      ],
+      "decisive_factor": "污物是否已去除。",
+      "mechanism": "表面污物会影响化学品接触目标，单纯增加消毒剂不能代替清洁。",
+      "applicability": [
+        "普通家庭表面且产品标签适用。"
+      ],
+      "boundaries": [
+        "仅按成品标签操作，不给自配比例或混合方案。"
+      ],
+      "common_mistakes": [
+        "把消毒剂浓度或气味当作清洁程度。"
+      ],
+      "point_targets": [
+        "识别可见污物需先清除。",
+        "按先清洁后必要时消毒的顺序设计步骤。",
+        "拒绝混用清洁剂作为补救。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "厨房台面清洁分工",
+          "constructed": true,
+          "situation": "台面有油污，室友计划直接擦一次消毒湿巾，另一人建议先用适用洗涤剂清洁。",
+          "goal": "比较两种流程。",
+          "constraints": [
+            "已知台面材料允许两种成品",
+            "不涉及病人环境",
+            "标签附题"
+          ],
+          "observable_evidence": [
+            "污物描述",
+            "产品说明"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "关键是步骤依赖；不要求背诵病原体或医疗知识。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M09",
+      "title": "消毒看湿接触时间，不看擦了几遍",
+      "node_ids": [
+        "life_clean_home"
+      ],
+      "source_ids": [
+        "LH-B-S04"
+      ],
+      "decisive_factor": "表面按标签保持湿润的持续时间。",
+      "mechanism": "擦拭次数不等于有效接触时间；过早擦干破坏给定使用条件。",
+      "applicability": [
+        "成品明确标注接触时间，普通硬表面。"
+      ],
+      "boundaries": [
+        "不得自行延长成分浓度或混合产品，标签和材料兼容性优先。"
+      ],
+      "common_mistakes": [
+        "反复快擦替代一次足够的湿润时间。"
+      ],
+      "point_targets": [
+        "使用标签规定的接触时间。",
+        "指出提前擦干不满足条件。",
+        "将等待时间计入流程安排。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "社团借用桌面清洁",
+          "constructed": true,
+          "situation": "已完成清洁，成品说明要求湿润五分钟；甲一分钟内擦三遍后擦干，乙保持湿润到五分钟。",
+          "goal": "按说明判断哪条流程成立。",
+          "constraints": [
+            "题面给出五分钟是该产品要求",
+            "不泛化所有产品",
+            "确保场地通风"
+          ],
+          "observable_evidence": [
+            "标签",
+            "操作记录"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "可判定证据是持续时间，不是清洁努力的表面强度。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M10",
+      "title": "常规清洁与额外消毒的适用范围",
+      "node_ids": [
+        "life_clean_home"
+      ],
+      "source_ids": [
+        "LH-B-S04"
+      ],
+      "decisive_factor": "当前场景是否有额外消毒需求。",
+      "mechanism": "一般家庭日常清洁与需要额外消毒的场景不同，越强越频繁并非默认最优。",
+      "applicability": [
+        "普通健康家庭、无已知特殊污染，采用官方范围说明。"
+      ],
+      "boundaries": [
+        "不排除具体食品接触面、召回物品或特殊人群所需额外处理。"
+      ],
+      "common_mistakes": [
+        "把所有日常琐事升级成高强度消毒。"
+      ],
+      "point_targets": [
+        "根据题面识别是否属于普通常规清洁。",
+        "将产品适用表面作为约束。",
+        "不以消毒剂气味强弱评价效果。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "新合租屋的周清洁计划",
+          "constructed": true,
+          "situation": "两位室友都健康，无已知污染；一人要求每天对所有织物和电子设备使用同一种强消毒剂。",
+          "goal": "给出与实际场景相称的清洁计划。",
+          "constraints": [
+            "设备说明禁止液体直喷",
+            "正常维护为目标",
+            "不讨论诊疗"
+          ],
+          "observable_evidence": [
+            "房间用途",
+            "产品说明",
+            "设备说明"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求识别适用边界和材料限制，而非罗列越多措施越好。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M11",
+      "title": "相册好看不等于适合保存原件",
+      "node_ids": [
+        "life_storage_archives"
+      ],
+      "source_ids": [
+        "LH-B-S05"
+      ],
+      "decisive_factor": "接触原件的材料稳定性与可移除性。",
+      "mechanism": "未知胶、PVC等材料可带来长期损伤；装裱方式应服务保存目标。",
+      "applicability": [
+        "普通家庭纸张照片，原件完整，无修复需求。"
+      ],
+      "boundaries": [
+        "不以扫描件取代对珍贵原件的专业保存建议。"
+      ],
+      "common_mistakes": [
+        "只按相册外观和容量选购。"
+      ],
+      "point_targets": [
+        "识别原件不宜接触未知黏胶。",
+        "选择题面已确认的稳定材料。",
+        "区分可翻看便利与长期保存目标。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "毕业纪念册重装",
+          "constructed": true,
+          "situation": "家里找到唯一一张老照片，备选材料为带自黏胶相册与已标明稳定材质的照片角袋。",
+          "goal": "为原件和日常翻看各选方案。",
+          "constraints": [
+            "不修复旧损伤",
+            "可另制普通复制件",
+            "材料说明完整"
+          ],
+          "observable_evidence": [
+            "材料标签",
+            "保存目标"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "由不可替代性与材料证据决定，不把最贵或最好看当答案。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M12",
+      "title": "收纳位置不能只看空余体积",
+      "node_ids": [
+        "life_storage_archives",
+        "life_changes_moving"
+      ],
+      "source_ids": [
+        "LH-B-S05"
+      ],
+      "decisive_factor": "候选位置的漏水、温湿和搬动风险。",
+      "mechanism": "空间能装下物品不代表能长期保持纸张照片状态。",
+      "applicability": [
+        "存放普通家庭纸张照片，候选环境有实测记录。"
+      ],
+      "boundaries": [
+        "不外推所有物品都需要同样温湿度，也不进行霉变处理。"
+      ],
+      "common_mistakes": [
+        "为了整齐把原件放到潮湿地下角落。"
+      ],
+      "point_targets": [
+        "排除题面已知漏水或潮湿位置。",
+        "避免为适配盒子折弯原件。",
+        "以保存环境作为容量之外的条件。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "搬家后三个空柜",
+          "constructed": true,
+          "situation": "卧室柜较小但干燥，洗衣机旁柜很大但有漏水记录，阁楼夏季温度很高。",
+          "goal": "为家庭纸质相册安排存放。",
+          "constraints": [
+            "给出相册尺寸",
+            "只选已知环境",
+            "可拆分合适容器"
+          ],
+          "observable_evidence": [
+            "温湿记录",
+            "漏水记录",
+            "尺寸"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "让可行性由环境和尺寸共同决定，避免只有整理口诀。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M13",
+      "title": "重要照片副本要脱离同一故障范围",
+      "node_ids": [
+        "life_digital_backup"
+      ],
+      "source_ids": [
+        "LH-B-S06"
+      ],
+      "decisive_factor": "副本是否可在原设备或地点失效后独立读取。",
+      "mechanism": "原指南要求副本分开存放并检查可读；结合题面给定的设备故障范围，可判断同盘目录不能覆盖整盘损坏。",
+      "applicability": [
+        "个人照片、给出设备和同步删除行为。"
+      ],
+      "boundaries": [
+        "不假定任何云服务默认保留历史，不承诺永久安全。",
+        "具体同步删除、版本保留与设备故障行为须由题面或当前服务说明给出，不归为LOC对某个产品的测试结果。"
+      ],
+      "common_mistakes": [
+        "把文件夹复制数当作独立副本数。"
+      ],
+      "point_targets": [
+        "识别同盘副本共享整盘故障。",
+        "确认至少一份副本不依赖原设备。",
+        "把恢复可读检查列为验证。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "手机清空间前检查照片",
+          "constructed": true,
+          "situation": "手机照片同步到电脑，电脑内部盘另复制一份；云端服务会跟随删除，另有一块未验证的移动盘。",
+          "goal": "判断现在能否直接清空唯一原图。",
+          "constraints": [
+            "同步行为明确",
+            "不能假设回收站无限保留",
+            "可先验证移动盘"
+          ],
+          "observable_evidence": [
+            "存储拓扑",
+            "同步设置",
+            "抽样恢复记录"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要区分同步、重复目录与独立可恢复副本。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M14",
+      "title": "能存住不等于找得到",
+      "node_ids": [
+        "life_digital_backup",
+        "life_storage_archives"
+      ],
+      "source_ids": [
+        "LH-B-S06"
+      ],
+      "decisive_factor": "未来检索所需的描述信息是否随文件保存。",
+      "mechanism": "只保留无含义文件名会丢失人物、日期等语境；目录说明和元数据补足检索路径。",
+      "applicability": [
+        "家庭数字照片或相同原理的个人资料，未来查询需求给定。"
+      ],
+      "boundaries": [
+        "不把某一种文件夹层级设为唯一正确方法。"
+      ],
+      "common_mistakes": [
+        "以文件数量或占用空间作为整理完成标准。"
+      ],
+      "point_targets": [
+        "从给定查询目标倒推必要描述字段。",
+        "保留原文件与描述的对应关系。",
+        "用一条实际查询验证整理结果。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "家庭照片交给长辈使用",
+          "constructed": true,
+          "situation": "三台设备里照片文件名重复，家人想按人和活动找照片，有些拍摄日期错误。",
+          "goal": "设计最小整理方案并验证。",
+          "constraints": [
+            "不能靠错误日期唯一定位",
+            "不用专业数据库术语",
+            "保留原图"
+          ],
+          "observable_evidence": [
+            "样例文件",
+            "查询样例",
+            "已知人物活动信息"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "考点是可检索性与语境缺失，允许标签或目录等不同实现。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M15",
+      "title": "月结余不能替代逐期余额",
+      "node_ids": [
+        "life_plan_budget",
+        "life_changes_moving"
+      ],
+      "source_ids": [
+        "LH-B-S07"
+      ],
+      "decisive_factor": "每次必要支出之前已实际到账的可用金额。",
+      "mechanism": "未来收入不能提前支付当前账单，滚动余额可能先为负后回正。",
+      "applicability": [
+        "生活预算且金额、日期和可用余额完整。"
+      ],
+      "boundaries": [
+        "不引入未承诺借款或家人资助，不推荐金融产品。"
+      ],
+      "common_mistakes": [
+        "月总收入大于支出即判定可行。"
+      ],
+      "point_targets": [
+        "按日期结转余额。",
+        "识别首次出现的资金缺口。",
+        "区分预计收入与当前可用钱。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "第一份工作搬家预算",
+          "constructed": true,
+          "situation": "现在有3600元，6日付租金押金3000元，10日工资到账5000元，8日前还有900元必要生活支出。",
+          "goal": "判断原计划是否可执行并给出有条件调整。",
+          "constraints": [
+            "无已承诺借款",
+            "不能把工资提前算入余额",
+            "协商改期是否成功须区分"
+          ],
+          "observable_evidence": [
+            "收支日期表",
+            "起始余额",
+            "费用报价"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "算术不难，决定因素是到账顺序，建议必须消除真实缺口。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M16",
+      "title": "到期日与发起操作日不一定相同",
+      "node_ids": [
+        "life_daily_errands",
+        "life_plan_budget"
+      ],
+      "source_ids": [
+        "LH-B-S08"
+      ],
+      "decisive_factor": "服务处理时间相对于最晚完成日。",
+      "mechanism": "有处理延迟的支付或预约需要向前倒排，记录最终截止日不等于留足办理时间。",
+      "applicability": [
+        "题面给出办理周期、工作日定义及截止日。"
+      ],
+      "boundaries": [
+        "不直接移植美国工具的提前天数；不推断宽限期。"
+      ],
+      "common_mistakes": [
+        "当天提交就默认当天生效。"
+      ],
+      "point_targets": [
+        "区分发起时间与完成时间。",
+        "依题面工作日规则倒排最晚发起日。",
+        "识别自动扣款仍需余额覆盖。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "假期前缴费提醒",
+          "constructed": true,
+          "situation": "物业缴费需两个工作日入账，周五17点截止；周四、周五前没有假期，但周三晚才会收到一笔钱。",
+          "goal": "设定最晚操作与资金安排。",
+          "constraints": [
+            "当天17点后算次工作日",
+            "到账日期明示",
+            "不假定即时到账"
+          ],
+          "observable_evidence": [
+            "处理规则",
+            "日历",
+            "余额时间线"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "使用明确业务规则推理，而不是一律提前三天。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M17",
+      "title": "生活转变的成本包含附带费用",
+      "node_ids": [
+        "life_changes_moving",
+        "life_plan_budget"
+      ],
+      "source_ids": [
+        "LH-B-S09"
+      ],
+      "decisive_factor": "转变所需的全部一次性成本与对应发生时间。",
+      "mechanism": "只比较主价格会遗漏运输、接驳、过渡期等使方案不可执行的支出。",
+      "applicability": [
+        "给出搬家、设备采购或社团活动的明细。"
+      ],
+      "boundaries": [
+        "不自行推测税率、通胀或贷款；缺失报价应标记待核。"
+      ],
+      "common_mistakes": [
+        "以最低标价替代最低可行总成本。"
+      ],
+      "point_targets": [
+        "纳入题面明确的一次性附带费用。",
+        "区分可退押金与当期可用余额。",
+        "按总成本比较候选方案。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "低租金房是否真便宜",
+          "constructed": true,
+          "situation": "A房租低但要付运输和一周过渡住宿，B房租高但可直接入住；押金虽可退但本月须先付。",
+          "goal": "在给定本月预算下比较两方案。",
+          "constraints": [
+            "所有费用附表",
+            "押金退回日期明确",
+            "不讨论租约法律效力"
+          ],
+          "observable_evidence": [
+            "报价",
+            "入住日期",
+            "押金时间线"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "选择由完整成本和时点决定，不能只比较月租。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M18",
+      "title": "调整目标应改变约束中的量",
+      "node_ids": [
+        "life_goals_stage",
+        "life_plan_budget"
+      ],
+      "source_ids": [
+        "LH-B-S10"
+      ],
+      "decisive_factor": "目标规模、期限和优先级能否随已知资源变化。",
+      "mechanism": "资源变少时，单纯重写励志计划不会填补缺口；可调整的变量需要明确。",
+      "applicability": [
+        "非投资、非医疗目标，约束和优先级给定。"
+      ],
+      "boundaries": [
+        "不预设坚持或放弃更高尚，允许多种满足约束的选择。"
+      ],
+      "common_mistakes": [
+        "预算不足仍保持全部目标与原截止期。"
+      ],
+      "point_targets": [
+        "识别原计划在新资源下不可行。",
+        "明确实际调整的是规模或期限。",
+        "保留题面不可调整的优先目标。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "两项业余学习预算",
+          "constructed": true,
+          "situation": "原计划三个月内买3600元器材并报1200元课程，新增通勤费用后每月只能留800元；课程报名截止不可推迟。",
+          "goal": "重新制定可执行目标。",
+          "constraints": [
+            "已有存款只够课程",
+            "器材可延期或降低规格",
+            "不借款"
+          ],
+          "observable_evidence": [
+            "每月余量",
+            "截止日",
+            "优先级"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要改变真实约束变量，不接受只有增强自律的方案。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M19",
+      "title": "阶段目标要有与目标对应的证据",
+      "node_ids": [
+        "life_goals_stage"
+      ],
+      "source_ids": [
+        "LH-B-S11",
+        "LH-B-S12"
+      ],
+      "decisive_factor": "记录的指标是否能显示目标本身的进展。",
+      "mechanism": "原研究将进度监测定义为与目标参照值比较；本卡据此检查记录是否回答题面目标，不把打卡频次当作个人必然成功的预测。",
+      "applicability": [
+        "非医疗生活或学习目标，明确可观察的完成标准。"
+      ],
+      "boundaries": [
+        "本卡的指标选择是依据题面目标定义的推理；论文平均效应不能证明该构造案例中某种指标必然改善结果。",
+        "不强制公开汇报或高频打卡，不把健康行为干预结果直接外推为阅读提分保证。"
+      ],
+      "common_mistakes": [
+        "把打卡天数当作一切目标的结果。"
+      ],
+      "point_targets": [
+        "从既定目标定义可观察的参照值。",
+        "识别与目标不等价的代理指标。",
+        "设计能比较前后状态的检查。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "读书目标只有打卡变多",
+          "constructed": true,
+          "situation": "目标是能解释书中论证，连续二十天截图打卡，但只统计阅读页数，没有任何解释或检验。",
+          "goal": "重设最小可用的进度检查。",
+          "constraints": [
+            "每日总时间不增加",
+            "不追求统一字数",
+            "允许口头复述留记录"
+          ],
+          "observable_evidence": [
+            "既定目标",
+            "打卡记录",
+            "一段待解释材料"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "区分参与动作和目标结果，允许不同但可验证的观测方式。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M20",
+      "title": "先判断一周装不装得下",
+      "node_ids": [
+        "life_plan_time",
+        "life_clubs_choice"
+      ],
+      "source_ids": [
+        "LH-B-S15"
+      ],
+      "decisive_factor": "扣除不可挪承诺后剩余的实际容量。",
+      "mechanism": "日历中的空白不是无限资源；总需求超过可用时间需改变承诺。",
+      "applicability": [
+        "给出固定事项、实际耗时和最低保留时间。"
+      ],
+      "boundaries": [
+        "不把课程学时倍数当标准，不自行削减睡眠或照护。"
+      ],
+      "common_mistakes": [
+        "把所有愿望依次填入日历而不验总量。"
+      ],
+      "point_targets": [
+        "先扣除题面固定承诺。",
+        "计算剩余可分配时数。",
+        "识别总需求超过容量的差额。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "社团干部与兼职排班",
+          "constructed": true,
+          "situation": "周内可支配十四小时，课程任务要九小时，社团承诺六小时，通勤另占两小时，均为真实记录。",
+          "goal": "判断是否能全部保留并给出调整方向。",
+          "constraints": [
+            "必要休息已保留",
+            "不能双重计算通勤",
+            "至少一个承诺可协商"
+          ],
+          "observable_evidence": [
+            "一周时间账",
+            "任务耗时",
+            "可调整项"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求先给出可行性判断，不以时间管理工具掩盖容量矛盾。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M21",
+      "title": "碎片时间要与任务连续需求匹配",
+      "node_ids": [
+        "life_student_coursework",
+        "life_plan_time"
+      ],
+      "source_ids": [
+        "LH-B-S15"
+      ],
+      "decisive_factor": "某任务需要的连续时段及准备切换开销。",
+      "mechanism": "总空闲时长相同，能承载的任务不同；跨越固定预约的连续工作不可用。",
+      "applicability": [
+        "连续时长和准备开销是题面已知事实。"
+      ],
+      "boundaries": [
+        "不声称所有学习必须长时专注，不固定番茄钟长度。",
+        "连续工作需求与准备开销必须由题面明确给出，不能把这种特定任务约束说成所有人注意力的统一规律。"
+      ],
+      "common_mistakes": [
+        "把五个二十分钟当成一段一百分钟。"
+      ],
+      "point_targets": [
+        "识别必须连续完成的任务。",
+        "将准备开销计入可用时段。",
+        "为可分割任务使用剩余碎片。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "借用设备完成课程练习",
+          "constructed": true,
+          "situation": "课程需连续九十分钟操作一次，准备十分钟；每天课间合计两小时但每段不超过四十分钟，周五有两小时空档。",
+          "goal": "安排操作与预习。",
+          "constraints": [
+            "设备周五可约",
+            "预习可分割",
+            "不能暂停保存操作"
+          ],
+          "observable_evidence": [
+            "课表",
+            "设备规则",
+            "任务依赖"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "连续性来自具体任务规则，避免把某种学习节奏当普适规律。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M22",
+      "title": "工作生活冲突有时来自工作量本身",
+      "node_ids": [
+        "life_balance_boundaries"
+      ],
+      "source_ids": [
+        "LH-B-S19"
+      ],
+      "decisive_factor": "要求在约定时间与资源内是否可达。",
+      "mechanism": "如果工作量已超过可用工时，个人清单优化无法消除资源缺口。",
+      "applicability": [
+        "普通工作安排，给出经过核实的任务耗时与交付要求。"
+      ],
+      "boundaries": [
+        "不提供劳动法律或心理诊断，不假设上级必然同意协商。"
+      ],
+      "common_mistakes": [
+        "所有冲突都归因于个人不够高效。"
+      ],
+      "point_targets": [
+        "计算约定时间内的工作容量。",
+        "指出既有任务量与容量的冲突。",
+        "把协商范围或资源列为条件性行动。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "下班后才能完成的常规任务",
+          "constructed": true,
+          "situation": "每周可用于项目的工时二十四小时，固定任务已需二十七小时，另加四小时紧急任务；用户希望留出固定家庭时间。",
+          "goal": "判断先优化日程还是先调整承诺。",
+          "constraints": [
+            "耗时来自多周记录",
+            "质量不可降低",
+            "没有自动化节省的证据"
+          ],
+          "observable_evidence": [
+            "任务清单",
+            "工时记录",
+            "优先级"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "关键是结构性容量缺口，不能以更早起床作为唯一解。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M23",
+      "title": "搬家的一次地址更新不等于全部同步",
+      "node_ids": [
+        "life_changes_moving",
+        "life_daily_errands"
+      ],
+      "source_ids": [
+        "LH-B-S20"
+      ],
+      "decisive_factor": "各服务是否共享地址更新机制。",
+      "mechanism": "邮件转寄解决投递问题，不自动证明其他机构的记录已更新。",
+      "applicability": [
+        "明确列出各服务的更新方式与确认状态。"
+      ],
+      "boundaries": [
+        "原来源仅指美国；构造的本地服务规则必须写清，不推定中国制度。",
+        "学校系统及转寄范围是明确标记的构造设定，不宣称USAGov验证过任何学校的资料同步行为。"
+      ],
+      "common_mistakes": [
+        "一个入口成功即假定所有系统同步。"
+      ],
+      "point_targets": [
+        "区分转寄与账户资料更新。",
+        "逐项核对题面独立服务。",
+        "以各服务确认信息判定完成。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "搬宿舍后材料仍寄旧址",
+          "constructed": true,
+          "situation": "题面说明学校邮寄转寄只对校内信件生效，图书馆和快递账户需各自修改；只完成学校入口。",
+          "goal": "找出未完成事项并排优先次序。",
+          "constraints": [
+            "所有系统规则直接给出",
+            "不涉及户籍或法律期限",
+            "不填写真实个人地址"
+          ],
+          "observable_evidence": [
+            "系统说明",
+            "确认邮件",
+            "待到件日期"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "考察跨系统完成条件，避免泛泛搬家清单。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M24",
+      "title": "熟悉感与延迟回忆不是同一表现",
+      "node_ids": [
+        "life_learning_practice",
+        "life_exams_revision"
+      ],
+      "source_ids": [
+        "LH-B-S18"
+      ],
+      "decisive_factor": "目标是在何时、以什么形式使用知识。",
+      "mechanism": "即时重复阅读表现不能单独证明一周后能无提示回忆。",
+      "applicability": [
+        "以短文、概念或事实回忆为主的任务，有延迟测试证据。"
+      ],
+      "boundaries": [
+        "不把短文实验直接推广为任何复杂技能的保证。"
+      ],
+      "common_mistakes": [
+        "依据看起来顺畅和自信程度停止复习。"
+      ],
+      "point_targets": [
+        "区分即时熟悉感和延迟无提示表现。",
+        "按目标时间安排验证。",
+        "用无提示回忆核对目标知识的实际保持。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "背完讲义却一周后说不出",
+          "constructed": true,
+          "situation": "A方案多次通读后自评九分，B方案先回忆再核对；一周后的独立复述记录已附表。",
+          "goal": "依据目标选择后续复习方式。",
+          "constraints": [
+            "两方案总时长相同",
+            "目标是一周后讲清概念",
+            "不能只比较当天分数"
+          ],
+          "observable_evidence": [
+            "即时评分",
+            "一周后测试",
+            "练习流程"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "由测量时点造成证据反转，不接受只重复主动学习口号。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M25",
+      "title": "复习间隔应围绕保持目标而定",
+      "node_ids": [
+        "life_learning_practice",
+        "life_exams_revision"
+      ],
+      "source_ids": [
+        "LH-B-S17"
+      ],
+      "decisive_factor": "复习间隔和目标保持时长之间的关系。",
+      "mechanism": "原实验显示两者存在交互；间隔既非越长越好，也非固定比例通吃。",
+      "applicability": [
+        "事实记忆类任务，给出某人的可比较延迟测验记录。"
+      ],
+      "boundaries": [
+        "不宣称精确最优天数适用于所有科目或所有人。"
+      ],
+      "common_mistakes": [
+        "套用固定复习表而不看目标日期与结果。"
+      ],
+      "point_targets": [
+        "区分练习间隔和练习后保持时间。",
+        "依据同类任务的延迟表现比较方案。",
+        "说明不能由单一结果推定普适最优表。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "月底考试与半年后使用",
+          "constructed": true,
+          "situation": "学生有两批术语，一批四周后考试，一批半年后仍需使用，已有不同间隔的延迟自测记录。",
+          "goal": "制定有依据的分组复习安排。",
+          "constraints": [
+            "总复习次数受限",
+            "题面给出可用日期和记录",
+            "不要求拟合通用记忆公式"
+          ],
+          "observable_evidence": [
+            "两批用途",
+            "自测结果",
+            "可用日期"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要识别目标保持时长，难度来自条件匹配而非背间隔口诀。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M26",
+      "title": "会跟着例题不等于会选择方法",
+      "node_ids": [
+        "life_learning_practice",
+        "life_student_coursework"
+      ],
+      "source_ids": [
+        "LH-B-S12",
+        "LH-B-S14"
+      ],
+      "decisive_factor": "遇到略变条件时能否说明方法的适用原因。",
+      "mechanism": "复制步骤只证实跟随能力；变式问题和解释能暴露缺失的判断。",
+      "applicability": [
+        "课程任务，提供原题、变式及学生过程。"
+      ],
+      "boundaries": [
+        "不把学生不熟悉的新知识设为其本应掌握，不诊断能力。"
+      ],
+      "common_mistakes": [
+        "重复更多完全同型题当作唯一修正。"
+      ],
+      "point_targets": [
+        "从过程定位方法选择的具体缺口。",
+        "用改变一个条件的练习验证。",
+        "要求解释适用条件而非只复述步骤。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "统计例题换条件就卡住",
+          "constructed": true,
+          "situation": "学生能照着模板完成计算，但题面条件一改就继续套原公式；所有课程内适用条件均附在材料中。",
+          "goal": "设计最小纠偏练习。",
+          "constraints": [
+            "不引入课程外定理",
+            "可比的两个变式",
+            "目标是辨别适用条件"
+          ],
+          "observable_evidence": [
+            "两份解题过程",
+            "课程条件说明"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "点评必须落到已给证据的决策点，不能泛泛说加强基础。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M27",
+      "title": "模拟考试需要匹配资源和时间",
+      "node_ids": [
+        "life_exams_revision"
+      ],
+      "source_ids": [
+        "LH-B-S13"
+      ],
+      "decisive_factor": "练习环境与正式考核约束是否一致。",
+      "mechanism": "有答案提示、无限时长的练习分数不能直接预测限时闭卷成绩。",
+      "applicability": [
+        "正式考试规则明确且有合法练习材料。"
+      ],
+      "boundaries": [
+        "不建议违规获取真题或作弊，不将单次模考当精确预测。",
+        "保留题的选择来自避免已知答案干扰的测量推理；不声称该指南提供了任何模考分数预测公式。"
+      ],
+      "common_mistakes": [
+        "做过同一题且知道答案就当作能力验证。"
+      ],
+      "point_targets": [
+        "识别资源条件不一致。",
+        "识别计时条件不一致。",
+        "使用未记住答案的等价保留题验证。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "开着答案做完算不算准备好",
+          "constructed": true,
+          "situation": "学生用九十分钟做完六十分钟试卷，查了三次答案后得九十分，正式考试闭卷六十分钟。",
+          "goal": "判断准备证据并安排下一次模拟。",
+          "constraints": [
+            "另有一套未见练习题",
+            "不能增加总复习时长",
+            "正式规则附题"
+          ],
+          "observable_evidence": [
+            "练习记录",
+            "正式规则",
+            "可用题集"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "需要识别多个可独立判断的证据缺陷，再给可验证安排。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M28",
+      "title": "复盘先区分失分原因",
+      "node_ids": [
+        "life_exams_revision",
+        "life_learning_practice"
+      ],
+      "source_ids": [
+        "LH-B-S14"
+      ],
+      "decisive_factor": "原解答显示的是读题、知识、运算还是迁移问题。",
+      "mechanism": "不同原因需要不同验证；总分低不能推出同一种学习措施。",
+      "applicability": [
+        "提供若干原始答案、评分依据和复测结果。"
+      ],
+      "boundaries": [
+        "不凭一次错误诊断心理问题，不强行每错都只有一个原因。"
+      ],
+      "common_mistakes": [
+        "一律归为粗心或一律重读教材。"
+      ],
+      "point_targets": [
+        "用原解答支持错误分类。",
+        "将未确定原因明确保留。",
+        "给出与已识别原因匹配的复测。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "两位同分同学不同问题",
+          "constructed": true,
+          "situation": "甲漏读单位但口述方法正确，乙记住公式却解释不了前提，两人分数相同。",
+          "goal": "分别安排二十分钟的针对性练习。",
+          "constraints": [
+            "已有口述与书面证据",
+            "不得只用分数推断",
+            "总时长相同"
+          ],
+          "observable_evidence": [
+            "原题",
+            "解答",
+            "口述记录"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "让建议由错误证据分流，避免同质化学习建议。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M29",
+      "title": "任务拆开不等于成果能集成",
+      "node_ids": [
+        "life_student_team",
+        "life_student_coursework"
+      ],
+      "source_ids": [
+        "LH-B-S16"
+      ],
+      "decisive_factor": "各部分之间的输入输出依赖及整合验证。",
+      "mechanism": "互相依赖的小组成果若只按页数平分，最后可能无法拼合。",
+      "applicability": [
+        "课内小组报告或原型，依赖关系和截止期明示。"
+      ],
+      "boundaries": [
+        "不默认每个任务都需要协作；可独立任务可并行。"
+      ],
+      "common_mistakes": [
+        "每人负责一块即认为计划完整。"
+      ],
+      "point_targets": [
+        "识别至少一个真实跨成员依赖。",
+        "为整合安排明确时间。",
+        "用共同验收条件检查拼合结果。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "四人调研报告最后一晚才合并",
+          "constructed": true,
+          "situation": "一人问卷、一人分析、一人文献、一人展示，但问卷字段尚未与分析目标对齐，三天后提交。",
+          "goal": "重排最小协作计划。",
+          "constraints": [
+            "不需要真实受试者敏感数据",
+            "交付要求附题",
+            "成员可用时段已给"
+          ],
+          "observable_evidence": [
+            "分工",
+            "字段草案",
+            "分析目标",
+            "截止日"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "决定因素是依赖和整合时点，不仅是沟通频率。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M30",
+      "title": "小组交付质量与个人理解分别验证",
+      "node_ids": [
+        "life_student_team",
+        "life_student_coursework"
+      ],
+      "source_ids": [
+        "LH-B-S16"
+      ],
+      "decisive_factor": "课程是否要求每名成员掌握整体内容。",
+      "mechanism": "成品能通过不等于各人都理解；个人考核要求需要个人证据。",
+      "applicability": [
+        "课程明确要求每人答辩或独立说明。"
+      ],
+      "boundaries": [
+        "不能事后创造评分规则；只评题面已有要求。"
+      ],
+      "common_mistakes": [
+        "由小组高分推断每个人都掌握。"
+      ],
+      "point_targets": [
+        "区分成品验收与个人考核。",
+        "识别只会自己部分的证据缺口。",
+        "安排每人独立解释关键连接的验证。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "小组海报优秀但每人随机答辩",
+          "constructed": true,
+          "situation": "海报由分工拼成，教师将随机问任一成员任一章节；现有准备只背自己一页。",
+          "goal": "安排提交前最后一小时。",
+          "constraints": [
+            "海报无需重做",
+            "随机问答规则明确",
+            "不要求统一背稿"
+          ],
+          "observable_evidence": [
+            "评分规则",
+            "成员掌握表",
+            "完整海报"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "由交付对象不同形成决定性条件，不能拿总成果替代个体证据。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M31",
+      "title": "协作里程碑要服务后续依赖",
+      "node_ids": [
+        "life_student_team",
+        "life_clubs_execution"
+      ],
+      "source_ids": [
+        "LH-B-S16"
+      ],
+      "decisive_factor": "中间产物完成后是否给使用者留出验证和修订时间。",
+      "mechanism": "所有人同一最终截止不保证依赖链可完成；提前的阶段交付需要对准接力关系。",
+      "applicability": [
+        "题面给出依赖链、工作时段和所需时长。"
+      ],
+      "boundaries": [
+        "不把每日开会或固定角色轮换设为必需。",
+        "视频素材交接时长和顺序为构造题给定的约束；来源支持分阶段交付原则，不验证该具体视频项目。"
+      ],
+      "common_mistakes": [
+        "所有人承诺周五前完成就不再排中间截止。"
+      ],
+      "point_targets": [
+        "按依赖关系倒排阶段截止。",
+        "保留题面要求的检查时间。",
+        "明确交接物而非仅写开会。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "社团视频剪辑依赖素材",
+          "constructed": true,
+          "situation": "拍摄需一天，剪辑需两晚，字幕核对需半天，所有人最初只承诺周五完成。",
+          "goal": "重新设置可执行交接点。",
+          "constraints": [
+            "每人可用时段给定",
+            "不得用通宵补缺口",
+            "素材交接格式明示"
+          ],
+          "observable_evidence": [
+            "依赖图",
+            "时间表",
+            "交付要求"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "用具体依赖检验计划，允许不同但可行的分工。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M32",
+      "title": "新阶段的旧经验需经课程规则核验",
+      "node_ids": [
+        "life_student_transitions",
+        "life_student_coursework"
+      ],
+      "source_ids": [
+        "LH-B-S21"
+      ],
+      "decisive_factor": "新课程的实际评价、先修要求和帮助入口。",
+      "mechanism": "上一阶段经验不自动覆盖新课程；课程纲要可消除对规则的错误假定。",
+      "applicability": [
+        "题面附课程纲要摘要，规则不涉及法律。"
+      ],
+      "boundaries": [
+        "不假定所有学校都有相同退选、教材或评分制度。"
+      ],
+      "common_mistakes": [
+        "靠学长经验覆盖当前课程明文要求。"
+      ],
+      "point_targets": [
+        "从当前纲要提取关键要求。",
+        "指出与旧经验冲突之处。",
+        "把确实未写清的要求列为待核。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "从高中进入项目制大学课程",
+          "constructed": true,
+          "situation": "学生按过去只刷卷子的方式准备，但新课要求周记录和阶段演示；学长说期末考好即可。",
+          "goal": "制定前两周的最小适应计划。",
+          "constraints": [
+            "当前课程纲要完整附题",
+            "不引入学校隐含规则",
+            "每周时间受限"
+          ],
+          "observable_evidence": [
+            "纲要",
+            "学长建议",
+            "现有计划"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "以当期一手规则纠正经验外推，而非泛泛适应大学生活。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M33",
+      "title": "求助要暴露具体卡点",
+      "node_ids": [
+        "life_learning_practice",
+        "life_student_coursework"
+      ],
+      "source_ids": [
+        "LH-B-S22"
+      ],
+      "decisive_factor": "已有尝试与不理解的步骤是否可见。",
+      "mechanism": "只有整章不会的描述难以定位，具体过程能让有限求助时间围绕真正障碍。",
+      "applicability": [
+        "合法课程辅导，学生已做初步尝试。"
+      ],
+      "boundaries": [
+        "不承诺老师代做作业或立即回应；规则以课程为准。"
+      ],
+      "common_mistakes": [
+        "将求助等同索要完整答案。"
+      ],
+      "point_targets": [
+        "保留已经完成的尝试。",
+        "指出第一个不能解释的步骤。",
+        "提出能确认理解的后续问题。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "十分钟助教答疑",
+          "constructed": true,
+          "situation": "学生能完成前三步但第四步理由不清，只准备带一句整章听不懂去见助教。",
+          "goal": "组织十分钟答疑材料。",
+          "constraints": [
+            "不能要求代做作业",
+            "老师允许讨论思路",
+            "已有书面尝试附题"
+          ],
+          "observable_evidence": [
+            "解题过程",
+            "课程定义",
+            "答疑时长"
+          ],
+          "question_types": [
+            "分析决策类",
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "核心是信息足以定位障碍，可用自然口语而非模板式工单。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M34",
+      "title": "有场地不等于活动已获准",
+      "node_ids": [
+        "life_clubs_execution",
+        "life_events_small"
+      ],
+      "source_ids": [
+        "LH-B-S23"
+      ],
+      "decisive_factor": "必须的批准是否全部完成，而非预约页面是否显示成功。",
+      "mechanism": "场地预留与活动审批是不同状态，不能混为一个完成标志。",
+      "applicability": [
+        "组织流程在题面明确，普通低风险社团活动。"
+      ],
+      "boundaries": [
+        "源于UCL个案规则；别的组织必须直接给出自己的流程。",
+        "题面构造的学校流程须完整给出，不能仅凭UCL网页断言其他学校也需要同样批准。"
+      ],
+      "common_mistakes": [
+        "订到房间就对外承诺活动一定举行。"
+      ],
+      "point_targets": [
+        "区分临时预留与最终批准。",
+        "列出题面尚缺的前置条件。",
+        "给出条件性沟通而非虚假确认。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "读书会已订教室要不要发最终通知",
+          "constructed": true,
+          "situation": "教室系统显示临时预留，校园说明要求负责人确认并完成活动登记；后两项仍未完成。",
+          "goal": "判断能发何种通知并安排下一步。",
+          "constraints": [
+            "活动规模小",
+            "无外部嘉宾",
+            "流程明确附题"
+          ],
+          "observable_evidence": [
+            "预约状态",
+            "审批说明",
+            "待办清单"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "要求识别状态完成条件，不能仅复述注意提前准备。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M35",
+      "title": "场地选择先过硬约束",
+      "node_ids": [
+        "life_clubs_execution",
+        "life_events_small"
+      ],
+      "source_ids": [
+        "LH-B-S23"
+      ],
+      "decisive_factor": "容量、可达性和必要设备是否真正满足活动要求。",
+      "mechanism": "偏好更好看的空间不能补偿容量或无障碍缺口。",
+      "applicability": [
+        "普通室内社团聚会，参与需求已确定。"
+      ],
+      "boundaries": [
+        "不擅自定义安全载荷或消防容量，以场地方明确数据为准。"
+      ],
+      "common_mistakes": [
+        "只选交通最近或照片最好看的场地。"
+      ],
+      "point_targets": [
+        "依据题面人数检验场地容量。",
+        "依据已知需求检验可达性。",
+        "核实必要设备而非假定可借到。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "三十人桌游活动选房间",
+          "constructed": true,
+          "situation": "A房便宜但容量二十四，B房三十五但无电梯，C房三十六且有电梯；一名确认参与者需无障碍通道。",
+          "goal": "在给定预算内选可行方案。",
+          "constraints": [
+            "人数已确认",
+            "必要桌椅列明",
+            "不得建议超额挤入"
+          ],
+          "observable_evidence": [
+            "场地表",
+            "参与需求",
+            "预算"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "先筛除不可行项再比较偏好，排序有明确事实依据。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-B-M36",
+      "title": "常规活动批准不覆盖新增范围",
+      "node_ids": [
+        "life_clubs_execution",
+        "life_events_small"
+      ],
+      "source_ids": [
+        "LH-B-S24"
+      ],
+      "decisive_factor": "当前活动是否仍在已批准的内容和规模内。",
+      "mechanism": "新增一次性活动或改变范围可能触发不同准备流程，不能沿用原批准的名字。",
+      "applicability": [
+        "题面明确既有批准范围及新增活动要求。"
+      ],
+      "boundaries": [
+        "不采用原页面不一致的金额阈值，不外推UCL法定要求。",
+        "具体新增活动规则及准备周期须由构造题面或目标机构当期说明提供；不能套用该页面全部条件。"
+      ],
+      "common_mistakes": [
+        "名字仍叫例会就默认沿用全部批准。"
+      ],
+      "point_targets": [
+        "比较新活动与原批准范围。",
+        "识别题面新增前置要求。",
+        "依据实际准备周期调整日期或范围。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "摄影社例会临时变公开展览",
+          "constructed": true,
+          "situation": "原批准只包括十人室内作品讨论，计划改为跨社团公开展览；校园给定公开展览另需设备申请和两周审核，现只剩五天。",
+          "goal": "选择保留日期缩回原范围或延期的新方案。",
+          "constraints": [
+            "不涉及商业售票",
+            "新流程直接附题",
+            "不能假定加急成功"
+          ],
+          "observable_evidence": [
+            "原批准",
+            "新计划",
+            "申请周期"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "关键是范围变化引起约束变化，不重复泛化的风险清单。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M01",
+      "title": "同样萎蔫不能直接决定加水",
+      "node_ids": [
+        "life_garden_indoor"
+      ],
+      "source_ids": [
+        "LH-C-S01"
+      ],
+      "decisive_factor": "先区分根区实际干湿，而非只看叶子是否下垂。",
+      "mechanism": "同一外观可由相反含水状态造成，直接补水可能使错误方向持续。",
+      "applicability": [
+        "普通室内盆栽且可观察介质状态。"
+      ],
+      "boundaries": [
+        "需水差异应按物种核实；不作病害诊断。"
+      ],
+      "common_mistakes": [
+        "见萎蔫便统一浇水。"
+      ],
+      "point_targets": [
+        "萎蔫本身不能唯一确定缺水。",
+        "操作前应取得根区湿度等区分证据。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "两盆叶子都垂了",
+          "constructed": true,
+          "situation": "构造情境：两盆同种绿植外观相似，一盆盆体轻、介质干，另一盆较重且托盘有余水。",
+          "goal": "决定今天分别怎样处理，并说明还需看什么。",
+          "constraints": [
+            "只能使用现有浇水工具。",
+            "不更换植物品种。"
+          ],
+          "observable_evidence": [
+            "盆重变化",
+            "介质湿度记录",
+            "托盘状态"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M02",
+      "title": "固定浇水表应随环境和状态校正",
+      "node_ids": [
+        "life_garden_indoor"
+      ],
+      "source_ids": [
+        "LH-C-S01"
+      ],
+      "decisive_factor": "环境改变后以实际耗水证据调整，而非机械沿用日历。",
+      "mechanism": "同样的日数在不同温湿度和介质条件下不代表相同水分余额。",
+      "applicability": [
+        "有连续观察记录。"
+      ],
+      "boundaries": [
+        "不提供通用精确浇水间隔。"
+      ],
+      "common_mistakes": [
+        "出差前按天数一次补足全部未来用水。"
+      ],
+      "point_targets": [
+        "原日历不足以确定新环境下的需水。",
+        "调整应基于可重复观察的状态。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "换房后的养护表",
+          "constructed": true,
+          "situation": "构造情境：一盆植物从通风窗边搬到较阴凉房间，朋友仍按原周计划照料。",
+          "goal": "设计可交接且能纠偏的养护方式。",
+          "constraints": [
+            "照料人每两天能检查一次。"
+          ],
+          "observable_evidence": [
+            "不同位置的盆重与湿度变化",
+            "原照料记录"
+          ],
+          "question_types": [
+            "How-to类",
+            "开放推荐类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M03",
+      "title": "盆底铺石不能替代排水通路",
+      "node_ids": [
+        "life_garden_container"
+      ],
+      "source_ids": [
+        "LH-C-S02"
+      ],
+      "decisive_factor": "核实容器、介质与出水路径共同形成的排水条件。",
+      "mechanism": "局部材料变化不能自动修复整个水气通路。",
+      "applicability": [
+        "普通容器种植；情境提供盆孔和介质信息。"
+      ],
+      "boundaries": [
+        "不能据此否定结构合适的自浇水容器。"
+      ],
+      "common_mistakes": [
+        "盆底加厚石层就当作所有积水问题已解决。"
+      ],
+      "point_targets": [
+        "需要确认真正的出水通路。",
+        "应将普通花盆与有溢流结构的储水盆分开判断。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "阳台菜盆积水",
+          "constructed": true,
+          "situation": "构造情境：菜盆只有少量底孔，使用较密实土，浇水后长时间不出水；有人建议只铺石头。",
+          "goal": "在给定可用材料内选择改造方案。",
+          "constraints": [
+            "不能在阳台地面长时间积水。",
+            "允许换介质与容器。"
+          ],
+          "observable_evidence": [
+            "容器截面与底孔照片描述",
+            "浇水和出水记录"
+          ],
+          "question_types": [
+            "分析决策类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M04",
+      "title": "阳台种植先匹配实际光照和根域",
+      "node_ids": [
+        "life_garden_container"
+      ],
+      "source_ids": [
+        "LH-C-S02"
+      ],
+      "decisive_factor": "先检验场地资源是否支持候选作物，再比较个人偏好。",
+      "mechanism": "喜欢吃某种菜不等于现有日照、容器和承重适合种植。",
+      "applicability": [
+        "给出实际光照观察和候选作物需求。"
+      ],
+      "boundaries": [
+        "需求值和播种季节须在当地重新核实；不承诺产量。"
+      ],
+      "common_mistakes": [
+        "只按口味选作物。"
+      ],
+      "point_targets": [
+        "候选作物应先通过给定日照约束。",
+        "容器需满足所选作物的根系空间要求。",
+        "容器装满后的总重量须满足题设承重边界。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "半日照小阳台",
+          "constructed": true,
+          "situation": "构造情境：租房阳台空间有限，主人在香草、叶菜和大型结果作物间选择。",
+          "goal": "推荐一个可维护的组合。",
+          "constraints": [
+            "给出承重边界和每周维护时间。"
+          ],
+          "observable_evidence": [
+            "一周逐时日照记录",
+            "可用容器尺寸与湿重",
+            "已核验作物需求"
+          ],
+          "question_types": [
+            "开放推荐类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M05",
+      "title": "可选任务的收益包含失败扣分",
+      "node_ids": [
+        "life_games_board"
+      ],
+      "source_ids": [
+        "LH-C-S03"
+      ],
+      "decisive_factor": "选择额外目标应看未完成下行损失与占用的行动资源。",
+      "mechanism": "只比较完成时的加分，会忽视失败扣分及与已有目标争用回合。",
+      "applicability": [
+        "明确美国基础版与给定票分、剩余回合、路网事实。"
+      ],
+      "boundaries": [
+        "真实游戏有信息不完全；给定局面只能支持局部判断，不证明全局最优。"
+      ],
+      "common_mistakes": [
+        "把未完成的新目标当作零成本选择。"
+      ],
+      "point_targets": [
+        "应计入未完成目标的扣分。",
+        "应核对剩余行动是否支持新增目标。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "再摸一张目的地票吗",
+          "constructed": true,
+          "situation": "构造情境：桌游临近结束，玩家已有一个未完成目标，两个方案的所需路线与剩余回合均已给出。",
+          "goal": "评估是否值得新增目的地任务。",
+          "constraints": [
+            "题面直接给出相关抽票与计分规则。",
+            "不允许假定对手下一步会让路。"
+          ],
+          "observable_evidence": [
+            "当前路网",
+            "剩余车厢与已知回合窗口",
+            "目标分值"
+          ],
+          "question_types": [
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M06",
+      "title": "人数改变会改变共享路线可用容量",
+      "node_ids": [
+        "life_games_board"
+      ],
+      "source_ids": [
+        "LH-C-S03"
+      ],
+      "decisive_factor": "先应用本局人数对应的线路规则，再判断绕行需求。",
+      "mechanism": "图上两条平行线不一定意味着本局有两条可占路线。",
+      "applicability": [
+        "明确版本与二至三人局规则。"
+      ],
+      "boundaries": [
+        "其他扩展地图和规则须另查；不是抽象所有桌游的通则。"
+      ],
+      "common_mistakes": [
+        "看到双线就判定另一条仍可走。"
+      ],
+      "point_targets": [
+        "应按给定人数判断第二条路线是否可用。",
+        "建议路线须在当前已占路网中真实连通。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "同一地图换人数",
+          "constructed": true,
+          "situation": "构造情境：两名朋友沿用上次五人局的规划，关键双线路已有一条被占。",
+          "goal": "定位计划何处失效并提出可行替代。",
+          "constraints": [
+            "题面提供该版本双线路规则。",
+            "给出替代路线所需资源。"
+          ],
+          "observable_evidence": [
+            "玩家人数",
+            "已占线路图",
+            "手牌与车厢数量"
+          ],
+          "question_types": [
+            "How-to类",
+            "分析决策类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "LH-C-M07",
+      "title": "自制作品的固定方式会影响日后保存",
+      "node_ids": [
+        "life_visual_preservation",
+        "life_crafts_paper"
+      ],
+      "source_ids": [
+        "LH-C-S04"
+      ],
+      "decisive_factor": "把接触材料与预期保存时间作为选择条件。",
+      "mechanism": "暂时固定方便的材料，不一定适合长期直接接触纸作品。",
+      "applicability": [
+        "普通自制纸作品预防性收纳与展示。"
+      ],
+      "boundaries": [
+        "贵重原作和损坏修复交给专业人员；不能泛称所有无酸材料适合所有照片。"
+      ],
+      "common_mistakes": [
+        "为了摆放方便直接在原作上贴家用胶带。"
+      ],
+      "point_targets": [
+        "固定材料应考虑与原件的长期接触兼容性。",
+        "建议应区分复制品展示和原件保存。"
+      ],
+      "scenario_seeds": [
+        {
+          "label": "毕业展作品收纳",
+          "constructed": true,
+          "situation": "构造情境：学生要保存自己的速写与展览复制品，预算只够为部分作品配置较好的接触材料。",
+          "goal": "给出能执行的分层展示与收纳方案。",
+          "constraints": [
+            "原件不允许不可逆粘贴。",
+            "一学期后还需取出再展示。"
+          ],
+          "observable_evidence": [
+            "作品与复制品清单",
+            "候选衬垫和固定方式说明"
+          ],
+          "question_types": [
+            "开放推荐类",
+            "How-to类"
+          ]
+        }
+      ],
+      "difficulty_note": "通过给定记录与约束作出可检验判断；难度不以记忆冷知识或猜测用户偏好产生。",
+      "acceptance_status": "unvalidated_scenario_seed"
+    }
+  ]
+}

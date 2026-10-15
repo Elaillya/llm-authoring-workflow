@@ -1,6 +1,6 @@
 # 完整出题与五模型排序
 
-先读 README.md 与 skills/llm-authoring-workflow/SKILL.md。新用户准备依赖并创建工作区，不提示模型API配置；共用质检配置已随仓库提供，缺失时自动初始化，不再要求同项目用户提供HAR或service.json，只按需填写自己的Cookie。新题先问领域、子方向和题型。已有题目运行status，复用原件和有效结果。
+先读 README.md 与 skills/llm-authoring-workflow/SKILL.md。新用户准备依赖并创建工作区，不提示模型API配置；共用质检配置已随仓库提供，缺失时自动初始化，不再要求同项目用户提供HAR或service.json，只按需填写自己的Cookie。新题先问计算机科学、商科或生活爱好类，再问子方向和题型；生活类按Skill的references/lifestyle.md逐层选范围，也可明确停在当前层由助手细分。已有题目运行status，复用原件和有效结果。
 
 设计、判断和交付时读Skill的references/writing.md：发送文字与prompt完全一致；Insight用灵活的纯文本突出真正的决定性因素，考点减少背景且每条只判断一件事；提交说明用纯文本，排序备注简洁解释考点差异，不设字数下限。模型原Markdown保持。
 

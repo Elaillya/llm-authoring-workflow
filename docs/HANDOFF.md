@@ -19,3 +19,5 @@ workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评
 新建任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行考点/达成性质检，正常请求等待至完成；合理不通过返修、错误意见证据异议并给备注。门禁满足后先发Arena链接，三项实际通过的表达建议此后离线优化免复检。导入须--evaluation当前判断；Cookie填已有私有文件，模型生成API禁用。分支见Skill的references/platform-checks.md，2026-10-15变更见QA_REFINEMENTS_SPEC.md。更新先备份侧栏说明，保留已有任务合同及题目证据。
 
 3.1.0的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。
+
+3.3.0新增生活爱好类，与CS/商科并列；按LIFESTYLE_CATALOG.md和Skill的references/lifestyle.md分层选范围。50个已读一手来源、73张机制卡与73个构造种子；资料支持不等于模型区分度。仅新候选需要匹配生活资料，旧题原件继续读取。

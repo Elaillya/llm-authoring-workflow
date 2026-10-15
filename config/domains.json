@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "domains": {
     "计算机科学": [
       {
@@ -70,6 +70,676 @@
         "audience": "需要作出竞争和业务模式取舍的人",
         "guidance": "客户价值、价值链、差异化、平台和边界；结合具体能力与约束，不套通用战略口号。"
       }
+    ],
+    "生活爱好类": [
+      {
+        "id": "life_hobbies",
+        "label": "兴趣爱好",
+        "audience": "普通生活使用者、学生及相应爱好者",
+        "guidance": "从兴趣目标、已有经验、反馈与实际资源出发选题。",
+        "children": [
+          {
+            "id": "life_arts",
+            "label": "文艺与审美",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "围绕练习、表达、欣赏目标与资源限制出题；个人喜好不作为唯一正确答案。",
+            "children": [
+              {
+                "id": "life_arts_music",
+                "label": "音乐",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "区分听赏、演奏、合奏与创作目标；依据具体反馈和可用练习条件判断。",
+                "children": [
+                  {
+                    "id": "life_music_rock",
+                    "label": "摇滚与乐队",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "摇滚听赏、乐队排练、编配与合作；音量、时间、成员技能和演出目标是具体约束。"
+                  },
+                  {
+                    "id": "life_music_instruments",
+                    "label": "乐器练习",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "吉他、钢琴等练习瓶颈、反馈、难点拆分与迁移；不以练习时长直接代替效果。"
+                  },
+                  {
+                    "id": "life_music_listening",
+                    "label": "听赏与音乐探索",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "给定经验、听音条件和目标，推导探索路径；不把风格高低当客观结论。"
+                  },
+                  {
+                    "id": "life_music_ensemble",
+                    "label": "合奏与演出准备",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "处理个人熟练和集体同步之间的区别，明确排练证据与资源限制。"
+                  }
+                ]
+              },
+              {
+                "id": "life_arts_visual",
+                "label": "美术与视觉表达",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "绘画、构图、色彩与作品整理，区分表达目标和材料特性。",
+                "children": [
+                  {
+                    "id": "life_visual_drawing",
+                    "label": "素描、绘画与构图",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "围绕观察、明暗、构图反馈及材料条件选择练习。"
+                  },
+                  {
+                    "id": "life_visual_color",
+                    "label": "色彩与媒介选择",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "区分材料混色、显示与照明条件；技术事实与个人审美分开。"
+                  },
+                  {
+                    "id": "life_visual_preservation",
+                    "label": "作品装裱与保存",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "普通自作纸本作品的材料、存放和展示；不引导自行修复文物。"
+                  }
+                ]
+              },
+              {
+                "id": "life_arts_literature",
+                "label": "文学与写作",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "阅读目的、文本证据、叙事选择和反馈；文学品味不作单一标准。",
+                "children": [
+                  {
+                    "id": "life_literature_reading",
+                    "label": "阅读、细读与读书交流",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "围绕文本证据与不同阅读目标设计可判断的任务。"
+                  },
+                  {
+                    "id": "life_literature_writing",
+                    "label": "小说、散文与写作练习",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "具体表达目标、读者反馈和修订决策；不把某种文风规定为唯一好写法。"
+                  },
+                  {
+                    "id": "life_literature_poetry",
+                    "label": "诗歌与语言表达",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "以可见文本和表达目的讨论形式选择，区分事实与阐释。"
+                  }
+                ]
+              },
+              {
+                "id": "life_arts_photo",
+                "label": "摄影与影像",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "曝光、运动、光线、保存与使用场景的约束，避免器材品牌替代判断。",
+                "children": [
+                  {
+                    "id": "life_photo_shooting",
+                    "label": "手机与相机拍摄",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "通过光线、主体运动及目标效果定位关键约束。"
+                  },
+                  {
+                    "id": "life_photo_editing",
+                    "label": "照片整理与后期表达",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "原件保留、编辑目标和输出用途；不依赖短期软件界面。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "life_sports",
+            "label": "运动与身体活动",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "健康普通人的一般活动选择、技能练习、规则与组织；不提供诊断、康复处方或冒险挑战。",
+            "children": [
+              {
+                "id": "life_sports_running",
+                "label": "跑步",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "结合起点、可持续性、强度与恢复安排，避免固定训练比例的普适化。",
+                "children": [
+                  {
+                    "id": "life_running_beginner",
+                    "label": "新手与重返跑步",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "从现有能力和可持续安排出发，不用突击里程代替适应。"
+                  },
+                  {
+                    "id": "life_running_routine",
+                    "label": "日常跑步与目标安排",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "协调时间、强度、反馈与休息；比赛计划须核验个人适用性。"
+                  }
+                ]
+              },
+              {
+                "id": "life_sports_ball",
+                "label": "球类与团队运动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "比赛规则、练习迁移与公平组织；不得把规则条款记忆当复杂Insight。",
+                "children": [
+                  {
+                    "id": "life_sports_racket",
+                    "label": "持拍球类",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "从实际技能、规则和练习反馈出发。",
+                    "children": [
+                      {
+                        "id": "life_ball_table_tennis",
+                        "label": "乒乓球",
+                        "audience": "普通生活使用者、学生及相应爱好者",
+                        "guidance": "发接发、规则、练习组织与搭档配合；使用现行规则且注明版本。"
+                      },
+                      {
+                        "id": "life_ball_badminton",
+                        "label": "羽毛球",
+                        "audience": "普通生活使用者、学生及相应爱好者",
+                        "guidance": "按具体项目核验规则与技能依据，不能把乒乓球结论直接外推。"
+                      },
+                      {
+                        "id": "life_ball_tennis",
+                        "label": "网球",
+                        "audience": "普通网球爱好者与初学者",
+                        "guidance": "从日常练习、场地与搭档条件、具体规则及可观察表现构造问题，不借用其他球类规则。"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "life_ball_football",
+                    "label": "足球及配合",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "团队分工、规则、场地和人员限制；区分训练与比赛目标。"
+                  },
+                  {
+                    "id": "life_ball_basketball",
+                    "label": "篮球及日常球局",
+                    "audience": "普通生活使用者、学生及相应爱好者",
+                    "guidance": "围绕可用场地、水平差异、规则与轮换组织；不凭品牌或个人偏好作唯一判断。"
+                  }
+                ]
+              },
+              {
+                "id": "life_sports_strength",
+                "label": "一般力量与体能活动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "普通健康成人的活动安排和设施选择；疼痛、伤病和特殊人群交由相应专业判断。"
+              },
+              {
+                "id": "life_sports_cycling",
+                "label": "骑行与日常运动出行",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "可见性、装备检查、路线与同行组织；所在地交通规则需当时核验。"
+              }
+            ]
+          },
+          {
+            "id": "life_hobby_crafts",
+            "label": "手工与制作",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "低风险材料和工艺选择，依据结构、误差与可观察结果判断。",
+            "children": [
+              {
+                "id": "life_crafts_fiber",
+                "label": "编织与纤维手工",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "样片、尺寸、张力和材料适配；不把经验号数当普适保证。"
+              },
+              {
+                "id": "life_crafts_paper",
+                "label": "纸艺与普通作品保存",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "材料结构、使用目标与保存条件；不涉及危险工具或文物修复。"
+              }
+            ]
+          },
+          {
+            "id": "life_hobby_gardening",
+            "label": "植物与阳台园艺",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "光照、介质、根部空间和含水状况影响方案；不机械使用固定日历。",
+            "children": [
+              {
+                "id": "life_garden_indoor",
+                "label": "室内观叶与盆栽",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "区分缺水和积水表现，按基质、排水和光照等事实判断。"
+              },
+              {
+                "id": "life_garden_container",
+                "label": "阳台与容器种植",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "容器、光照、介质与可维护性匹配；本地气候需另核验。"
+              }
+            ]
+          },
+          {
+            "id": "life_hobby_games",
+            "label": "桌游与休闲游戏",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "给定规则、人数、可用时间和体验目标；机制理解优于冷僻规则记忆。",
+            "children": [
+              {
+                "id": "life_games_board",
+                "label": "桌游规则与组织",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "使用确定版本规则，理解得分、资源与行动约束；不声称有普适必赢策略。"
+              },
+              {
+                "id": "life_games_learning",
+                "label": "新手教学与体验设计",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "区分学会操作、理解目标和公平体验；由实际规则支持。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "life_activities",
+        "label": "活动与出行",
+        "audience": "普通生活使用者、学生及相应爱好者",
+        "guidance": "现实的参与者、交通、时间和场地约束；区分已确认安排与愿望。",
+        "children": [
+          {
+            "id": "life_activity_gathering",
+            "label": "朋友团聚与社交安排",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "协调共同时间、活动节奏、饮食及参与门槛，不把多数偏好当所有人的需求。",
+            "children": [
+              {
+                "id": "life_gather_meal",
+                "label": "聚餐与家庭招待",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "菜单、准备顺序、到场时间与官方食品安全条件。"
+              },
+              {
+                "id": "life_gather_friends",
+                "label": "小型聚会与朋友活动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "目标、成员差异、场地和时间的可执行协调。"
+              }
+            ]
+          },
+          {
+            "id": "life_activity_hiking",
+            "label": "徒步、登山与自然活动",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "天气、路线、人员能力和返程边界先于行程密度；不涉及技术攀登与应急冒险。",
+            "children": [
+              {
+                "id": "life_hiking_day",
+                "label": "日间徒步与山野活动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "普通已开放路线的准备和折返安排，动态条件出发前核验。"
+              },
+              {
+                "id": "life_hiking_group",
+                "label": "多人户外协调",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "按实际成员能力、集合与联系条件组织；不能用平均水平覆盖最弱约束。"
+              }
+            ]
+          },
+          {
+            "id": "life_activity_travel",
+            "label": "旅行与周末出行",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "给定兴趣目标、到达条件、时间窗口和资源，避免景点数量最大化。",
+            "children": [
+              {
+                "id": "life_travel_itinerary",
+                "label": "行程、换乘与节奏",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "固定预约、转乘及缓冲和临时变化；车次、开放时间与价格须当时核验。"
+              },
+              {
+                "id": "life_travel_culture",
+                "label": "城市漫游与文化参观",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "选择标准来自体验目标、可达性及参与差异，不推荐未经核实的具体商家。"
+              }
+            ]
+          },
+          {
+            "id": "life_activity_events",
+            "label": "活动组织与执行",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "报名、场地容量、任务依赖和备用方案；实际权限与承诺需明确。",
+            "children": [
+              {
+                "id": "life_events_small",
+                "label": "小型活动与社团活动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "人员、任务依赖、场地容量与时间窗口的协调。"
+              },
+              {
+                "id": "life_events_outdoor",
+                "label": "户外及跨场地活动",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "动态天气/场地规则、集合路径和可执行备选。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "life_daily",
+        "label": "日常生活",
+        "audience": "普通生活使用者、学生及相应爱好者",
+        "guidance": "解释日常琐事中的机制，围绕明确目标、观察和必要条件作判断。",
+        "children": [
+          {
+            "id": "life_daily_cooking",
+            "label": "做饭与食物管理",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "家庭餐食、备餐、存放和标签；官方安全要求不能用外观/气味代替。",
+            "children": [
+              {
+                "id": "life_cooking_workflow",
+                "label": "备餐与厨房流程",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "食材、设备、时间和食用安排的依赖关系。"
+              },
+              {
+                "id": "life_cooking_storage",
+                "label": "食品保存与剩食安排",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "按食品种类及时间温度事实判断；不提供家庭高风险保藏工艺。"
+              }
+            ]
+          },
+          {
+            "id": "life_daily_cleaning",
+            "label": "洗衣与清洁",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "材料、标签、污渍及产品使用边界，避免越多越强的直觉。",
+            "children": [
+              {
+                "id": "life_clean_laundry",
+                "label": "洗衣、晾晒与衣物照护",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "标签允许条件和材料特性优先，具体产品标签需核验。"
+              },
+              {
+                "id": "life_clean_home",
+                "label": "家庭清洁与低风险照护",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "清洁与消毒区别、接触条件和通风；不混配清洁化学品。"
+              }
+            ]
+          },
+          {
+            "id": "life_daily_storage",
+            "label": "收纳、物品与资料保存",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "使用频率、取用路径、恢复/找回能力与保存条件。",
+            "children": [
+              {
+                "id": "life_storage_objects",
+                "label": "日常物品整理",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "明确用途、取用频率和空间约束，不把视觉整齐当唯一效果。"
+              },
+              {
+                "id": "life_storage_archives",
+                "label": "照片、纪念物与个人档案",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "普通物品防损与可找回性，不自行修复高价值藏品。"
+              }
+            ]
+          },
+          {
+            "id": "life_daily_errands",
+            "label": "琐事、家务与时间安排",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "任务依赖、营业窗口、交通及缓冲，区分硬约束和可推迟事项。"
+          },
+          {
+            "id": "life_daily_digital",
+            "label": "普通人的数字生活",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "日常文件、照片、账号与信息核验，面向普通使用者而非CS系统设计。",
+            "children": [
+              {
+                "id": "life_digital_backup",
+                "label": "文件、照片与备份",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "同步、备份、恢复验证的区别，具体服务政策需核验。"
+              },
+              {
+                "id": "life_digital_information",
+                "label": "账号与信息辨别",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "核验来源、操作权限和可逆性，不把熟悉界面当可信证据。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "life_planning",
+        "label": "个人生活规划",
+        "audience": "普通生活使用者、学生及相应爱好者",
+        "guidance": "给定本人目标和现实约束，讨论实施与复盘；不替人规定一种正确人生。",
+        "children": [
+          {
+            "id": "life_plan_goals",
+            "label": "阶段目标与习惯",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "区分想达到的结果、可执行行动和实际反馈，避免仅列愿望。",
+            "children": [
+              {
+                "id": "life_goals_stage",
+                "label": "阶段目标与进度复盘",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "把目标、现有资源与检查点关联，不靠固定时长口号。"
+              },
+              {
+                "id": "life_goals_hobby",
+                "label": "兴趣发展与长期坚持",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "兴趣目标、门槛、反馈与生活条件，不把打卡次数等同能力。"
+              }
+            ]
+          },
+          {
+            "id": "life_plan_time",
+            "label": "个人时间与精力安排",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "硬约束、切换、缓冲和可用资源；没有适用于所有人的唯一日程。"
+          },
+          {
+            "id": "life_plan_balance",
+            "label": "工作、生活与休闲平衡",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "明确可控工作要求、恢复与生活责任，不把结构性问题只归因自律。",
+            "children": [
+              {
+                "id": "life_balance_boundaries",
+                "label": "边界、责任与可控安排",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "处理不可变约束和可协商事项，不能假定别人随时提供支持。"
+              },
+              {
+                "id": "life_balance_recovery",
+                "label": "休闲与日常恢复安排",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "普通生活安排，不作睡眠疾病、心理问题诊断或治疗。"
+              }
+            ]
+          },
+          {
+            "id": "life_plan_changes",
+            "label": "生活变化与过渡",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "搬家、独立生活和新阶段的依赖、截止点与可逆性。",
+            "children": [
+              {
+                "id": "life_changes_moving",
+                "label": "搬家与居住过渡",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "真实承诺、交接、物品与办事顺序；不替代当地合同/法律意见。"
+              },
+              {
+                "id": "life_changes_independent",
+                "label": "独立生活与新环境适应",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "可用资源、必需事项和实际支持，避免预设家庭资源。"
+              }
+            ]
+          },
+          {
+            "id": "life_plan_budget",
+            "label": "日常预算与资源分配",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "现金到达时间、固定支出和可选择开支；不涉及投资收益预测。"
+          }
+        ]
+      },
+      {
+        "id": "life_student",
+        "label": "学生学习与课余生活",
+        "audience": "普通生活使用者、学生及相应爱好者",
+        "guidance": "普通学生的学习与生活安排；专业教育理论、招生政策和心理治疗不混作一般生活题。",
+        "children": [
+          {
+            "id": "life_student_learning",
+            "label": "学习方法与技能养成",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "学习目标、检索反馈、间隔和迁移，不把主观熟悉感当掌握。",
+            "children": [
+              {
+                "id": "life_learning_practice",
+                "label": "练习、复盘与知识保持",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "观察能否独立完成目标任务，用证据选择练习方式。"
+              },
+              {
+                "id": "life_learning_habits",
+                "label": "新技能与学习习惯",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "根据已有基础、反馈和具体约束选择计划，不机械套用学习风格。"
+              }
+            ]
+          },
+          {
+            "id": "life_student_coursework",
+            "label": "课程任务与日程",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "课程要求、截止时间、任务依赖和可用时段；不代做受限制的考试。"
+          },
+          {
+            "id": "life_student_exams",
+            "label": "备考与阶段复习",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "以题目表现和截止点安排复习，区分看懂和独立提取。",
+            "children": [
+              {
+                "id": "life_exams_revision",
+                "label": "期中期末复习",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "针对知识缺口、任务形式和反馈调整。"
+              },
+              {
+                "id": "life_exams_multiple",
+                "label": "多任务与多门考试协调",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "不能只比较剩余天数而忽略薄弱环节、要求及任务依赖。"
+              }
+            ]
+          },
+          {
+            "id": "life_student_team",
+            "label": "同伴学习与小组合作",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "角色、依赖、评价标准和进度透明；不把总时长当公平贡献。"
+          },
+          {
+            "id": "life_student_clubs",
+            "label": "社团、课余与兴趣选择",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "课程硬约束、实际责任、兴趣目标和机会成本。",
+            "children": [
+              {
+                "id": "life_clubs_choice",
+                "label": "课余活动与社团选择",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "明确个人目标与可持续投入，不比较一种唯一优秀的经历。"
+              },
+              {
+                "id": "life_clubs_execution",
+                "label": "学生活动执行与协调",
+                "audience": "普通生活使用者、学生及相应爱好者",
+                "guidance": "场地、人员、任务依赖和备用方案。"
+              }
+            ]
+          },
+          {
+            "id": "life_student_transitions",
+            "label": "入学、毕业与阶段过渡",
+            "audience": "普通生活使用者、学生及相应爱好者",
+            "guidance": "手续、资源、生活节奏与真实承诺；具体政策须以目标机构为准。"
+          }
+        ]
+      }
     ]
+  },
+  "lifestyle_facets": {
+    "audience": [
+      "学生",
+      "普通上班族",
+      "初学者",
+      "有经验的爱好者",
+      "朋友/同伴群体",
+      "独立生活者"
+    ],
+    "goal": [
+      "入门探索",
+      "练习改进",
+      "分析决策",
+      "组织协作",
+      "排查原因",
+      "维持习惯",
+      "减少浪费",
+      "处理过渡"
+    ],
+    "constraints": [
+      "时间窗口",
+      "预算与现金到达",
+      "空间与噪声",
+      "场地与设备",
+      "已有基础",
+      "同行者差异",
+      "任务依赖",
+      "天气及本地规则"
+    ],
+    "evidence": [
+      "实际表现",
+      "任务样本",
+      "时间记录",
+      "可复算数据",
+      "产品/规则原文",
+      "环境观察",
+      "同伴反馈"
+    ],
+    "setting": [
+      "宿舍/校园",
+      "家庭",
+      "工作日",
+      "周末",
+      "线上协作",
+      "城市出行",
+      "一般户外"
+    ],
+    "level": [
+      "初学",
+      "进阶",
+      "重返/中断后恢复"
+    ],
+    "usage": "标签用于构造具体场景与查重，不替代用户选择，不要求逐项询问或把标签堆入prompt。"
   }
 }

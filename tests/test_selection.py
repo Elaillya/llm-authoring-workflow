@@ -12,9 +12,9 @@ class SelectionTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.ws=Path(self.temp.name)/'ws'
         create_workspace(self.ws);self.root=self.ws/'task'
     def tearDown(self):self.temp.cleanup()
-    def test_two_domains_and_cs_four_branches(self):
+    def test_three_domains_and_cs_four_branches(self):
         result=begin(self.root,self.ws)
-        self.assertEqual(result['domain_choices'],['计算机科学','商科'])
+        self.assertEqual(result['domain_choices'],['计算机科学','商科','生活爱好类'])
         self.assertEqual(result['next_question']['field'],'domain')
         choose_domain(self.root,'计算机科学')
         result=begin(self.root,self.ws)

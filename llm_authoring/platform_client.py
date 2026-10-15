@@ -51,10 +51,11 @@ def validated_config(value):
     # without changing those files; a healthy check must be allowed to finish.
     agent=value.get('user_agent','Mozilla/5.0')
     require(isinstance(agent,str) and agent and not any(c in agent+referer for c in '\r\n'),'请求头格式不合法')
-    domains=value.get('domain_labels',{'计算机科学':'计算机与数理科学','商科':'商科'})
+    domains=value.get('domain_labels',{})
     types=value.get('type_labels',{'分析决策类':'分析决策','开放推荐类':'开放推荐','How-to类':'How-to'})
     require(isinstance(domains,dict) and isinstance(types,dict)
             and all(isinstance(k,str) and isinstance(v,str) and v.strip() for mapping in (domains,types) for k,v in mapping.items()),'平台标签映射须为非空文本')
+    domains={**read_json(DEFAULT_CONFIG)['domain_labels'],**domains}
     return {'schema_version':1,'endpoint':ENDPOINT,'task_id':task,'checks':checked,'referer':referer,
             'timeout_seconds':None,'user_agent':agent,'domain_labels':domains,'type_labels':types}
 
