@@ -42,7 +42,7 @@ def main(argv=None):
     cr=subs.add_parser('candidate-reserve');cr.add_argument('question',type=Path);cr.add_argument('--review',type=Path)
     br=subs.add_parser('business-references');br.add_argument('--subdirection')
     qs=subs.add_parser('qa-setup');sources=qs.add_mutually_exclusive_group(required=True)
-    sources.add_argument('--har',type=Path);sources.add_argument('--config',type=Path)
+    sources.add_argument('--har',type=Path);sources.add_argument('--config',type=Path);sources.add_argument('--default',dest='use_default',action='store_true')
     qr=subs.add_parser('qa-run');qr.add_argument('stage',choices=[*platform_client.KEYS,'models'])
     qr.add_argument('--question',type=Path);qr.add_argument('--evaluation',type=Path);qr.add_argument('--refresh',action='store_true')
     qst=subs.add_parser('qa-status');qst.add_argument('--evaluation',type=Path)
@@ -98,7 +98,9 @@ def main(argv=None):
                 write_json(args.output,review_template(root,read_json(args.question)));result={'output':str(args.output),'next':'助手逐项填写真实比较理由，再candidate-reserve或freeze，不向用户新增确认'}
             elif args.command=='candidate-reserve':result=reserve(root,read_json(args.question),args.review)
             elif args.command=='business-references':result=business_context(args.subdirection)
-            elif args.command=='qa-setup':result=platform_client.setup(workspace,platform_client.config_from_har(args.har) if args.har else read_json(args.config))
+            elif args.command=='qa-setup':
+                config=platform_client.default_config() if args.use_default else platform_client.config_from_har(args.har) if args.har else read_json(args.config)
+                result=platform_client.setup(workspace,config)
             elif args.command=='qa-run':
                 q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
                 evaluation=read_json(args.evaluation) if args.evaluation else None

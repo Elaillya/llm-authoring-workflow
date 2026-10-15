@@ -4,7 +4,9 @@
 
 ## 私有配置与等待
 
-父工作区local/aidp/保存service.json和cookie.txt（文件600、目录700），同父目录题目共享登录态。首次用`qa-setup --har <脱敏HAR>`提取三计划ID、平台任务ID及普通请求头，或`qa-setup --config <私有配置>`导入元数据。题目原文、模型回复和Cookie留在私人目录。
+本项目共用元配置已随工具仓config/aidp-service.json提供。父工作区local/aidp/保存本地service.json和cookie.txt（文件600、目录700），同父目录题目共享本地登录态。缺少本地service.json时，首次读取配置会自动导入共用值并创建Cookie文件；也可先`qa-setup --default`显式准备。**同项目首次使用不再索取service.json或HAR路径**；只在需要检查时让用户填写自己的Cookie。已有私有配置和Cookie保留。其他任务可用`--config <文件>`或`--har <脱敏HAR>`高级导入，不能用默认值覆盖已有不同配置。
+
+task_id是项目任务上下文，plan_id选择检查，网页itemID不是当前请求的独立字段。共用配置Referer为站点根地址，不带原题itemID或会话参数；它的字段和初始化经过离线验证，净化Referer尚未实测线上调用，不能引用旧配置的成功记录声称已验证这一点。细节见工具仓docs/SHARED_PLATFORM_CONFIG.md。
 
 需要检查时才请用户填写已创建的cookie.txt并给可点击链接；会话已有配置/登录态直接复用。401/403时给同一文件更新，保留失败记录；登录失效不代表题目不合格。
 

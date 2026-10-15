@@ -5,13 +5,15 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 import json
 import os
-from .core import Error, hash_json, read_json, require, write_json
+import tempfile
+from .core import read_json, require
 
 ENDPOINT='https://aidp.bytedance.com/llm/union/app/invoke'
 KEYS={'question':('题目AI质检结论','题目AI质检详情'),
       'criteria':('AI考点质检结论','AI考点质检详情'),
       'attainment':('AI达成性判断结论','AI达成性质检详情')}
 COOKIE_PLACEHOLDER='请用已登录AIDP的Cookie完整值替换本行，保存后告诉助手。\n'
+DEFAULT_CONFIG=Path(__file__).resolve().parents[1]/'config/aidp-service.json'
 
 
 def private_directory(workspace):
@@ -24,8 +26,10 @@ def private_directory(workspace):
         require(not (directory/name).is_symlink(),'平台配置和Cookie不能为符号链接')
     cookie=directory/'cookie.txt'
     if not cookie.exists():
-        fd=os.open(cookie,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-        with os.fdopen(fd,'w') as stream:stream.write(COOKIE_PLACEHOLDER)
+        try:fd=os.open(cookie,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        except FileExistsError:pass
+        else:
+            with os.fdopen(fd,'w') as stream:stream.write(COOKIE_PLACEHOLDER)
     require(cookie.is_file(),'Cookie须为普通文件');cookie.chmod(0o600)
     return directory
 
@@ -77,11 +81,23 @@ def config_from_har(path):
     return validated_config({'endpoint':ENDPOINT,'task_id':next(iter(tasks)),'checks':found,**meta})
 
 
+def default_config():
+    return validated_config(read_json(DEFAULT_CONFIG))
+
+
 def setup(workspace,config):
     directory=private_directory(workspace);config=validated_config(config);target=directory/'service.json'
-    if target.exists():
-        require(validated_config(read_json(target))==config,'已有平台配置，保留原件；确认新任务配置后由助手显式编辑')
-    else:write_json(target,config)
+    if not target.exists():
+        # Publish a complete file exclusively: concurrent setup must never
+        # overwrite a custom configuration or expose partially written JSON.
+        fd,name=tempfile.mkstemp(prefix='.service-',dir=directory)
+        try:
+            with os.fdopen(fd,'w',encoding='utf-8') as stream:
+                json.dump(config,stream,ensure_ascii=False,indent=2);stream.write('\n');stream.flush();os.fsync(stream.fileno())
+            try:os.link(name,target)
+            except FileExistsError:pass
+        finally:Path(name).unlink(missing_ok=True)
+    require(validated_config(read_json(target))==config,'已有平台配置，保留原件；确认新任务配置后由助手显式编辑')
     target.chmod(0o600)
     return {'service_file':str(target),'cookie_file':str(directory/'cookie.txt'),
             'next':'需要检查时填写Cookie；账号密码不进入聊天、源码或日志'}
@@ -89,8 +105,8 @@ def setup(workspace,config):
 
 def configuration(root):
     from .workspace import locate_workspace
-    directory=private_directory(locate_workspace(root));target=directory/'service.json'
-    require(target.is_file(),'先由助手qa-setup导入私有配置或脱敏HAR；Cookie填写文件已创建：'+str(directory/'cookie.txt'))
+    workspace=locate_workspace(root);directory=private_directory(workspace);target=directory/'service.json'
+    if not target.exists():setup(workspace,default_config())
     return validated_config(read_json(target)),directory/'cookie.txt'
 
 

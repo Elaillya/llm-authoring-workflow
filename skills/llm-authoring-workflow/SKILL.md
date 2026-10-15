@@ -5,7 +5,7 @@ description: 完成开放难题第五期完整出题与五模型排序。选领�
 
 # 完整出题与五模型排序
 
-先读当前题目 AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md 及工具仓 rules/authoring.md。路径见 TOOLKIT.md，命令为父工作区 bin/lab。首次仅有工具仓时按 README 准备环境并建工作区，不索取 API 配置。
+先读当前题目 AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md 及工具仓 rules/authoring.md。路径见 TOOLKIT.md，命令为父工作区 bin/lab。首次仅有工具仓时按 README 准备环境并建工作区，不索取模型API配置。同项目质检配置已自带，缺失时自动导入，不要求用户提供HAR/service.json；需要质检时仅给已有Cookie文件让用户填写自己的登录态。
 
 1. 运行 lab begin 与 lab status，按next_question先询问计算机科学/商科，再询问菜单子方向，最后记录三种题型。计算机科学提供日常AI与学习、大学课程、研究生科研、真实生产四类；商科提供经核验资料支持的七类。已有选择直接记录，旧冻结题沿用原选题。具体菜单来自config/domains.json，不要求用户提供专业场景和关键事实。
 2. 未冻结时按references/design.md读取题库和资料，写自然题面与Insight后，必须按references/platform-checks.md执行题目难度与标签检查；合理问题自主修订再检。通过后补齐考点，完成多样性复核、candidate-reserve和冻结。商科核实参考卡边界。已有冻结版本和原件从缺失步骤接续，全局Codex记忆不参与题库。

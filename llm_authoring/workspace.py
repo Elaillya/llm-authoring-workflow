@@ -125,6 +125,7 @@ def workspace_file(folder,label,workspace):
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
             '新题先选计算机科学或商科，再选子方向与题型；助手读本地题库并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。\n'
+            '同项目质检配置已随工具仓提供，缺少时自动导入；仅在需要时填写自己的Cookie，无需HAR或另找service.json，已有私有配置保留。\n'
             'prompt与Insight后先做平台难度标签检查，通过后再冻结。三模型原文、判断及备注齐备后并行质检考点和达成性，正常请求等待至完成；合理不通过返修，错误意见给异议备注。先发Arena链接，再离线处理三项通过的表达建议，优化后免复检；Cookie按需填已有私有文件。\n'
             '冻结后先填写Seed的Markdown；判断其未达成全部决定性点后，再填写GPT和Claude的Markdown。\n'
             'Arena阶段填写工具创建的另两份Markdown；全部模型的官方页面截图由你单独提交。\n'
