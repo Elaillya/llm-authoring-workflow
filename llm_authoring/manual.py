@@ -3,9 +3,9 @@ from pathlib import Path
 from .core import (Error, NAMES, ROLES, active_question, hash_json, read_json,
                    read_response, require, response_dir, save_response,
                    validate_markdown, write_json)
+from .model_prompt import LEGACY_FORMAT_INSTRUCTION,request_matches,validate_prompt_file
 
 PLACEHOLDER = '待粘贴完整 Markdown 回复\n'
-FORMAT_INSTRUCTION = '请使用 Markdown 格式回复，不要用最外层代码块包裹全文。'
 
 
 def seed_screen(root, evaluation=None):
@@ -32,24 +32,24 @@ def model_request(root, role, screen=None):
     request = {key: current[key] for key in ('revision', 'question_sha256', 'prompt_sha256', 'rubric_sha256')}
     request.update({'schema_version': 1, 'task_id': current['question']['task_id'],
                     'role': role, 'display_name': NAMES[role], 'prompt': current['question']['prompt'],
-                    'format_instruction': FORMAT_INSTRUCTION,
+                    'prompt_policy': 'prompt_only',
                     'source_kind': 'official_manual', 'screenshot_submission': 'user_submits_separately'})
     if screen is not None:
         request['seed_evaluation_sha256'] = hash_json(screen)
         request['seed_response_sha256'] = screen['models']['seed']['response_sha256']
+    # Historical filled files keep prompt.md; new requests get a distinct path.
+    for manifest in input_directory(root).glob('*-request.json'):
+        recorded=read_json(manifest)
+        if recorded.get('format_instruction')==LEGACY_FORMAT_INSTRUCTION and recorded.get('prompt')==request['prompt']:
+            request['prompt_file']='prompt-only.md'
+            break
     return request
 
 
-def prompt_text(request):
-    return request['prompt'] + '\n\n' + FORMAT_INSTRUCTION + '\n'
-
-
 def validate_prompt(directory, request):
-    prompt = directory / 'prompt.md'
-    require(prompt.is_file() and not prompt.is_symlink()
-            and prompt.read_text(encoding='utf-8') == prompt_text(request),
-            '发送给模型的题面文件已改变或缺失，请恢复冻结题面')
-    return prompt
+    name=request.get('prompt_file','prompt.md')
+    require(name in ('prompt.md','prompt-only.md'),'模型题面路径不合法')
+    return validate_prompt_file(directory/name,request)
 
 
 def prepare_model(root, role, evaluation=None):
@@ -69,33 +69,38 @@ def prepare_model(root, role, evaluation=None):
     request = model_request(root, role, screen)
     manifest = directory / (role + '-request.json')
     if manifest.exists():
-        require(read_json(manifest) == request, '填写文件绑定已变化，保留旧文件并使用新的冻结版本')
+        recorded=read_json(manifest)
+        require(request_matches(recorded,request,manual=True), '填写文件绑定已变化，保留旧文件并使用新的冻结版本')
+        request=recorded
     else:
         write_json(manifest, request)
     slot = directory / (NAMES[role] + '.md')
     require(not slot.is_symlink(), '模型填写文件不能为符号链接')
     if not slot.exists():
         slot.write_text(PLACEHOLDER, encoding='utf-8')
-    prompt = directory / 'prompt.md'
+    prompt = directory / request.get('prompt_file','prompt.md')
     require(not prompt.is_symlink(), '题面文件不能为符号链接')
     if prompt.exists():
         validate_prompt(directory, request)
     else:
-        prompt.write_text(prompt_text(request), encoding='utf-8')
+        require(request.get('prompt_policy')=='prompt_only','旧题面文件缺失，先恢复原件，不重建旧格式指令')
+        prompt.write_bytes(request['prompt'].encode('utf-8'))
     guide = directory / 'README.md'
     require(not guide.is_symlink(), '模型填写说明不能为符号链接')
     if not guide.exists():
         guide.write_text('# 填入官方网页的完整回答\n\n'
-                         '复制 prompt.md 到指定型号的官方页面新会话。GPT/Claude 使用项目要求的中高推理模式。'
+                         '原样复制 prompt.md 到指定型号的官方页面新会话；内容与冻结prompt完全相同，不另加格式要求。GPT/Claude 使用项目要求的中高推理模式。'
                          '如果网页不能确认规定型号，先说明问题，不用相近型号代替。\n\n'
                          '模型文件已经创建：将“待粘贴完整 Markdown 回复”替换为回答原文全文并保存，'
                          '不增加标题、来源声明或外层代码块，不改写或补写回答。'
                          '保存后在 Codex 侧栏说“已填好 Seed 回复，继续”或“已填好 GPT 和 Claude 回复，继续”。\n\n'
                          '先收 Seed；其未达成全部决定性考点后才创建 GPT 和 Claude 的填写文件。'
                          '所有官方网页截图由你另行提交甲方，工作区只接收 Markdown。\n', encoding='utf-8')
+    notice='存在旧版带格式指令的输入记录；新题面另存prompt-only.md，原件保留。严格同输入评测需另建新题统一重新采集，不能把新旧合同混称为相同发送内容。' if prompt.name=='prompt-only.md' else ''
     return {'stage': 'awaiting_seed_markdown' if role == 'seed' else 'awaiting_gpt_claude_markdown',
             'role': role, 'display_name': NAMES[role], 'input_file': str(slot),
             'prompt_file': str(prompt), 'screenshots_required': False,
+            'capture_contract_notice':notice,
             'next': '在官方页面获得对应型号的完整回答，粘贴到已创建的模型文件并保存'}
 
 
@@ -107,7 +112,7 @@ def import_model(root, role, evaluation=None):
     screen = seed_screen(root, evaluation) if role != 'seed' else None
     directory = input_directory(root)
     request = read_json(directory / (role + '-request.json'))
-    require(request == model_request(root, role, screen), '模型输入绑定已过期或与当前 Seed 判断不一致')
+    require(request_matches(request,model_request(root,role,screen),manual=True), '模型输入绑定已过期或与当前 Seed 判断不一致')
     validate_prompt(directory, request)
     slot = directory / (NAMES[role] + '.md')
     require(slot.is_file() and not slot.is_symlink(), '缺少工具创建的模型填写文件')

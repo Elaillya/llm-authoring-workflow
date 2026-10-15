@@ -1,14 +1,13 @@
 """Five-model point-based ordering and complete submission export."""
 from pathlib import Path
 import copy
-import re
 import shutil
 import tempfile
 from .core import (ALL_ROLES, ARENA_ROLES, ROLES, active_question, hash_json,
                    read_response, require, sha, write_json)
 from .authoring import check_three, evaluation_template, export_authoring, validated_models
 from .arena import validate_arena_evidence, validate_names
-from .delivery import model_files, named_text, reply_link
+from .delivery import model_files,named_text,submission_text
 
 
 def five_evaluation_template(root, authoring_evaluation):
@@ -55,13 +54,14 @@ def ranking_template(root, evaluation):
     notes = {}
     for role, stat in result['models'].items():
         notes[role] = (f'全部决定性考点{"达成" if stat["attained"] else "未达成"}，决定性点{stat["decisive_met"]}/{stat["decisive_total"]}，'
-                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。\n\n' + attainment_notes(stat))
+                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。' + '；'.join(
+                           f'{item["id"]}{"满足" if item["met"] else "未满足"}：{item["reason"]}' for item in stat['judgments']))
     return {'schema_version': 1, 'phase': 'ranking', 'task_id': current['question']['task_id'],
             'question_sha256': current['question_sha256'], 'evaluation_sha256': hash_json(evaluation),
             'reviewer': evaluation['reviewer'], 'groups': result['groups'], 'order': result['order'],
             'display_names': {role: stat['name'] for role, stat in result['models'].items()},
             'summary': f'排序为{result["order"]}。全部决定性考点达成的模型先于未全部达成的模型；'
-                       '同一梯队按全部核心考点满足数比较，满足数相同时并列。以下逐模型列出满足和未满足的具体考点及依据。',
+                       '同一梯队按全部核心考点满足数比较，同数并列。',
             'models': notes}
 
 
@@ -86,37 +86,11 @@ def validate_ranking(root, evaluation, ranking):
     require(set(ranking.get('models', {})) == set(ALL_ROLES), '排序理由需覆盖全部五个模型')
     for role in ALL_ROLES:
         require(isinstance(ranking['models'][role], str) and ranking['models'][role].strip(), '每个模型需要具体考点达成性备注')
-    require(len(re.sub(r'\s', '', ranking_notes(ranking, expected['display_names']))) >= 500, '排序理由（总结＋逐模型说明）不少于500字')
     return check_five(root, evaluation)
 
 
 def submission_markdown(fields):
-    q = fields
-    lines = ['# 完整出题与模型排序提交', '\n## 题目编号\n', q['task_id'], '\n## 题目领域\n', q['domain'], '\n## 题目 prompt\n', q['prompt'], '\n## 题目类型\n', q['question_type'],
-             '\n## 关键洞察（Insight）\n', f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
-    for field, title in [('decisive_points', '决定性核心考点'), ('supporting_points', '非决定性核心考点')]:
-        lines.append('\n## ' + title + '\n')
-        lines.extend(['无'] if q[field] == '无' else [f'- {p["id"]}：{p["criterion"]}' for p in q[field]])
-    for role in ALL_ROLES:
-        model = fields['models'][role]
-        lines.extend([f'\n## {model["display_name"]}\n', reply_link(model),
-                      '\n### 是否达成全部决定性核心考点\n', '是' if model['attained'] else '否',
-                      '\n### 达成性备注\n', model['attainment_notes']])
-        if model.get('screenshot'):
-            lines.append(f'\n截图：[完整API渲染截图]({model["screenshot"]})')
-        else:
-            lines.append('\n官方网页截图由用户另行向甲方提交。')
-    lines.extend(['\n## 五模型核心考点达成性排序\n', fields['ranking'], '\n## 排序理由备注\n', fields['ranking_notes'],
-                  '\n## 出题说明备注\n', fields['author_notes'], '\n## 材料来源说明\n',
-                  ('前三份回复为用户提供的官方页面Markdown；两份Arena回复为用户提供的Markdown。'
-                   '工具未独立核验官方页面型号、会话及Arena模式和随机过程，全部网页截图由用户单独提交。')
-                  if all(q['models'][role].get('source_kind')=='official_manual' for role in ROLES) else
-                  '前三份回复包含历史API原文；两份Arena回复为用户提供的Markdown。历史API渲染图不等于官方网页截图，网页截图由用户单独提交。'])
-    if fields.get('platform_checks',{}).get('form_notes'):
-        lines.extend(['\n## 平台质检异议及表单备注\n',fields['platform_checks']['form_notes']])
-    if fields.get('postpass_polish'):
-        lines.extend(['\n## 平台通过后表达优化说明\n',fields['postpass_polish']['notice']])
-    return '\n'.join(lines) + '\n'
+    return submission_text(fields,ALL_ROLES)
 
 
 def export_complete(root, evaluation, review, ranking, output):

@@ -47,7 +47,7 @@ task_id是项目任务上下文，plan_id选择检查，网页itemID不是当前
 
 1. `arena-prepare --evaluation <当前三模型评估>`，**先在侧栏发出**arena-prompt.md、model-4.md、model-5.md的可点击链接及填写说明，让用户开始获取两份回复。
 2. 有通过后的建议时，`qa-polish-template evaluations/polish-rNNNN.json --evaluation <当前三模型评估>`。助手在后台处理，用户无需补内容。记录arena_notice为刚才实际发出的通知；reviews逐项说明题面、Insight含义、考点标准、原文、结论及引用保持。
-3. changes记录每个字段的field、before、after、stage、feedback_quote及reason。允许insight.mechanism/priority/conclusion、points.<ID>.criterion、author_notes、reasons.<seed|gpt|claude>.<决定性考点ID>的表达优化。准确引用本次通过反馈，说明为何专业含义和判定不变。同一份记录为完整优化集合，追加新版时保留仍采用的此前改写。
+3. changes记录每个字段的field、before、after、stage、feedback_quote及reason。纯文本Insight使用field=insight；旧三字段对象仍使用insight.mechanism/priority/conclusion。其他允许字段为points.<ID>.criterion、author_notes、reasons.<seed|gpt|claude>.<决定性考点ID>。准确引用本次通过反馈，说明为何专业含义和判定不变；按writing.md保留决定性因素，考点减少背景且单点可判定，不趁表达优化实质拆改冻结标准。同一份记录为完整优化集合，追加新版时保留仍采用的此前改写。
 4. `qa-polish <优化JSON> --evaluation <当前三模型评估>`只保存离线记录，**不调用质检**。冻结题面、原文、真假判断、引用、考点ID和分类保持。实质修改题面/含义/标准的建议记录为后续候选，不覆盖正在收集的版本。没有可采用建议直接等Arena，不强行优化。
 5. 继续等两份Arena Markdown。最终export自动使用优化文字，并把依据放evidence/platform/postpass-polish.json；提交信息说明“通过对应优化前输入，优化后未复检”，不宣称新措辞已获平台通过。优化不新增第七份交付Markdown，也不使原通过失效。
 

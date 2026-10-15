@@ -4,11 +4,8 @@
   "domain": null,
   "prompt": "",
   "question_type": "",
-  "insight": {
-    "mechanism": "",
-    "priority": "",
-    "conclusion": ""
-  },
+  "insight": "",
+  "text_format": "plain",
   "author_notes": "",
   "points": [
     {

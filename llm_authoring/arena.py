@@ -1,5 +1,6 @@
 """Receive two real Arena replies through pre-created Markdown slots."""
 from pathlib import Path
+from .model_prompt import request_matches,validate_prompt_file
 import re
 from .core import (ARENA_ROLES, ROLES, active_question, hash_json, read_json,
                    read_response, require, response_dir, save_response,
@@ -50,12 +51,14 @@ def prepare_arena(root, evaluation):
     directory.mkdir(parents=True, exist_ok=True)
     request = {key: current[key] for key in ('revision', 'question_sha256', 'prompt_sha256', 'rubric_sha256')}
     request.update({'schema_version': 1, 'task_id': current['question']['task_id'],
-                    'prompt': current['question']['prompt'], 'source': 'https://arena.ai/search',
+                    'prompt': current['question']['prompt'], 'prompt_policy':'prompt_only', 'source': 'https://arena.ai/search',
                     'capture_instructions': 'Search 联网模式、Battle Mode、新会话；按偏好揭晓型号，两个模型均须合规。',
                     'provenance': '用户提供 Markdown，工具不能独立确认真实页面的模式、会话和随机性；截图由用户单独提交。'})
     manifest = directory / 'request.json'
     if manifest.exists():
-        require(read_json(manifest) == request, 'Arena 输入绑定已变化，请保留旧文件并使用当前冻结版本')
+        recorded=read_json(manifest)
+        require(request_matches(recorded,request), 'Arena 输入绑定已变化，请保留旧文件并使用当前冻结版本')
+        request=recorded
     else:
         write_json(manifest, request)
     slots = {}
@@ -66,12 +69,15 @@ def prepare_arena(root, evaluation):
             path.write_text(SLOT_TEMPLATE, encoding='utf-8')
         slots[role] = str(path)
     prompt = directory / 'arena-prompt.md'
-    if not prompt.exists():
-        prompt.write_text(current['question']['prompt'] + '\n\n请使用 Markdown 格式回复，不要用最外层代码块包裹全文。\n', encoding='utf-8')
+    require(not prompt.is_symlink(),'Arena题面不能为符号链接')
+    if prompt.exists():validate_prompt_file(prompt,request)
+    else:
+        require(request.get('prompt_policy')=='prompt_only','旧Arena题面缺失，先恢复原件，不重建旧格式指令')
+        prompt.write_bytes(current['question']['prompt'].encode('utf-8'))
     guide = directory / 'README.md'
     if not guide.exists():
         guide.write_text('# 填入 Arena 的两个模型回复\n\n'
-                         '使用 arena-prompt.md 的题面，在 https://arena.ai/search 的 Search + Battle 新会话获取随机回复，揭晓模型名称。'
+                         '原样使用 arena-prompt.md 的题面，不另加格式要求，在 https://arena.ai/search 的 Search + Battle 新会话获取随机回复，揭晓模型名称。'
                          '两个模型不得重复，不得与前三个相同，不得为 GPT/Claude 系列。\n\n'
                          '打开 model-4.md、model-5.md：把 model_name 后的“待填写”替换为实际完整型号；'
                          '把“待粘贴完整 Markdown 回复”替换为对应回复全文，保留开头两条 ---。保存后在侧栏说“已填好两个 Arena 回复，继续排序”。\n\n'
@@ -88,6 +94,8 @@ def import_arena(root,evaluation=None):
     require(request.get('schema_version') == 1 and request.get('task_id') == current['question']['task_id'], 'Arena 输入不属于当前题目')
     for key in ('revision', 'question_sha256', 'prompt_sha256', 'rubric_sha256'):
         require(request.get(key) == current[key], 'Arena 输入绑定已过期，请按当前冻结题目准备新输入文件')
+    require(request.get('prompt')==current['question']['prompt'],'Arena请求题面与冻结prompt不一致')
+    validate_prompt_file(directory/'arena-prompt.md',request)
     from .platform_checks import final_gate,required
     if required(root):
         require(evaluation is not None,'Arena导入需要显式提供当前三模型判断 --evaluation')

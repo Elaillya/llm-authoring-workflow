@@ -4,6 +4,8 @@
 
 同项目质检配置已自带；本地缺失时工具自动导入或qa-setup --default，不再要求用户提供HAR/service.json。需要时给已创建Cookie文件让用户填自己的登录态。已有私有配置及Cookie保持。
 
+设计、判断和交付按Skill的references/writing.md：五模型提问严格等于冻结prompt，不追加格式指令；Insight灵活组织但必须突出真正决定性因素；考点少写背景、一条判断一件事，保留必要边界。Insight、考点、达成性与排序说明用纯文本；排序备注简洁说明差异和原因，不设500字下限。五份模型原Markdown保持不变。
+
 运行lab begin与lab status，新题先询问计算机科学还是商科，用lab choose-domain记录；再按begin菜单询问子方向并choose-subdirection，最后询问题型；不提示或使用模型API配置。问题、事实和限制由助手生成并核实来源。设计前读取父目录本地题库；按Skill的references/design.md完成自然表达、场景、Insight和考点差异检查及预留后冻结。商科使用对应参考库并核实本题适用性。已有冻结题目继续原领域与题型，保留成果。
 
 冻结候选后按Skill创建Seed填写文件并等待用户提供完整Markdown，导入和判断Seed；其未达成全部决定性点才创建GPT/Claude文件并等待用户填好。禁止collect/recover/render，禁止补写模型回复或伪造官方页面。

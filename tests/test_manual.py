@@ -72,7 +72,7 @@ class ManualTests(unittest.TestCase):
         self.assertEqual(manual_status(self.root)['stage'], 'awaiting_seed_markdown')
     def test_empty_placeholder_or_unclosed_markdown_cannot_be_imported(self):
         slot = Path(prepare_model(self.root, 'seed')['input_file'])
-        for text in (PLACEHOLDER, ' ', '```py\ntruncated\n', '```md\n# wrapped\n```\n'):
+        for text in (PLACEHOLDER, ' ', '```py\ntruncated\n'):
             slot.write_text(text)
             with self.assertRaises(Error): import_model(self.root, 'seed')
             self.assertFalse(response_dir(self.root, 'seed').exists())

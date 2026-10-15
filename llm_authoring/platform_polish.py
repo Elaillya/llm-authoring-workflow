@@ -33,7 +33,8 @@ def basis(root,evaluation):
 
 def editable_fields(root,evaluation):
     q=active_question(root)['question'];ev,_=qa.authoring_evaluation(root,evaluation)
-    fields={f'insight.{key}':q['insight'][key] for key in ('mechanism','priority','conclusion')}
+    fields={'insight':q['insight']} if isinstance(q['insight'],str) else {
+        f'insight.{key}':q['insight'][key] for key in ('mechanism','priority','conclusion')}
     fields['author_notes']=q['author_notes']
     fields.update({f'points.{point["id"]}.criterion':point['criterion'] for point in q['points']})
     fields.update({f'reasons.{role}.{point}':item['reason'] for role in ROLES
@@ -94,7 +95,8 @@ def export(root,evaluation,fields,models,package):
     models=copy.deepcopy(models)
     for change in decision['changes']:
         parts=change['field'].split('.');after=change['after']
-        if parts[0]=='insight':fields['insight'][parts[1]]=after
+        if change['field']=='insight':fields['insight']=after
+        elif parts[0]=='insight':fields['insight'][parts[1]]=after
         elif parts[0]=='author_notes':fields['author_notes']=after
         elif parts[0]=='points':
             for name in ('decisive_points','supporting_points'):

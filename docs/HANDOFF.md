@@ -6,7 +6,7 @@ request 绑定题目 ID、版本、完整题目/题面/考点哈希；GPT/Claude
 
 三模型门槛通过后，arena-prepare 创建 arena-input/rNNNN/model-4.md、model-5.md、arena-prompt.md。两份文件头部填写实际 model_name，后面填原 Markdown；工具检查完整性与型号限制。所有网页截图由用户直接提交甲方，工具不渲染图片，不独立声称网页型号/模式/随机性核验。
 
-五模型排序全部决定性达成梯队优先，同梯队按全部核心考点满足数比较，相同并列。决定性和非决定性点均判断；没有非决定性点填“无”。排序与备注使用实际名称，理由至少500字；旧编号形式可兼容读取并转换展示。
+五模型排序全部决定性达成梯队优先，同梯队按全部核心考点满足数比较，相同并列。决定性和非决定性点均判断；没有非决定性点填“无”。排序与备注使用实际名称，理由简洁写明考点达成差异及原因，不设字数下限；旧编号形式可兼容读取并转换展示。
 
 完整交付为提交信息.md及models/下五份按模型名命名的原回复，主文件不内嵌回答。JSON、evidence 和 manifest 作为辅助记录；不生成 ZIP。handoff.kind=llm_complete_submission，next_workflow=platform_submission；软件导出不代表甲方验收。
 

@@ -133,13 +133,15 @@ class RankingTests(ArenaTests):
         output = ranking_notes(ranking, {role: item['name'] for role, item in expected['models'].items()})
         self.assertNotRegex(output, r'模型[一二三四五1-5]')
         self.assertIn('Seed 2.1 Turbo未全部达成', output)
-    def test_reason_requires_summary_all_five_models_and_500_characters(self):
+    def test_reason_requires_summary_and_all_five_models_without_length_padding(self):
         five = fill_five(self.root, self.three)
         ranking = ranking_template(self.root, five)
         ranking['summary'] = ''
         with self.assertRaisesRegex(Error, '总结'): validate_ranking(self.root, five, ranking)
         ranking['summary'] = '总结'; ranking['models'] = {role: '简短说明' for role in ALL_ROLES}
-        with self.assertRaisesRegex(Error, '500'): validate_ranking(self.root, five, ranking)
+        validate_ranking(self.root, five, ranking)
+        ranking['models'].pop('gpt')
+        with self.assertRaisesRegex(Error, '五个'): validate_ranking(self.root, five, ranking)
     def test_all_decisive_has_priority_and_total_points_sort_within_tier(self):
         q = question()
         q['points'] += [{'id': f'N{i}', 'kind': 'supporting', 'criterion': '合成辅助标准'} for i in range(1, 4)]

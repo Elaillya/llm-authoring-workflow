@@ -7,6 +7,7 @@ import shutil
 import os
 import tempfile
 from datetime import datetime, timezone
+from .text import valid_insight
 
 ROLES = ('seed', 'gpt', 'claude')
 ARENA_ROLES = ('arena_1', 'arena_2')
@@ -57,8 +58,7 @@ def validate_question(q,legacy_domain=False):
     require(q.get('question_type') in TYPES, '题目类型必须是分析决策类、开放推荐类或 How-to类')
     if not legacy_domain or 'domain' in q:
         require(isinstance(q.get('domain'),str) and q['domain'].strip(), '题目需要用户选择的专业领域')
-    require(all(isinstance(q.get('insight',{}).get(k),str) and q['insight'][k].strip()
-                for k in ['mechanism','priority','conclusion']), 'Insight 需要机制、优先级和参考结论')
+    require(valid_insight(q.get('insight')), 'Insight需要非空洞察文本，或完整的旧版机制、优先级和结论对象')
     require(isinstance(q.get('author_notes'),str) and q['author_notes'].strip(), '需要真实来源及出题说明备注')
     points=q.get('points',[])
     require(isinstance(points,list) and any(isinstance(p,dict) and p.get('kind')=='decisive' for p in points), '至少需要一个决定性考点')
@@ -140,7 +140,6 @@ def response_dir(root,role):
 
 def validate_markdown(text):
     require(isinstance(text,str) and text.strip(), '模型回复 Markdown 为空')
-    require(not re.fullmatch(r'\s*```(?:markdown|md)\s*\n[\s\S]*\n```\s*',text,re.I), '回复不能用最外层代码块包裹整个 Markdown')
     from markdown_it import MarkdownIt
     tokens=MarkdownIt('commonmark',{'html':False}).enable('table').parse(text)
     lines=text.splitlines()

@@ -7,6 +7,7 @@ from .core import hash_json, read_json, require, sha, validate_question
 from .memory import records, remember, snapshot, sync_locked, task_key, topic_index, transaction
 from .references import LIBRARY, validate_business_references
 from .selection import validate_selection
+from .text import insight_text
 
 CHECKS=('natural_prompt','distinct_scenario','distinct_insight','distinct_points','source_grounding')
 PROFILE_TEXT=('scenario','goal')
@@ -57,7 +58,7 @@ def validate_profile(q):
 
 def report_locked(root,q,items):
     key=task_key(root);neighbors=[];hard=[]
-    insight=lambda value:'\n'.join(value['insight'][k] for k in ('mechanism','priority','conclusion'))
+    insight=lambda value:insight_text(value['insight'],labels=False)
     points=lambda value:'\n'.join(p['criterion'] for p in value['points'])
     for record in items:
         if record['task_key']==key:continue

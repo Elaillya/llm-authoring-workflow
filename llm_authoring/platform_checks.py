@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor,as_completed
 import copy,json,re,shutil,time,uuid
 from .core import Error,ROLES,active_question,hash_json,now,read_json,read_response,require,sha,write_json
 from . import platform_client as client
+from .text import insight_text,valid_insight
 
 
 def required(root):
@@ -20,8 +21,7 @@ def initial_question(root,q):
     require(q.get('domain')==question_domain(root,request) and q.get('question_type')==request.get('question_type')
             and q.get('question_type') in TYPES,'先选择并记录匹配的领域、子方向及题型')
     require(isinstance(q.get('prompt'),str) and 0<len(q['prompt'].strip()) and len(q['prompt'])<=100,'先形成不超过100字符的题面')
-    require(all(isinstance(q.get('insight',{}).get(key),str) and q['insight'][key].strip()
-                for key in ('mechanism','priority','conclusion')),'先完成Insight三个字段')
+    require(valid_insight(q.get('insight')),'先完成非空Insight洞察文本')
 
 
 def authoring_evaluation(root,ev):
@@ -46,12 +46,13 @@ def descriptor(root,stage,q=None,evaluation=None):
         current=active_question(root);q=current['question'];evaluation,stats=authoring_evaluation(root,evaluation)
         binding={'task_identity':read_json(Path(root)/'TASK.json').get('memory_id',str(Path(root).resolve())),
                  'question_sha256':current['question_sha256']}
-    insight=q['insight'];params={'题目':q['prompt'],'出题说明':f'机制：{insight["mechanism"]}\n\n优先级：{insight["priority"]}\n\n核心结论：{insight["conclusion"]}'}
+    plain=q.get('text_format')=='plain' or isinstance(q['insight'],str)
+    params={'题目':q['prompt'],'出题说明':insight_text(q['insight'])}
     if stage=='question':
         require(q['domain'] in config['domain_labels'] and q['question_type'] in config['type_labels'],'核实并配置平台领域/题型标签')
         params.update({'领域':config['domain_labels'][q['domain']],'题目类型':config['type_labels'][q['question_type']]})
     else:
-        points=lambda kind:'\n'.join(f'- {p["id"]}：{p["criterion"]}' for p in q['points'] if p['kind']==kind) or '无'
+        points=lambda kind:'\n'.join(('' if plain else '- ')+f'{p["id"]}：{p["criterion"]}' for p in q['points'] if p['kind']==kind) or '无'
         params['决定性核心考点']=points('decisive')
         if stage=='criteria':params['非决定性核心考点']=points('supporting')
         for role,key in zip(ROLES,('豆包专家回复','GPT回复','Claude回复')):params[key]=read_response(root,role)['text']

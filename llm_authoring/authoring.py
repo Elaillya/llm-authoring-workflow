@@ -4,10 +4,10 @@ import shutil
 import tempfile
 from .core import (Error, NAMES, ROLES, active_question, read_json, read_response,
                    question_domain, require, sha, validate_image, write_json)
-from .delivery import model_files, reply_link, submission_id
+from .delivery import model_files,submission_id,submission_text
 
 COMMON_CHECKS=('realistic_stable_domain_scenario','clear_natural_prompt','no_insight_leak_or_hidden_conditions',
-               'insight_mechanism_priority_conclusion','insight_necessary_decisive_specific_consensual',
+               'insight_key_reasoning_and_conclusion','insight_necessary_decisive_specific_consensual',
                'rubric_specific_atomic_and_supported','insight_and_rubric_distinct','sources_and_assumptions_honest')
 TYPE_CHECKS={'分析决策类':'decision_selects_one_allowed_option','开放推荐类':'recommendation_infers_profile_and_limited_candidates',
              'How-to类':'howto_has_executable_mainline_and_order'}
@@ -37,7 +37,7 @@ def validated_models(root,ev,roles=ROLES,include_supporting=False):
     require(ev.get('question_sha256')==current['question_sha256'],'完整冻结版本失效，重新确认三模型判断；题面未变可复用完整原回复')
     require(isinstance(ev.get('reviewer'),str) and ev['reviewer'].strip(),'填写实际评估责任人')
     require(set(ev.get('models',{}))==set(roles),'当前检查须有完整指定模型，缺回复不能记为未达成')
-    stats={}
+    stats={};sent_texts=set()
     for role in roles:
         item=read_response(root,role);record=ev['models'][role]
         if role in NAMES:
@@ -49,6 +49,10 @@ def validated_models(root,ev,roles=ROLES,include_supporting=False):
         else:
             from .arena import validate_arena_evidence
             validate_arena_evidence(root,role,item)
+        request=item['meta'].get('manual_request') if item['meta'].get('source_kind')=='official_manual' else item['meta'].get('arena_request')
+        if request is not None:
+            from .model_prompt import prompt_text
+            sent_texts.add(prompt_text(request))
         require(record.get('response_sha256')==item['meta']['reply_sha256'],'评估与原文不匹配')
         require(set(record.get('points',{}))=={p['id'] for p in points},'逐项评估全部指定考点；五模型排序也需判断非决定性点')
         judgments=[]
@@ -64,6 +68,7 @@ def validated_models(root,ev,roles=ROLES,include_supporting=False):
         met=sum(j['met'] for j in decisive)
         stats[role]={'name':item['meta']['display_name'],'decisive_met':met,'decisive_total':len(decisive),'attained':met==len(decisive),
                      'total_met':sum(j['met'] for j in judgments),'total_points':len(points),'judgments':judgments}
+    require(len(sent_texts)<=1,'模型实际发送文字存在新旧合同差异；保留原件，在独立新题统一采集相同prompt后再评测')
     return stats
 
 
@@ -92,6 +97,8 @@ def validate_self_review(root,review):
     require(review.get('source_notes_sha256')==expected['source_notes_sha256'],'专业依据笔记已改变，按新依据更新自查')
     require(isinstance(review.get('reviewer'),str) and review['reviewer'].strip(),'自查需记录实际执行者，AI自查不能冒充独立专家质检')
     checks=dict(review.get('checks',{}))
+    if 'insight_mechanism_priority_conclusion' in checks and 'insight_key_reasoning_and_conclusion' not in checks:
+        checks['insight_key_reasoning_and_conclusion']=checks.pop('insight_mechanism_priority_conclusion')
     if 'realistic_stable_cs_scenario' in checks and 'realistic_stable_domain_scenario' not in checks:
         require(question_domain(root)=='计算机科学','旧CS自查字段仅适用于计算机科学旧题；请按所选领域重新自查')
         checks['realistic_stable_domain_scenario']=checks.pop('realistic_stable_cs_scenario')
@@ -140,11 +147,6 @@ def export_authoring(root,ev,review,output):
         (staging/'models').mkdir();(staging/'evidence').mkdir()
         if any(pictures.values()):(staging/'screenshots').mkdir()
         paths=model_files({role:item['meta']['display_name'] for role,item in validated})
-        lines=['# 三模型出题检查点','\n## 题目编号\n',fields['task_id'],'\n## 题目领域\n',fields['domain'],'\n## 题目 prompt\n',q['prompt'],'\n## 题目类型\n',q['question_type'],
-               '\n## 关键洞察（Insight）\n',f'机制：{q["insight"]["mechanism"]}\n\n优先级：{q["insight"]["priority"]}\n\n核心结论：{q["insight"]["conclusion"]}']
-        for field,title in [('decisive_points','决定性核心考点'),('supporting_points','非决定性核心考点')]:
-            lines.append('\n## '+title+'\n')
-            lines.extend(['无'] if fields[field]=='无' else [f'- {p["id"]}：{p["criterion"]}' for p in fields[field]])
         for index,(role,item) in enumerate(validated,1):
             m=item['meta'];stat=result['models'][role];pic=pictures[role]
             shutil.copyfile(item['directory']/'reply.md',staging/paths[role])
@@ -158,16 +160,10 @@ def export_authoring(root,ev,review,output):
                                    'reply_markdown':item['text'],'reply_file':paths[role],'attained':stat['attained'],'attainment_notes':notes,
                                    'screenshot':f'screenshots/{role}.png' if pic else None,'source_kind':m['source_kind'],
                                    'screenshot_submission':'historical_api_render' if pic else 'user_submits_separately'}
-            lines.extend([f'\n## {NAMES[role]}\n',reply_link(fields['models'][role]),'\n### 是否达成全部决定性核心考点\n',
-                          '是' if stat['attained'] else '否','\n### 达成性备注\n',notes,
-                          f'\n历史截图：[API渲染截图](screenshots/{role}.png)' if pic else '\n官方网页截图由用户单独提交甲方。'])
-        lines.extend(['\n## 出题说明备注\n',q['author_notes'],'\n## 检查点接续说明\n',
-                      '三模型区分度检查通过。此为出题检查点，继续补齐Arena两份Markdown、五模型排序及完整提交。用户提供的Markdown不代表工具已核验官方网页型号或会话；网页截图另行提交。'])
         platform=export_evidence(root,ev,staging)
         if platform:
             fields['platform_checks']=platform
-            if platform['form_notes']:lines.extend(['\n## 平台质检异议及表单备注\n',platform['form_notes']])
-        (staging/'提交信息.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+        (staging/'提交信息.md').write_text(submission_text(fields,ROLES,checkpoint=True),encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
         shutil.copyfile(Path(root)/'drafts/sources.md',staging/'evidence/sources.md')
         write_json(staging/'evaluation.json',ev);write_json(staging/'author-self-review.json',review)

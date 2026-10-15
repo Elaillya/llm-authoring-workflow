@@ -113,7 +113,7 @@ def topic_index(items,key):
         q=item['question'];profile=q.get('design_profile',{})
         result.append({'entry_id':item['entry_id'],'task_id':q['task_id'],'domain':q.get('domain'),
                        'subdirection':q.get('subdirection'),'prompt':q['prompt'],
-                       'mechanism':q['insight']['mechanism'][:220],
+                       'mechanism':(q['insight'] if isinstance(q['insight'],str) else q['insight']['mechanism'])[:220],
                        'mechanism_tags':profile.get('mechanism_tags',[]),
                        'point_targets':profile.get('point_targets') or [p['criterion'][:120] for p in q['points']],
                        'status':item['status']})
