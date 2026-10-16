@@ -1,3 +1,5 @@
+进入GPT/Claude收集之前先读optional-model-checks.md：Seed未全部达成后询问是否执行后两项质检、等待实际答复并记录；已有选择沿用。选择跳过只去掉后续两项API，模型原文和达成门槛保持。
+
 # 三模型手动 Markdown
 
 不运行 collect、recover、render，不读取或提示 API 密钥，不自动调用模型，不渲染模拟官方页面。每条命令在当前题目目录执行，lab 指父工作区 bin/lab；也可显式 --task 指定该题。

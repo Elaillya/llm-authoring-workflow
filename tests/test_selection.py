@@ -14,7 +14,7 @@ class SelectionTests(unittest.TestCase):
     def tearDown(self):self.temp.cleanup()
     def test_three_domains_and_cs_four_branches(self):
         result=begin(self.root,self.ws)
-        self.assertEqual(result['domain_choices'],['计算机科学','商科','生活爱好类'])
+        self.assertEqual(result['domain_choices'],['计算机科学','商科','生活娱乐'])
         self.assertEqual(result['next_question']['field'],'domain')
         choose_domain(self.root,'计算机科学')
         result=begin(self.root,self.ws)

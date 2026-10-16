@@ -88,6 +88,8 @@ def apply(root,evaluation,decision):
 
 def export(root,evaluation,fields,models,package):
     if not qa.required(root):return None
+    from .check_policy import require_choice
+    if require_choice(root)['choice']=='skipped':return None
     current=active_question(root)
     paths=sorted(qa.records_directory(root).glob('polish-'+current['question_sha256']+'-*.json'))
     if not paths:return None

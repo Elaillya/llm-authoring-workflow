@@ -8,6 +8,7 @@ import subprocess
 import uuid
 from . import VERSION
 from .core import Error, NAMES, TYPES, active_question, question_domain, read_json, require, write_json
+from .domains import canonical_domain
 
 TOOL_ROOT=Path(__file__).resolve().parents[1]
 
@@ -124,9 +125,9 @@ def workspace_file(folder,label,workspace):
 
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
-            '新题先选计算机科学、商科或生活爱好类，再选子方向与题型；助手读本地题库和认可失败经验并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。生活类可逐层细分或确认停在当前范围，参考docs/LIFESTYLE_CATALOG.md与LIFESTYLE_REFERENCES.md。Insight灵活组织并突出决定性因素，考点精简背景且独立可判定。\n'
+            '新题先选计算机科学、商科或生活娱乐，再选子方向与题型；助手读本地题库和认可失败经验并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。生活类可逐层细分或确认停在当前范围，参考docs/LIFESTYLE_CATALOG.md与LIFESTYLE_REFERENCES.md。Insight灵活组织并突出决定性因素，考点精简背景且独立可判定。\n'
             '同项目质检配置已随工具仓提供，缺少时自动导入；仅在需要时填写自己的Cookie，无需HAR或另找service.json，已有私有配置保留。\n'
-            'prompt与Insight后先做平台难度标签检查，通过后再冻结。三模型原文、判断及备注齐备后先确认Seed未全部决定性达成且GPT或Claude至少一个全部达成，再并行质检考点和达成性；GPT/Claude都未达成则保留失败并重选新prompt，不调用后两项质检。正常请求等待至完成；合理不通过返修，错误意见给异议备注。先发Arena链接，再离线处理三项通过的表达建议，优化后免复检；Cookie按需填已有私有文件。\n'
+            'prompt与Insight后先做平台难度标签检查，通过后再冻结。三模型原文、判断及备注齐备后先确认Seed未全部决定性达成且GPT或Claude至少一个全部达成，并在准备GPT/Claude文件前询问是否进行后两项质检；选择需要才并行质检考点和达成性，选择不需要则去掉两项API，按题目检查和三模型门槛直接进入Arena并标明未执行；GPT/Claude都未达成则保留失败并重选新prompt，不调用后两项质检。正常请求等待至完成；合理不通过返修，错误意见给异议备注。先发Arena链接，再离线处理三项通过的表达建议，优化后免复检；Cookie按需填已有私有文件。\n'
             '发给五模型的文字严格等于冻结prompt，不追加格式要求。冻结后先填写Seed的Markdown；判断其未达成全部决定性点后，再填写GPT和Claude的Markdown。\n'
             'Arena阶段填写工具创建的另两份Markdown；全部模型的官方页面截图由你单独提交。\n'
             '交付为一份纯文本提交信息和五份按模型名称命名的原Markdown；排序用真实名称，备注简洁说明考点差异和原因，不设字数下限。\n'
@@ -163,15 +164,15 @@ def choose_type(root,question_type):
 
 def choose_domain(root,domain):
     require(isinstance(domain,str) and domain.strip(),'请输入非空的专业领域名称')
-    domain=domain.strip();root=Path(root)
+    domain=canonical_domain(domain.strip());root=Path(root)
     file=root/'REQUEST.json';request=read_json(file)
     if request.get('selection_schema')==2 and not (root/'CURRENT.json').is_file():
         from .selection import menu
-        require(domain in menu(),'请选择计算机科学、商科或生活爱好类')
-        if request.get('domain')!=domain:
+        require(domain in menu(),'请选择计算机科学、商科或生活娱乐')
+        if canonical_domain(request.get('domain'))!=domain:
             request.update(subdirection=None,subdirection_path=[],subdirection_confirmed=False)
     if (root/'CURRENT.json').is_file():
-        require(domain==question_domain(root,request),'已有冻结题目，改领域请新建题目，保留旧题返修来源')
+        require(domain==canonical_domain(question_domain(root,request)),'已有冻结题目，改领域请新建题目，保留旧题返修来源')
     request.update({'domain':domain,'domain_confirmed':True});write_json(file,request)
     return {'domain':domain,'next':'从该方向菜单询问子方向，再记录题型；已有选择直接记录，不要求用户提供场景或事实'}
 
@@ -181,7 +182,7 @@ def begin(root,workspace):
     request=read_json(root/'REQUEST.json')
     models={role:{'display_name':name,'input':'user_provided_markdown'} for role,name in NAMES.items()}
     needs=[]
-    domain=question_domain(root,request)
+    domain=canonical_domain(question_domain(root,request))
     if domain is None:needs.append('domain')
     from .selection import selection_status
     selection,missing=selection_status(root,request,domain);needs.extend(missing)
@@ -190,9 +191,12 @@ def begin(root,workspace):
     if request.get('selection_schema')==2 and not needs:
         from .memory import context
         memory=context(root,workspace,6)
+    from .check_policy import current,prompt
+    policy=current(root);choice=prompt(root) if not needs else None
     return {'phase':'authoring','domain':domain,'question_type':request.get('question_type'),'question_type_choices':list(TYPES),
-            **selection,'memory_context':memory,'models':models,'response_mode':'official_manual','requires_input':needs,'ready':not needs,
-            'scenario_owner':'assistant','next':'按next_question先选计算机科学、商科或生活爱好类，再选子方向与题型；场景和专业资料由助手生成核实' if needs else
+            **selection,**({'next_question':choice} if choice else {}),'model_checks_policy':policy,
+            'memory_context':memory,'models':models,'response_mode':'official_manual','requires_input':needs,'ready':not needs,
+            'scenario_owner':'assistant','next':'按next_question先选计算机科学、商科或生活娱乐，再选子方向与题型；场景和专业资料由助手生成核实' if needs else
             '已有冻结题目，运行status查看缺失材料并接续，不重跑已完成模型' if (root/'CURRENT.json').exists() else '按已选领域和题型自动生成并核实场景'}
 
 
@@ -256,7 +260,10 @@ def update_workspace(workspace,tool=TOOL_ROOT):
         arena=None
         if evaluation:
             from .arena import prepare_arena
-            arena=prepare_arena(root,read_json(evaluation))
+            from .platform_checks import status
+            checks=status(root,read_json(evaluation))
+            if not checks.get('required') or checks.get('ready_for_arena'):
+                arena=prepare_arena(root,read_json(evaluation))
         updated.append({'task':str(root),'preserved_existing_question':(root/'CURRENT.json').exists(),
                         'authoring_evaluation':str(evaluation) if evaluation else None,'arena':arena})
     marker.update({'toolkit_root':str(tool),'version':VERSION});write_json(workspace/'.authoring-workspace.json',marker)

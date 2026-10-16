@@ -1,6 +1,7 @@
 """Checked public source index and independently written business mechanism cards."""
 from pathlib import Path
 from .core import read_json, require
+from .domains import canonical_domain,LIFESTYLE
 
 LIBRARY=Path(__file__).resolve().parents[1]/'rules/business-reference.json'
 
@@ -33,7 +34,7 @@ LIFESTYLE_LIBRARY=Path(__file__).resolve().parents[1]/'rules/lifestyle-reference
 def validate_lifestyle_library(data):
     """Check traceability, not the truth or difficulty of a research claim."""
     from .selection import topic_index
-    nodes={n['id'] for n in topic_index('生活爱好类')}
+    nodes={n['id'] for n in topic_index('生活娱乐')}
     require(isinstance(data,dict) and isinstance(data.get('sources'),list)
             and isinstance(data.get('mechanisms'),list),'生活资料须包含sources与mechanisms列表')
     sources=data['sources'];cards=data['mechanisms']
@@ -93,7 +94,7 @@ def lifestyle_library(root=None):
 
 def lifestyle_coverage(cards,branch=None):
     from .selection import topic_index
-    nodes=topic_index('生活爱好类')
+    nodes=topic_index('生活娱乐')
     leaves=[n for n in nodes if not n['has_children'] and (branch is None or branch in n['path_ids'])]
     direct_nodes={i for card in cards for i in card['node_ids']}
     direct=[n['id'] for n in leaves if n['id'] in direct_nodes]
@@ -106,22 +107,22 @@ def lifestyle_coverage(cards,branch=None):
 
 def topic_matches(branch,node_ids):
     from .selection import topic_node
-    selected=topic_node('生活爱好类',branch)
+    selected=topic_node('生活娱乐',branch)
     if not selected:return False
     for node_id in node_ids:
-        node=topic_node('生活爱好类',node_id)
+        node=topic_node('生活娱乐',node_id)
         if node and (branch in node['path_ids'] or node_id in selected['path_ids']):return True
     return False
 
 
 def lifestyle_context(branch=None,limit=8,offset=0,root=None):
     from .selection import topic_node
-    require(branch is None or topic_node('生活爱好类',branch) is not None,'生活子方向不合法')
+    require(branch is None or topic_node('生活娱乐',branch) is not None,'生活子方向不合法')
     require(type(limit) is int and 1<=limit<=30 and type(offset) is int and offset>=0,'分页须limit=1..30且offset>=0')
     data=lifestyle_library(root)
     cards=[m for m in data['mechanisms'] if branch is None or topic_matches(branch,m['node_ids'])]
     page=cards[offset:offset+limit];ids={sid for m in page for sid in m['source_ids']}
-    return {'domain':'生活爱好类','scope':topic_node('生活爱好类',branch) if branch else None,
+    return {'domain':'生活娱乐','scope':topic_node('生活娱乐',branch) if branch else None,
             'total':len(cards),'offset':offset,'next_offset':offset+limit if offset+limit<len(cards) else None,
             'mechanism_index':[{'id':m['id'],'title':m['title'],'node_ids':m['node_ids']} for m in cards],
             'mechanisms':page,'sources':[s for s in data['sources'] if s['id'] in ids],
@@ -132,7 +133,7 @@ def lifestyle_context(branch=None,limit=8,offset=0,root=None):
 
 
 def validate_lifestyle_references(root,q):
-    if q.get('domain')!='生活爱好类':return
+    if canonical_domain(q.get('domain'))!=LIFESTYLE:return
     data=lifestyle_library(root);sources={s['id']:s for s in data['sources']};cards={m['id']:m for m in data['mechanisms']}
     selected=q.get('lifestyle_mechanisms',[]);refs=q.get('lifestyle_references',[])
     require(isinstance(selected,list) and selected and all(isinstance(i,str) and i in cards for i in selected),'生活候选须绑定匹配本题的机制卡')

@@ -8,6 +8,7 @@ import os
 import tempfile
 from datetime import datetime, timezone
 from .text import valid_insight
+from .domains import canonical_domain
 
 ROLES = ('seed', 'gpt', 'claude')
 ARENA_ROLES = ('arena_1', 'arena_2')
@@ -77,7 +78,7 @@ def freeze(root, q):
     if (root/'TASK.json').exists():require(read_json(root/'TASK.json').get('task_id')==q['task_id'],'题目ID与工作区不匹配')
     selected=question_domain(root,request)
     require(selected is not None,'先询问并记录用户选择的领域，再冻结题目')
-    require(q['domain']==selected,'题目领域与用户选择不一致；已冻结题目换领域请新建题目')
+    require(canonical_domain(q['domain'])==canonical_domain(selected),'题目领域与用户选择不一致；已冻结题目换领域请新建题目')
     from .platform_checks import question_gate
     question_gate(root,q)
     if (root/'CURRENT.json').is_file():

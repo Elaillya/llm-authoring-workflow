@@ -19,6 +19,7 @@ from . import platform_checks as qa
 from . import platform_client
 from . import platform_polish
 from . import lessons,replacement
+from . import check_policy
 
 
 def main(argv=None):
@@ -29,6 +30,7 @@ def main(argv=None):
     w=subs.add_parser('workspace-create');w.add_argument('directory',type=Path)
     n=subs.add_parser('new');n.add_argument('id')
     rn=subs.add_parser('rename');rn.add_argument('name')
+    cp=subs.add_parser('choose-model-checks');cp.add_argument('choice',choices=check_policy.CHOICES);cp.add_argument('--user-note',required=True)
     subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update')
     ai=subs.add_parser('arena-import');ai.add_argument('--evaluation',type=Path)
     t=subs.add_parser('choose-type');t.add_argument('type',choices=['分析决策类','开放推荐类','How-to类'])
@@ -89,10 +91,11 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学、商科还是生活爱好类，再问相应子方向，最后选择题型；设计前读取本地题库和认可的共享失败经验，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），才按Skill并行考点和达成性质检；若初次GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；认可考点失败按Skill的repair.md先保持prompt修Insight/考点统一重评，再询问是否重新提供GPT/Claude，替换不可行才改prompt；真实失败由助手复核后共享经验；错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学、商科还是生活娱乐，再问相应子方向，最后选择题型；设计前读取本地题库和认可的共享失败经验，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点后，先询问我是否进行考点和达成性质检、等待实际答复并用choose-model-checks记录，再创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），且我选择需要时才按Skill并行考点和达成性质检；我选择不需要则跳过两项API，保留题目检查与三模型门槛后直接进入Arena并标注未执行；若初次GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；认可考点失败按Skill的repair.md先保持prompt修Insight/考点统一重评，再询问是否重新提供GPT/Claude，替换不可行才改prompt；真实失败由助手复核后共享经验；错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
+            elif args.command=='choose-model-checks':result=check_policy.choose(root,args.choice,args.user_note)
             elif args.command=='choose-subdirection':result=choose_subdirection(root,args.branch,args.confirm)
             elif args.command=='domain-tree':result=domain_tree(args.domain)
             elif args.command=='selection-upgrade':result=upgrade_selection(root)
@@ -195,6 +198,8 @@ def main(argv=None):
                     result.update(stage='awaiting_replacement_markdown',pending_replacements=pending,
                                   next='用户已授权的替换填写入口见pending_replacements；导入前保留原回复，导入后统一重评，门槛通过才补质检')
                     result['model_input_files'].update({item['role']:item['input_file'] for item in pending})
+                if result['ready'] and (choice:=check_policy.prompt(root)):
+                    result.update(stage='choose_model_checks',next_question=choice,next=choice['ask'])
             else:raise Error('未知命令')
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:

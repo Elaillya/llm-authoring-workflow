@@ -1,11 +1,13 @@
 """Version-bound platform checks, evidence-based disagreement, and Arena gates."""
 from pathlib import Path
-from contextlib import contextmanager
+from contextlib import contextmanager,nullcontext
 from concurrent.futures import ThreadPoolExecutor,as_completed
 import copy,json,re,shutil,time,uuid
 from .core import Error,ROLES,active_question,hash_json,now,read_json,read_response,require,sha,write_json
 from . import platform_client as client
 from .text import insight_text,valid_insight
+from .domains import canonical_domain
+from . import check_policy
 
 THREE_MODEL_REJECTION=('当前候选不合格：Seed须未达成全部决定性核心考点，且GPT或Claude至少一个全部达成。'
     '保留当前题面、原回复和判断，标记失败并重新选题生成新prompt；不调用考点质检或达成性质检。')
@@ -21,7 +23,7 @@ def initial_question(root,q):
     from .core import question_domain,TYPES
     request=read_json(Path(root)/'REQUEST.json');validate_selection(root,q)
     require(q.get('task_id')==read_json(Path(root)/'TASK.json')['task_id'],'平台检查候选不属于当前任务')
-    require(q.get('domain')==question_domain(root,request) and q.get('question_type')==request.get('question_type')
+    require(canonical_domain(q.get('domain'))==canonical_domain(question_domain(root,request)) and q.get('question_type')==request.get('question_type')
             and q.get('question_type') in TYPES,'先选择并记录匹配的领域、子方向及题型')
     require(isinstance(q.get('prompt'),str) and 0<len(q['prompt'].strip()) and len(q['prompt'])<=100,'先形成不超过100字符的题面')
     require(valid_insight(q.get('insight')),'先完成非空Insight洞察文本')
@@ -52,8 +54,9 @@ def descriptor(root,stage,q=None,evaluation=None):
     plain=q.get('text_format')=='plain' or isinstance(q['insight'],str)
     params={'题目':q['prompt'],'出题说明':insight_text(q['insight'])}
     if stage=='question':
-        require(q['domain'] in config['domain_labels'] and q['question_type'] in config['type_labels'],'核实并配置平台领域/题型标签')
-        params.update({'领域':config['domain_labels'][q['domain']],'题目类型':config['type_labels'][q['question_type']]})
+        label=config['domain_labels'].get(q['domain'],config['domain_labels'].get(canonical_domain(q['domain'])))
+        require(label and q['question_type'] in config['type_labels'],'核实并配置平台领域/题型标签')
+        params.update({'领域':label,'题目类型':config['type_labels'][q['question_type']]})
     else:
         points=lambda kind:'\n'.join(('' if plain else '- ')+f'{p["id"]}：{p["criterion"]}' for p in q['points'] if p['kind']==kind) or '无'
         params['决定性核心考点']=points('decisive')
@@ -138,6 +141,8 @@ def question_gate(root,q):
 
 def stage_gate(root,stage,evaluation):
     q=active_question(root)['question'];question_gate(root,q)
+    policy=check_policy.require_choice(root)
+    if policy['choice']=='skipped':return check_policy.skipped(root,stage)
     request,_,_=descriptor(root,stage,evaluation=evaluation);result=latest(root,request)
     require(result and result['accepted'],'平台'+stage+'检查未完成、未通过或已过期；修订复检，或为有证据的错误结论登记异议')
     return result
@@ -145,6 +150,7 @@ def stage_gate(root,stage,evaluation):
 
 def final_gate(root,evaluation):
     if not required(root):return {}
+    require(authoring_evaluation(root,evaluation)[1]['three_model_gate'],'先满足三模型达成性门槛，再进入Arena或交付')
     return {stage:stage_gate(root,stage,evaluation) for stage in ('criteria','attainment')}
 
 
@@ -156,7 +162,9 @@ def run_models(root,evaluation,refresh=False):
     checks=run_checks(root,('criteria','attainment'),evaluation=evaluation,refresh=refresh)
     return {'stage':'three_model_platform_checks','checks':checks,
             'ready_for_arena':status(root,evaluation)['ready_for_arena'],
-            'next':'核对两项反馈，先failure-review。认可考点问题按references/repair.md优先修Insight/考点并统一重评，仍不满足再询问替换GPT/Claude，最后改prompt；有证据异议给备注。门禁满足后先发Arena链接。'}
+            'next':('用户选择跳过后两项质检；三模型门槛和题目检查满足后，先发Arena填写链接。跳过不代表质检通过。'
+                    if all(item['state']=='skipped_by_user' for item in checks.values()) else
+                    '核对两项反馈，实际失败先failure-review。认可考点问题按references/repair.md先修标准重评、再征求回复替换、最后改prompt；有证据异议给备注。门禁满足后先发Arena链接。')}
 
 
 def cached_result(previous):
@@ -182,6 +190,20 @@ def run_checks(root,stages,q=None,evaluation=None,refresh=False):
             from .lessons import repair_route
             route=repair_route(root)
             require(False,route['next'] if route else THREE_MODEL_REJECTION)
+        # The user's choice and every post-model cache/network operation form
+        # one critical section with choose-model-checks. Question-only checks
+        # retain their independent cache behavior.
+        with check_lock(root):
+            return _run_checks(root,stages,q,evaluation,refresh,locked=True)
+    return _run_checks(root,stages,q,evaluation,refresh,locked=False)
+
+
+def _run_checks(root,stages,q,evaluation,refresh,*,locked):
+    if locked:
+        policy=check_policy.require_choice(root)
+        if policy['choice']=='skipped':
+            question_gate(root,active_question(root)['question'])
+            return {stage:check_policy.skipped(root,stage) for stage in stages}
     if stages!=('question',):
         question_gate(root,active_question(root)['question'])
     descriptions={stage:descriptor(root,stage,q=q,evaluation=evaluation) for stage in stages}
@@ -200,7 +222,7 @@ def run_checks(root,stages,q=None,evaluation=None,refresh=False):
         for stage,item in previous.items():observe_platform(root,stage,item,q)
         return {stage:cached_result(item) for stage,item in previous.items()}
     base=records_directory(root)
-    with check_lock(root):
+    with (nullcontext() if locked else check_lock(root)):
         previous={stage:latest(root,item[0]) for stage,item in descriptions.items()}
         pending=[stage for stage in stages if not reusable(previous[stage])]
         if pending:
@@ -304,21 +326,28 @@ def status(root,evaluation=None):
     try:initial_question(root,q)
     except Error:return {'required':True,'stage':'draft_prompt_insight','ready_for_arena':False}
     try:
+        policy=check_policy.current(root)
         if evaluation is not None:
             _,stats=authoring_evaluation(root,evaluation)
             if not stats['three_model_gate']:
                 from .lessons import repair_route
                 route=repair_route(root)
                 return {'required':True,'stage':route['stage'] if route else 'candidate_rejected','three_model_gate':False,
-                        'ready_for_arena':False,'next':route['next'] if route else THREE_MODEL_REJECTION}
+                        'ready_for_arena':False,'model_checks_policy':policy,'next':route['next'] if route else THREE_MODEL_REJECTION}
         request,_,cookie=descriptor(root,'question',q=q);question=latest(root,request)
         checks={'question':question or {'state':'pending','accepted':False}}
         if evaluation is not None:
+            if not policy['configured']:
+                return {'required':True,'checks':checks,'model_checks_policy':policy,'ready_for_arena':False,
+                        'stage':'choose_model_checks','next':check_policy.ASK}
             for stage in ('criteria','attainment'):
-                request,_,_=descriptor(root,stage,evaluation=evaluation);checks[stage]=latest(root,request) or {'state':'pending','accepted':False}
-        ready=all(checks.get(stage,{}).get('accepted') for stage in client.KEYS)
+                if policy['choice']=='skipped':checks[stage]=check_policy.skipped(root,stage)
+                else:
+                    request,_,_=descriptor(root,stage,evaluation=evaluation);checks[stage]=latest(root,request) or {'state':'pending','accepted':False}
+        ready=checks['question'].get('accepted') and all(checks.get(stage,{}).get('accepted')
+                or checks.get(stage,{}).get('state')=='skipped_by_user' for stage in ('criteria','attainment'))
         if ready:ready=authoring_evaluation(root,evaluation)[1]['three_model_gate']
-        return {'required':True,'checks':checks,'ready_for_arena':bool(ready),'cookie_file':str(cookie),
+        return {'required':True,'checks':checks,'model_checks_policy':policy,'ready_for_arena':bool(ready),'cookie_file':str(cookie),
                 'stage':'platform_checks_ready' if ready else 'platform_checks_pending'}
     except Error as error:return {'required':True,'stage':'platform_checks_pending','ready_for_arena':False,'reason':str(error)}
 
@@ -327,8 +356,12 @@ def export_evidence(root,evaluation,package):
     if not required(root):return None
     checks=final_gate(root,evaluation);q=active_question(root)['question']
     request,_,_=descriptor(root,'question',q=q);checks={'question':latest(root,request),**checks}
-    notes=[];summary={}
+    notes=[];summary={};policy=check_policy.require_choice(root)
+    write_json(Path(package)/'evidence/platform/model-check-choice.json',read_json(policy['record']))
     for stage,result in checks.items():
+        if result['state']=='skipped_by_user':
+            summary[stage]={'state':'skipped_by_user','server_conclusion':None,'choice_sha256':policy['decision_sha256']}
+            continue
         destination=Path(package)/'evidence/platform'/stage;destination.mkdir(parents=True)
         source=Path(result['attempt'])
         for name in ('request.json','result.json'):
@@ -337,4 +370,5 @@ def export_evidence(root,evaluation,package):
         if result.get('disagreement'):
             write_json(destination/'disagreement.json',result['disagreement'])
             notes.append(result['disagreement']['form_notes'])
-    return {'checks':summary,'form_notes':'\n\n'.join(notes)}
+    if policy['choice']=='skipped':notes.append('用户选择不进行考点质检与达成性质检；这两项未执行，不表示通过。题目难度与标签检查仍按实际结果记录。')
+    return {'checks':summary,'model_checks_policy':policy['choice'],'form_notes':'\n\n'.join(notes)}

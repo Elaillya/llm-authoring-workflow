@@ -1,3 +1,5 @@
+后两项质检是否执行先按optional-model-checks.md的本题实际选择：required沿下述检查流程，skipped去掉两项调用但仍须题目检查及三模型门槛。交付标明跳过，不能写成三项通过。
+
 # Arena Markdown与五模型排序
 
 1. 先lab check当前三模型评估。门禁满足后lab arena-prepare --evaluation evaluations/three-rNNNN.json。工具创建arena-input/rNNNN/model-4.md、model-5.md和arena-prompt.md；发送内容严格等于冻结prompt，不另加格式要求。先向用户给出这三份文件的可点击链接，让用户在Search + Battle新会话获取随机两模型，填两份MD的model_name及原回复全文。截图用户自己提交。三项实际质检均通过但有优化建议时，按platform-checks.md在链接发出后离线完成表达优化，不再调用质检，再等待用户填好；没有建议直接等待。题面和原判定保持。无需用户自己创建文件或提供图片。

@@ -25,7 +25,7 @@ class LifestyleLibraryTests(unittest.TestCase):
         self.assertEqual(data['source_count'],len(data['sources']))
         self.assertEqual(data['mechanism_count'],len(data['mechanisms']))
         self.assertEqual(data['scenario_seed_count'],sum(len(m['scenario_seeds']) for m in data['mechanisms']))
-        leaves={n['id'] for n in topic_index('生活爱好类') if not n['has_children']}
+        leaves={n['id'] for n in topic_index('生活娱乐') if not n['has_children']}
         covered={n for m in data['mechanisms'] for n in m['node_ids']}
         self.assertEqual(data['directly_covered_leaf_count'],len(covered&leaves))
         self.assertEqual(set(data['uncovered_leaf_ids']),leaves-covered)
@@ -63,8 +63,8 @@ class LifestyleLibraryTests(unittest.TestCase):
         old=client.default_config();old['domain_labels']={'计算机科学':'自定义CS','商科':'商科'}
         before=copy.deepcopy(old);value=client.validated_config(old)
         self.assertEqual(old,before);self.assertEqual(value['domain_labels']['计算机科学'],'自定义CS')
-        self.assertEqual(value['domain_labels']['生活爱好类'],'生活爱好')
-        old['domain_labels']['生活爱好类']='自定义生活';self.assertEqual(client.validated_config(old)['domain_labels']['生活爱好类'],'自定义生活')
+        self.assertEqual(value['domain_labels']['生活娱乐'],'生活娱乐')
+        old['domain_labels']['生活娱乐']='自定义生活';self.assertEqual(client.validated_config(old)['domain_labels']['生活娱乐'],'自定义生活')
 
 
 class LifestyleCandidateTests(unittest.TestCase):
@@ -72,9 +72,9 @@ class LifestyleCandidateTests(unittest.TestCase):
     tearDown=diversity.DiversityTests.tearDown
     candidate=diversity.DiversityTests.candidate
     def life(self):
-        choose_domain(self.a,'生活爱好类');choose_subdirection(self.a,'life_garden_indoor')
+        choose_domain(self.a,'生活娱乐');choose_subdirection(self.a,'life_garden_indoor')
         card=next(c for c in lifestyle_library()['mechanisms'] if c['id']=='LH-C-M01')
-        q=self.candidate(self.a);q.update(domain='生活爱好类',subdirection='life_garden_indoor',
+        q=self.candidate(self.a);q.update(domain='生活娱乐',subdirection='life_garden_indoor',
           prompt='两盆绿植叶子都垂了，一盆土干盆轻，另一盆托盘有水。我该一起补水吗？',
           insight=card['decisive_factor'],lifestyle_mechanisms=[card['id']],lifestyle_references=card['source_ids'])
         return q
@@ -124,12 +124,12 @@ class LifestyleFlowTests(unittest.TestCase):
     seed=platform_fixture.PlatformTests.seed
     three=platform_fixture.PlatformTests.three
     def test_life_selection_through_mocked_checks_and_five_original_md(self):
-        choose_domain(self.root,'生活爱好类');choose_subdirection(self.root,'life_garden_indoor')
+        choose_domain(self.root,'生活娱乐');choose_subdirection(self.root,'life_garden_indoor')
         card=next(c for c in lifestyle_library()['mechanisms'] if c['id']=='LH-C-M01')
-        self.q.update(domain='生活爱好类',subdirection='life_garden_indoor',lifestyle_mechanisms=[card['id']],
+        self.q.update(domain='生活娱乐',subdirection='life_garden_indoor',lifestyle_mechanisms=[card['id']],
                       lifestyle_references=card['source_ids'],insight=card['decisive_factor'])
         value,send=self.run_check('question',q=self.q)
-        self.assertEqual(send.call_args.args[1]['params']['领域'],'生活爱好')
+        self.assertEqual(send.call_args.args[1]['params']['领域'],'生活娱乐')
         diversity.accept(self.root,self.q);freeze(self.root,self.q)
         ev=self.three()
         for stage in ('criteria','attainment'):

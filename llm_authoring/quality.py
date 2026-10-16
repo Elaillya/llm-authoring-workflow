@@ -90,7 +90,8 @@ def report_locked(root,q,items):
             'neighbors':neighbors,'hard_duplicates':hard,'topic_index':topic_index(items,key),
             'comparison_scope':'all_other_task_versions_in_this_workspace',
             'limits':'本地分数仅召回近似文本和标签；作者必须结合原题语义比较场景、机制和评分要求，不能据低分声称语义绝不重复'}
-    if q.get('domain')=='生活爱好类':
+    from .domains import canonical_domain,LIFESTYLE
+    if canonical_domain(q.get('domain'))==LIFESTYLE:
         report['lifestyle_library_sha256']=sha(LIFESTYLE_LIBRARY)
         supplement=Path(root)/'drafts/lifestyle-supplement.json'
         report['lifestyle_supplement_sha256']=sha(supplement) if supplement.exists() else None

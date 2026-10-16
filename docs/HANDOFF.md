@@ -20,6 +20,8 @@ workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评
 
 3.1.0的新题二选一计算机科学/商科，再选子方向和题型。冻结前读取工作区私有题库、完成自然与差异复核；新用户不需要配置API。接口与迁移边界见LOCAL_MEMORY.md；业务资料见BUSINESS_REFERENCES.md及rules/business-reference.json。现有已冻题的原件不要求补画像或重取回复。
 
-3.3.0新增生活爱好类，与CS/商科并列；按LIFESTYLE_CATALOG.md和Skill的references/lifestyle.md分层选范围。50个已读一手来源、73张机制卡与73个构造种子；资料支持不等于模型区分度。仅新候选需要匹配生活资料，旧题原件继续读取。
+3.3.0新增生活娱乐，与CS/商科并列；按LIFESTYLE_CATALOG.md和Skill的references/lifestyle.md分层选范围。50个已读一手来源、73张机制卡与73个构造种子；资料支持不等于模型区分度。仅新候选需要匹配生活资料，旧题原件继续读取。
 
 3.4.0按FAILURE_LEARNING.md与Skill的references/repair.md处理认可考点失败；先修标准统一重评，再征求GPT/Claude替换，最后改题。失败观察自动记、原因复核后共享，更新不会给历史失败批量盖认可或触发新调用。
+
+3.5.0按OPTIONAL_MODEL_CHECKS_SPEC.md与Skill的references/optional-model-checks.md执行本题后两项选择，题目难度/标签固定；显示领域生活娱乐，历史名称、冻结和平台载荷兼容保留。

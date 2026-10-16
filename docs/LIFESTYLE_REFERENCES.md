@@ -1,4 +1,4 @@
-# 生活爱好类：资料与出题方法
+# 生活娱乐：资料与出题方法
 
 新增大类与计算机科学、商科并列。五条主干是兴趣爱好、活动与出行、日常生活、个人生活规划、学生学习与课余生活；完整层级与ID见[分类目录](LIFESTYLE_CATALOG.md)。支持兴趣爱好 → 文艺 → 音乐 → 摇滚，也支持运动 → 球类 → 乒乓球等不同深度。大范围确认后由助手继续细化，不强迫用户了解分类树。
 
@@ -13,8 +13,8 @@
 ## 助手怎样用
 
 ```bash
-bin/lab choose-domain 生活爱好类
-bin/lab domain-tree --domain 生活爱好类
+bin/lab choose-domain 生活娱乐
+bin/lab domain-tree --domain 生活娱乐
 bin/lab choose-subdirection life_hobbies
 # 若用户明确指定摇滚，也可直接记录：
 bin/lab choose-subdirection life_music_rock
@@ -33,7 +33,7 @@ bin/lab lifestyle-references --subdirection life_arts_music --limit 8 --offset 0
 5. prompt自然简短，只交代影响判断的事实与真实目标，不堆出题术语。Insight用灵活纯文本突出改变结论的因素；核心考点短而独立，一条判断一件事。设计复核绑定公共资料、私有补充资料与来源笔记的哈希；改资料后重做本地复核。更新本功能不重写既有题目与旧判断。
 6. 继续原流程：题面/Insight难度标签检查 → 考点和冻结 → Seed → 合条件后GPT/Claude → 三模型门槛通过才并行两项质检 → Arena两模型 → 五模型排序与六份MD。
 
-生活爱好在项目原领域清单中的标签为“生活爱好”；工具会为缺少它的旧私有映射补默认值，不改service.json或Cookie，不覆盖显式自定义映射。该新增领域的线上质检尚未在本轮实际调用。
+生活娱乐在项目原领域清单中的标签为“生活娱乐”；工具会为缺少它的旧私有映射补默认值，不改service.json或Cookie，不覆盖显式自定义映射。该新增领域的线上质检尚未在本轮实际调用。
 
 ## 什么题值得出
 

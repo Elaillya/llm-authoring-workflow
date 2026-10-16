@@ -1,6 +1,6 @@
 # 完整出题工具接口规范
 
-- 新题先选择计算机科学、商科或生活爱好类，再选择config/domains.json的子方向及三种题型之一；助手负责场景、事实、限制和专业资料核实。没有用户材料不阻塞。领域不得从 cs_ 等 ID 或相邻题目推断。
+- 新题先选择计算机科学、商科或生活娱乐，再选择config/domains.json的子方向及三种题型之一；助手负责场景、事实、限制和专业资料核实。没有用户材料不阻塞。领域不得从 cs_ 等 ID 或相邻题目推断。
 - 候选题面≤100字符；Insight用非空纯文本突出决定性因素及其作用，组织形式灵活，兼容旧三字段对象；考点减少背景且每条独立可判定；至少一个决定性考点，非决定性考点可选，没有时交付“无”。先冻结再获取回答，禁止倒推标准。
 - 3.0.0 所有模型回复手动填入工具预先创建的 Markdown。新用户不需要 API 配置，不自动调用 Seed/GPT/Claude，collect/recover/render 命令拒绝执行。所有官方网页截图由用户另行提交；不渲染模拟网页，不要求在工作区上传截图。
 - 新 TASK.response_mode=official_manual。model-prepare seed 创建 model-input/rNNNN/prompt.md 与 Seed 2.1 Turbo.md。用户只替换占位内容，不填模型元数据；名称由角色固定。model-import 保存完整原始字节、来源为用户提供、版本绑定和哈希，格式损坏、占位或空文不可导入。
@@ -23,3 +23,5 @@
 新策略selection_schema=2；画像与子方向随冻结保存，本地题库SQLite位于父目录local，跨窗口事务预留、快照绑定、词法召回加全库语义筛查；自然表达按受众核实，不机械禁用专业词。商科20来源/18机制卡是参考索引，非已验收题目或专家判断替代品。具体实施范围与未部署约束见NEXT_SPEC.md，操作接口见LOCAL_MEMORY.md。旧冻结记录与3.0请求读取兼容。
 
 3.4.0失败修复顺序、同题面授权替换和父工作区共享经验按[REPAIR_LEARNING_SPEC.md](REPAIR_LEARNING_SPEC.md)，回归使用合成原文与模拟平台返回。
+
+3.5.0按OPTIONAL_MODEL_CHECKS_SPEC.md与Skill的references/optional-model-checks.md执行本题后两项选择，题目难度/标签固定；显示领域生活娱乐，历史名称、冻结和平台载荷兼容保留。

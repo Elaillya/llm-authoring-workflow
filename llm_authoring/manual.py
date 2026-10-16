@@ -58,6 +58,9 @@ def prepare_model(root, role, evaluation=None):
     from .platform_checks import question_gate
     question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
+    if role != 'seed':
+        from .check_policy import require_choice
+        require_choice(root)
     if response_dir(root, role).exists():
         item = read_response(root, role)
         validate_model_evidence(root, role, item)
@@ -110,6 +113,9 @@ def import_model(root, role, evaluation=None):
     from .platform_checks import question_gate
     question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
+    if role != 'seed':
+        from .check_policy import require_choice
+        require_choice(root)
     directory = input_directory(root)
     request = read_json(directory / (role + '-request.json'))
     require(request_matches(request,model_request(root,role,screen),manual=True), '模型输入绑定已过期或与当前 Seed 判断不一致')

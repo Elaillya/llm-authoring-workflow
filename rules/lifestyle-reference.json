@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "domain": "生活爱好类",
+  "domain": "生活娱乐",
   "checked_date": "2026-10-15",
   "description": "已阅读的一手资料索引、原创机制卡与构造情境；不是已验证模型区分度或项目方验收合格的题库。",
   "acceptance_status": "unvalidated_scenario_seeds",

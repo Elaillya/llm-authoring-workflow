@@ -1,11 +1,13 @@
 """Domain choices and progressive topic scopes, retaining flat legacy branches."""
 from pathlib import Path
 from .core import active_question, question_domain, read_json, require, write_json
+from .domains import canonical_domain,LIFESTYLE
 
 CATALOG=Path(__file__).resolve().parents[1]/'config/domains.json'
 
 
 def topic_index(domain):
+    domain=canonical_domain(domain)
     result=[]
     def visit(nodes,path,labels):
         for node in nodes:
@@ -31,17 +33,18 @@ def menu(domain=None,parent=None):
 
 
 def domain_tree(domain):
+    domain=canonical_domain(domain)
     require(domain in menu(),'先选择有效大方向')
     nodes=topic_index(domain)
     return {'domain':domain,'nodes':len(nodes),'topics':nodes,
-            'facets':read_json(CATALOG).get('lifestyle_facets',{}) if domain=='生活爱好类' else {},
+            'facets':read_json(CATALOG).get('lifestyle_facets',{}) if domain==LIFESTYLE else {},
             'next':'按层询问，也可直接指定细类；确认当前范围可停止细分，不强制到叶节点'}
 
 
 def choose_subdirection(root,branch,confirm=False):
     root=Path(root);request=read_json(root/'REQUEST.json')
     require(request.get('selection_schema')==2,'旧题请保留原选择；未冻结新题可先升级选题入口')
-    domain=question_domain(root,request);selected=topic_node(domain,branch)
+    domain=canonical_domain(question_domain(root,request));selected=topic_node(domain,branch)
     require(selected is not None,'先选择大方向，再从该方向菜单选择子方向')
     if (root/'CURRENT.json').exists():
         require(active_question(root)['question'].get('subdirection')==branch,'已冻结题目不能更换子方向，请新建题目')
@@ -72,11 +75,11 @@ def selection_status(root,request,domain):
 def validate_selection(root,q):
     request=read_json(Path(root)/'REQUEST.json')
     if request.get('selection_schema')!=2:return
-    require(request.get('domain_confirmed') is True and request.get('domain')==q.get('domain'),
+    require(request.get('domain_confirmed') is True and canonical_domain(request.get('domain'))==canonical_domain(q.get('domain')),
             '先询问并确认用户选择的领域，候选题目须与选择一致')
     require(request.get('question_type')==q.get('question_type'),
             '先询问并记录用户选择的题型，候选题目须与选择一致')
-    require(q.get('domain') in menu(),'新题须选择目录中的大方向')
+    require(canonical_domain(q.get('domain')) in menu(),'新题须选择目录中的大方向')
     branch=request.get('subdirection');selected=topic_node(q['domain'],branch)
     require(selected is not None and q.get('subdirection')==branch,'先记录子方向，并让候选题目与该子方向一致')
     require(not selected['has_children'] or request.get('subdirection_confirmed') is True,

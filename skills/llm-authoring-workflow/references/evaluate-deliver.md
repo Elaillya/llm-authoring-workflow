@@ -1,3 +1,5 @@
+后两项质检是否执行先按optional-model-checks.md的本题实际选择：required沿下述检查流程，skipped去掉两项调用但仍须题目检查及三模型门槛。交付标明跳过，不能写成三项通过。
+
 # 三模型验证与出题检查点
 
 运行lab evaluation-template evaluations/three-rNNNN.json，逐项填写全部决定性考点met/reason/quotes，满足需原文准确引用；缺证据保持null。已有同版本判断复用。

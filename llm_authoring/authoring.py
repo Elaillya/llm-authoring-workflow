@@ -137,7 +137,8 @@ def export_authoring(root,ev,review,output):
     validated=[(role,read_response(root,role)) for role in ROLES]
     from .manual import validate_model_evidence
     pictures={role:validate_model_evidence(root,role,item) for role,item in validated}
-    fields={'phase':'authoring','task_id':submission_id(root,q['task_id']),'domain':question_domain(root),'prompt':q['prompt'],'question_type':q['question_type'],
+    from .domains import canonical_domain
+    fields={'phase':'authoring','task_id':submission_id(root,q['task_id']),'domain':canonical_domain(question_domain(root)),'prompt':q['prompt'],'question_type':q['question_type'],
             'insight':q['insight'],'author_notes':q['author_notes'],
             'decisive_points':[p for p in q['points'] if p['kind']=='decisive'],
             'supporting_points':[p for p in q['points'] if p['kind']=='supporting'] or '无','models':{}}

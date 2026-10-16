@@ -1,16 +1,16 @@
 ---
 name: llm-authoring-workflow
-description: 完成开放难题第五期完整出题与五模型排序。选领域/子方向和题型，查本地题库，题面与Insight先平台检查，冻结后先Seed再GPT/Claude Markdown，齐备后并行考点及达成性质检，等待至完成；认可考点失败先修标准重评、再征求用户换GPT/Claude、最后改题；本地共享复核失败经验。错误意见给证据异议备注。门禁满足后先发Arena链接，再离线优化通过建议免复检，收两份MD、排序交付六份MD；模型回复手动，平台质检可自动调用。
+description: 完成开放难题第五期完整出题与五模型排序。选领域/子方向和题型，读题库及失败经验，题面与Insight固定先查难度标签；冻结后先Seed，再询问是否进行后两项质检并收GPT/Claude Markdown。选择需要才在三模型门槛后并行质检，选择不需要则跳过两项进入Arena；收两份随机模型MD、排序交付六份MD。认可失败先修标准、再征求换回复、最后改题；错误意见给证据异议。模型回复手动、截图用户另交。
 ---
 
 # 完整出题与五模型排序
 
-先读当前题目 AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md 及工具仓 rules/authoring.md。设计、判断和交付的表达按references/writing.md：发送文字严格等于prompt；Insight形式灵活但突出决定性因素，考点精简背景且独立可判定，作者字段用纯文本，排序理由简洁。路径见 TOOLKIT.md，命令为父工作区 bin/lab。首次仅有工具仓时按 README 准备环境并建工作区，不索取模型API配置。同项目质检配置已自带，缺失时自动导入，不要求用户提供HAR/service.json；需要质检时仅给已有Cookie文件让用户填写自己的登录态。
+先读当前题目AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md，以及工具仓rules/authoring.md。路径和命令见TOOLKIT.md。首次仅有工具仓时按README创建工作区，不索取模型API配置。共用平台配置已附带；需要时只给已有Cookie文件让用户填写登录态。设计与交付表达读references/writing.md：自然prompt；灵活Insight突出决定因素；原子考点；作者字段纯文本；五份模型原Markdown保持，发送文字逐字等于prompt。
 
-1. 运行 lab begin 与 lab status，按next_question先询问计算机科学/商科/生活爱好类，再询问菜单子方向，最后记录三种题型。计算机科学提供日常AI与学习、大学课程、研究生科研、真实生产四类；商科提供经核验资料支持的七类。生活爱好按references/lifestyle.md显示多层主题；可逐层选或直接指定细类，内部范围用--confirm确认后由助手细分，不强迫选到叶节点。已有选择直接记录，旧冻结题沿用原选题。具体菜单来自config/domains.json，不要求用户提供专业场景和关键事实。
-2. 未冻结时按references/design.md读取题库、共享失败经验和资料，写自然题面与Insight后，必须按references/platform-checks.md执行题目难度与标签检查；合理问题自主修订再检。通过后补齐考点，完成多样性复核、candidate-reserve和冻结。商科核实参考卡边界；生活爱好按references/lifestyle.md读匹配卡与来源，资料不足由助手先补查。已有冻结版本和原件从缺失步骤接续，全局Codex记忆不参与题库。
-3. 按 references/collect.md 创建 Seed Markdown 填写文件，给出 prompt 和填写文件的可点击链接，等待用户填写。导入后按全部决定性点判断；未全部达成才创建 GPT 和 Claude 的文件。三模型完整原文和判断齐备后，按 references/evaluate-deliver.md 验证门槛及作者自查。
-4. 三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），再按references/platform-checks.md用qa-run models并行考点及达成性质检；初次门槛不通过尤其GPT/Claude都未达成时，保留负结果、复核失败经验、按题库记rejected并生成不同的新prompt；认可后期考点失败后的门槛失效按references/repair.md处理，不调用后两项质检；正常请求持续等待至完成，认可考点不通过按references/repair.md优先保持prompt修Insight/考点并统一重评；仍不满足先询问是否替换GPT/Claude完整回复，最后才改prompt。真实失败按该引用复核并共享经验。任何内容检查的错误意见按该引用登记证据异议，立即告知不认同并给出可复制备注。门禁与三模型门槛满足后按references/arena-rank.md先发Arena填写链接，再离线处理三项实际通过的表达建议，保持题面、专业含义和判定，优化后免复检。缺失/过期Cookie填已有私有文件；网页截图用户另交。
-5. 用户填好后导入，统一判断全部考点，按真实名称排序并校验理由。交付提交信息.md和五份按模型名命名的原回复，各给可点击链接，更新 WORKLOG 和 Git 检查点，不生成 ZIP。
+1. lab begin/status先选计算机科学、商科或生活娱乐，再选子方向、题型，已有明确选择直接记录。生活娱乐按references/lifestyle.md分层选或确认当前范围；商科按资料库选范围。场景、事实和依据由助手构造并研究，使用references/design.md读共享题库和认可失败经验。旧“生活爱好类”只作兼容，冻结与原证据不改。
+2. 写prompt与Insight，固定按references/platform-checks.md检查题目难度与标签，合理返修复检，错误意见保留证据异议。通过后补齐考点、完成设计复核/预留/冻结。已有冻结题从缺失步骤接续。
+3. 按references/collect.md先收Seed完整Markdown并判断。Seed未全部决定性达成后，**创建GPT/Claude填写文件前必须读references/optional-model-checks.md，询问用户是否进行考点与达成性质检，等待实际答复并记录选择**；同题已有选择直接沿用。再给两份填写链接，原样导入，统一完成三模型判断与备注。
+4. lab check确认three_model_gate=true：Seed未全部决定性达成，且GPT/Claude至少一个全部达成。选择需要才按references/platform-checks.md用qa-run models并行后两项，正常请求等至完成；选择不需要则去除这两个步骤，按有效题目检查及本地三模型门槛直接进入Arena。门槛失败不能通过选择跳过放行；初次失败保留负结果并换新prompt。认可考点失败按references/repair.md先修Insight/考点统一重评、再征求回复替换、最后改prompt；失败原因复核后共享。错误质检告知不认同并给可复制表单备注。
+5. 按references/arena-rank.md先发Arena题面和两份填写链接。只有三项实际通过才可按原规则离线优化通过建议、免复检；跳过不声称通过。收Arena两份MD、统一五模型考点评估和具名排序，按references/evaluate-deliver.md交付提交信息.md与五份模型原MD并给链接，不生成ZIP，更新WORKLOG和Git检查点。
 
-材料齐备时连续推进。完成条件是五份完整原 Markdown、同版考点判断、合规型号、具名排序及简洁具体的五模型考点理由、纯文本提交字段及 manifest。原件和负结果保留。缺少回复或型号不能确认记为证据不足；禁止补写模型答案或伪造网页。用户提供的 Markdown 不代表工具独立核验了网页或甲方验收。
+保留原件、失败历史和私有选择；未得到完整回复或型号不能确认是证据不足。完整交付需要五份原文、同版判断、合规型号、具名排序与具体简洁理由、纯文本作者字段和manifest。用户提交截图，工具不独立核验真实网页或甲方验收。

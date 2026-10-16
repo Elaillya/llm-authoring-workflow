@@ -33,6 +33,8 @@ class PlatformTests(unittest.TestCase):
     def setUp(self):
         diversity.DiversityTests.setUp(self);self.root=self.a;self.workspace=self.ws;self.q=self.candidate(self.root)
         task=read_json(self.root/'TASK.json');task['platform_checks_required']=True;write_json(self.root/'TASK.json',task)
+        from llm_authoring.check_policy import choose
+        choose(self.root,'required','合成用户选择需要后两项检查。')
         self.files=setup(self.ws,config());Path(self.files['cookie_file']).write_text('sid=TEST-ONLY-CREDENTIAL')
     def run_check(self,stage,q=None,ev=None,decision='通过',details='合成测试检查通过，不代表真实专业判断。',**kwargs):
         with patch('llm_authoring.platform_client.call',return_value=response(stage,decision,details)) as send:
