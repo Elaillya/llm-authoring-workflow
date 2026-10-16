@@ -47,3 +47,5 @@ SQLite写事务串行化窗口间的预留/冻结；复核绑定候选、来源�
 旧3.0请求与冻结版本继续读取，不强迫重设计。尚未冻结的旧任务需要新选题入口时，可显式 `selection-upgrade`，再重新选大方向与子方向；升级不会自动搬动题目或修改已冻结记录。
 
 生活爱好候选还绑定lifestyle_mechanisms/lifestyle_references。匹配卡、来源阅读范围、空白主题补查和私有补充资料结构见[LIFESTYLE_REFERENCES.md](LIFESTYLE_REFERENCES.md)；ID与哈希只保证可追踪和复核失效条件，不证明来源确实支持题设。
+
+3.4.0新增同库失败观察及追加复核历史，设计前读取memory_context.failure_learning。认可经验与待复核观察分开，原题库快照合同保持；记录、纠正和隐私范围见[FAILURE_LEARNING.md](FAILURE_LEARNING.md)。

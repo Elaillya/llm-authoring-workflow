@@ -18,6 +18,7 @@ from .references import business_context,lifestyle_context
 from . import platform_checks as qa
 from . import platform_client
 from . import platform_polish
+from . import lessons,replacement
 
 
 def main(argv=None):
@@ -41,6 +42,12 @@ def main(argv=None):
     dc=subs.add_parser('design-check');dc.add_argument('question',type=Path)
     dr=subs.add_parser('design-review-template');dr.add_argument('output',type=Path);dr.add_argument('--question',type=Path,required=True)
     cr=subs.add_parser('candidate-reserve');cr.add_argument('question',type=Path);cr.add_argument('--review',type=Path)
+    rp=subs.add_parser('model-replace-prepare');rp.add_argument('role',choices=['gpt','claude']);rp.add_argument('--failure',required=True);rp.add_argument('--authorization-note',required=True);rp.add_argument('--reason',required=True);rp.add_argument('--seed-evaluation',type=Path)
+    ri=subs.add_parser('model-replace-import');ri.add_argument('role',choices=['gpt','claude']);ri.add_argument('replacement_id');ri.add_argument('--seed-evaluation',type=Path)
+    fl=subs.add_parser('failure-context');fl.add_argument('--limit',type=int,default=12)
+    fs=subs.add_parser('failure-show');fs.add_argument('event_id')
+    ft=subs.add_parser('failure-review-template');ft.add_argument('event_id');ft.add_argument('output',type=Path)
+    fr=subs.add_parser('failure-review');fr.add_argument('decision',type=Path)
     br=subs.add_parser('business-references');br.add_argument('--subdirection')
     lr=subs.add_parser('lifestyle-references');lr.add_argument('--subdirection');lr.add_argument('--limit',type=int,default=8);lr.add_argument('--offset',type=int,default=0)
     qs=subs.add_parser('qa-setup');sources=qs.add_mutually_exclusive_group(required=True)
@@ -82,7 +89,7 @@ def main(argv=None):
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
-                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学、商科还是生活爱好类，再问相应子方向，最后选择题型；设计前读取本地题库，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），才按Skill并行考点和达成性质检；若GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；合理不通过自主返修，错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
+                print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学、商科还是生活爱好类，再问相应子方向，最后选择题型；设计前读取本地题库和认可的共享失败经验，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点才创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），才按Skill并行考点和达成性质检；若初次GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；认可考点失败按Skill的repair.md先保持prompt修Insight/考点统一重评，再询问是否重新提供GPT/Claude，替换不可行才改prompt；真实失败由助手复核后共享经验；错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
             elif args.command=='choose-domain':result=choose_domain(root,args.domain)
@@ -100,6 +107,14 @@ def main(argv=None):
                 require(not args.output.exists(),'设计复核文件已存在，保留旧记录；新版请使用新文件名')
                 write_json(args.output,review_template(root,read_json(args.question)));result={'output':str(args.output),'next':'助手逐项填写真实比较理由，再candidate-reserve或freeze，不向用户新增确认'}
             elif args.command=='candidate-reserve':result=reserve(root,read_json(args.question),args.review)
+            elif args.command=='model-replace-prepare':result=replacement.prepare(root,args.role,args.failure,authorization_note=args.authorization_note,reason=args.reason,evaluation=args.seed_evaluation)
+            elif args.command=='model-replace-import':result=replacement.import_reply(root,args.role,args.replacement_id,args.seed_evaluation)
+            elif args.command=='failure-context':result=lessons.failure_context(root,workspace,args.limit)
+            elif args.command=='failure-show':result=lessons.show(workspace,args.event_id)
+            elif args.command=='failure-review-template':
+                require(not args.output.exists(),'保留已有失败复核，使用新文件名')
+                write_json(args.output,lessons.review_template(workspace,args.event_id));result={'output':str(args.output)}
+            elif args.command=='failure-review':result=lessons.review(workspace,read_json(args.decision))
             elif args.command=='business-references':result=business_context(args.subdirection)
             elif args.command=='lifestyle-references':result=lifestyle_context(args.subdirection,args.limit,args.offset,root)
             elif args.command=='qa-setup':
@@ -135,8 +150,12 @@ def main(argv=None):
                 require(not args.output.exists(),'输出已存在，拒绝覆盖判断或自查')
                 value=self_review_template(root) if args.command=='self-review-template' else evaluation_template(root,('seed',) if args.command=='seed-evaluation-template' else ROLES)
                 write_json(args.output,value);result={'output':str(args.output)}
-            elif args.command=='seed-check':result=check_seed(root,read_json(args.evaluation))
-            elif args.command=='check':result=check_three(root,read_json(args.evaluation))
+            elif args.command=='seed-check':
+                evaluation=read_json(args.evaluation);result=check_seed(root,evaluation)
+                result['failure_observations']=lessons.observe_gate(root,evaluation)
+            elif args.command=='check':
+                evaluation=read_json(args.evaluation);result=check_three(root,evaluation)
+                result['failure_observations']=lessons.observe_gate(root,evaluation)
             elif args.command=='arena-prepare':result=prepare_arena(root,read_json(args.evaluation))
             elif args.command=='arena-import':result=import_arena(root,read_json(args.evaluation) if args.evaluation else None)
             elif args.command=='five-evaluation-template':
@@ -172,6 +191,10 @@ def main(argv=None):
                 platform=qa.status(root,read_json(path) if path else None);result['platform_checks']=platform
                 if platform.get('required') and result['ready'] and not platform.get('ready_for_arena'):
                     result['stage']=platform['stage'];result['next']=platform.get('next','先完成三模型判断并确认门槛通过，再qa-run models并行质检；正常请求等至完成，异议给可复制备注')
+                if result['ready'] and (pending:=replacement.pending(root)):
+                    result.update(stage='awaiting_replacement_markdown',pending_replacements=pending,
+                                  next='用户已授权的替换填写入口见pending_replacements；导入前保留原回复，导入后统一重评，门槛通过才补质检')
+                    result['model_input_files'].update({item['role']:item['input_file'] for item in pending})
             else:raise Error('未知命令')
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:

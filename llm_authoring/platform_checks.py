@@ -156,7 +156,7 @@ def run_models(root,evaluation,refresh=False):
     checks=run_checks(root,('criteria','attainment'),evaluation=evaluation,refresh=refresh)
     return {'stage':'three_model_platform_checks','checks':checks,
             'ready_for_arena':status(root,evaluation)['ready_for_arena'],
-            'next':'核对两项独立反馈；合理不通过返修，有证据异议给可复制备注；门禁满足后先发Arena填写链接，再处理通过建议'}
+            'next':'核对两项反馈，先failure-review。认可考点问题按references/repair.md优先修Insight/考点并统一重评，仍不满足再询问替换GPT/Claude，最后改prompt；有证据异议给备注。门禁满足后先发Arena链接。'}
 
 
 def cached_result(previous):
@@ -176,7 +176,12 @@ def run_checks(root,stages,q=None,evaluation=None,refresh=False):
     q=copy.deepcopy(q);evaluation=copy.deepcopy(evaluation)
     if any(stage in ('criteria','attainment') for stage in stages):
         _,stats=authoring_evaluation(root,evaluation)
-        require(stats['three_model_gate'],THREE_MODEL_REJECTION)
+        if not stats['three_model_gate']:
+            from .lessons import observe_gate
+            observe_gate(root,authoring_evaluation(root,evaluation)[0])
+            from .lessons import repair_route
+            route=repair_route(root)
+            require(False,route['next'] if route else THREE_MODEL_REJECTION)
     if stages!=('question',):
         question_gate(root,active_question(root)['question'])
     descriptions={stage:descriptor(root,stage,q=q,evaluation=evaluation) for stage in stages}
@@ -191,6 +196,8 @@ def run_checks(root,stages,q=None,evaluation=None,refresh=False):
     previous={stage:latest(root,item[0]) for stage,item in descriptions.items()}
     reusable=lambda result:result and not refresh and result['state'] in ('passed','failed','disputed')
     if all(reusable(item) for item in previous.values()):
+        from .lessons import observe_platform
+        for stage,item in previous.items():observe_platform(root,stage,item,q)
         return {stage:cached_result(item) for stage,item in previous.items()}
     base=records_directory(root)
     with check_lock(root):
@@ -222,6 +229,8 @@ def run_checks(root,stages,q=None,evaluation=None,refresh=False):
             result.update(cached=False,cookie_file=str(cookie_path),next=('请填写/更新Cookie后继续，不把登录问题记为题目不合格' if result['state']=='needs_cookie'
                           else '按原始反馈修订后复检；疑似错误意见先核对证据并登记异议' if not result['accepted'] else '继续下一阶段'))
             results[stage]=result
+    from .lessons import observe_platform
+    for stage,result in results.items():observe_platform(root,stage,result,q)
     return results
 
 
@@ -270,6 +279,8 @@ def record_disagreement(root,decision,evaluation=None,q=None):
         write_json(target,decision)
     except BaseException:
         notes.unlink(missing_ok=True);raise
+    from .lessons import mark_disputed
+    mark_disputed(root,stage,result,decision,q)
     return {'state':'disputed','server_conclusion':'不通过','accepted_with_evidence':True,'notes_file':str(notes),
             'message':'不认同该不通过结论：'+decision['reason'],'form_notes':decision['form_notes'],
             'placement':'优先填平台质检异议或返修说明栏；若只能追加到模型达成性备注，更新该输入后须重新检查并重新绑定异议',
@@ -296,8 +307,10 @@ def status(root,evaluation=None):
         if evaluation is not None:
             _,stats=authoring_evaluation(root,evaluation)
             if not stats['three_model_gate']:
-                return {'required':True,'stage':'candidate_rejected','three_model_gate':False,
-                        'ready_for_arena':False,'next':THREE_MODEL_REJECTION}
+                from .lessons import repair_route
+                route=repair_route(root)
+                return {'required':True,'stage':route['stage'] if route else 'candidate_rejected','three_model_gate':False,
+                        'ready_for_arena':False,'next':route['next'] if route else THREE_MODEL_REJECTION}
         request,_,cookie=descriptor(root,'question',q=q);question=latest(root,request)
         checks={'question':question or {'state':'pending','accepted':False}}
         if evaluation is not None:

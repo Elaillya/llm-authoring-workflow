@@ -6,6 +6,8 @@ lab check evaluations/three-rNNNN.json验证Seed未全部决定性达成、GPT/C
 
 有旧delivery检查点直接保留。需要中途保存时用lab checkpoint --evaluation evaluations/three-rNNNN.json --self-review evaluations/self-review-rNNNN.json --output delivery/v001。检查点只有三模型，不是最终完成；继续references/arena-rank.md。
 
-新任务在三模型原文、判断及备注齐备后先确认lab check返回的three_model_gate=true，再按platform-checks.md并行质检考点与达成性；GPT/Claude都未达成或Seed全部达成则保留失败记录、按本地题库记rejected并重新选题生成新prompt，不调用后两项质检；正常请求等待至完成。合理不通过自主返修；错误意见登记输入/返回绑定的证据异议并向用户给可复制备注。门禁由命令校验。三项实际通过的优化建议先保留，Arena填写链接发出后再离线改写表达、免复检；最终提交说明其通过依据与未复检状态。
+新任务在三模型原文、判断及备注齐备后先确认lab check返回的three_model_gate=true，再按platform-checks.md并行质检考点与达成性；初次GPT/Claude都未达成或Seed全部达成则保留失败记录、复核失败经验、按本地题库记rejected并重新选题生成新prompt；认可后期考点失败后的修复分支按repair.md处理，不调用后两项质检；正常请求等待至完成。合理不通过自主返修；错误意见登记输入/返回绑定的证据异议并向用户给可复制备注。门禁由命令校验。三项实际通过的优化建议先保留，Arena填写链接发出后再离线改写表达、免复检；最终提交说明其通过依据与未复检状态。
 
 题面改变获取新回复，考点改变统一重评全部已获取模型。旧原件和交付始终保留。
+
+认可考点质检不通过、同题面修复或重新提供GPT/Claude时先读repair.md；先修合理标准并统一重评，再询问是否替换回复，最后改prompt。真实失败按该文复核后共享，不能直接把平台意见当普适经验。

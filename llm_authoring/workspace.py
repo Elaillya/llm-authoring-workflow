@@ -124,7 +124,7 @@ def workspace_file(folder,label,workspace):
 
 def workspace_readme(tool):
     return (f'# 出题与五模型排序工作区\n\n打开 Authoring.code-workspace，在Codex侧栏发送“按AGENTS.md开始或接续完整出题流程”。\n'
-            '新题先选计算机科学、商科或生活爱好类，再选子方向与题型；助手读本地题库并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。生活类可逐层细分或确认停在当前范围，参考docs/LIFESTYLE_CATALOG.md与LIFESTYLE_REFERENCES.md。Insight灵活组织并突出决定性因素，考点精简背景且独立可判定。\n'
+            '新题先选计算机科学、商科或生活爱好类，再选子方向与题型；助手读本地题库和认可失败经验并核实自然表达和跨题差异，生成实际场景，不需要模型API配置。生活类可逐层细分或确认停在当前范围，参考docs/LIFESTYLE_CATALOG.md与LIFESTYLE_REFERENCES.md。Insight灵活组织并突出决定性因素，考点精简背景且独立可判定。\n'
             '同项目质检配置已随工具仓提供，缺少时自动导入；仅在需要时填写自己的Cookie，无需HAR或另找service.json，已有私有配置保留。\n'
             'prompt与Insight后先做平台难度标签检查，通过后再冻结。三模型原文、判断及备注齐备后先确认Seed未全部决定性达成且GPT或Claude至少一个全部达成，再并行质检考点和达成性；GPT/Claude都未达成则保留失败并重选新prompt，不调用后两项质检。正常请求等待至完成；合理不通过返修，错误意见给异议备注。先发Arena链接，再离线处理三项通过的表达建议，优化后免复检；Cookie按需填已有私有文件。\n'
             '发给五模型的文字严格等于冻结prompt，不追加格式要求。冻结后先填写Seed的Markdown；判断其未达成全部决定性点后，再填写GPT和Claude的Markdown。\n'

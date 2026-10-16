@@ -38,6 +38,8 @@ def transaction(workspace):
         connection.execute('BEGIN IMMEDIATE')
         connection.execute('CREATE TABLE IF NOT EXISTS entries (entry_id TEXT PRIMARY KEY, task_key TEXT NOT NULL, question_sha TEXT NOT NULL, question_json TEXT NOT NULL, status TEXT NOT NULL, revision TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, provenance TEXT NOT NULL)')
         connection.execute('CREATE TABLE IF NOT EXISTS events (entry_id TEXT NOT NULL, status TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL)')
+        connection.execute('CREATE TABLE IF NOT EXISTS failure_observations (event_id TEXT PRIMARY KEY, body TEXT NOT NULL, body_sha TEXT NOT NULL, created_at TEXT NOT NULL)')
+        connection.execute('CREATE TABLE IF NOT EXISTS failure_reviews (event_id TEXT NOT NULL REFERENCES failure_observations(event_id), body TEXT NOT NULL, body_sha TEXT NOT NULL, created_at TEXT NOT NULL)')
         yield connection
         connection.commit()
     except sqlite3.Error:
@@ -124,11 +126,13 @@ def context(root,workspace,limit=12):
     require(1<=limit<=50,'题库上下文条数须在1到50之间')
     with transaction(workspace) as connection:
         sync_locked(workspace,connection);items=records(connection)
+    from .lessons import failure_context
+    learning=failure_context(root,workspace,limit)
     own=task_key(root);others=sorted([i for i in items if i['task_key']!=own],key=lambda i:(i['updated_at'],i['entry_id']))
     # Return text and profiles to allow semantic review beyond lexical matching.
     return {'memory_snapshot_sha256':snapshot(items,own),'entries':len(items),'other_task_entries':len(others),
             'topic_index':topic_index(items,own),
-            'recent_questions':others[-limit:],'own_previous_candidates':[i for i in items if i['task_key']==own][-5:],
+            'recent_questions':others[-limit:],'own_previous_candidates':[i for i in items if i['task_key']==own][-5:],'failure_learning':learning,
             'next':'先看题面、机制、任务目标与考点评分结构，再拟不同场景候选；需要更广上下文时提高limit或design-check全库召回'}
 
 
