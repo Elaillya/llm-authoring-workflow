@@ -27,3 +27,5 @@
 3.5.0按OPTIONAL_MODEL_CHECKS_SPEC.md与Skill的references/optional-model-checks.md执行本题后两项选择，题目难度/标签固定；显示领域生活娱乐，历史名称、冻结和平台载荷兼容保留。
 
 3.6.0按SHARED_MEMORY_SPEC.md支持显式跨父目录共用一份SQLite题库和失败经验；默认隔离、既有证据和判定保持。
+
+3.6.1按SINGLE_QUESTION_SPEC.md设计单一核心提问：理由融入同一问句，题目送检/冻结前拦截明显拆散写法，设计复核补single_core_question；历史冻结输入保持。

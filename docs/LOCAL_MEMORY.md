@@ -28,7 +28,7 @@ memory-context/memory-sync返回database、scope、member_workspaces，可确认
 商科还选择参考库中适用的 `business_mechanisms` 和 `business_references`，在 `drafts/sources.md` 记录原始链接、适用条件、题设事实及边界。选择资料ID不等于资料已经足以支持本题。
 
 1. `design-check drafts/question.json` 比较全库其他题的题面、Insight正文、整组考点和画像标签，返回分维度分数及近邻原文。
-2. `design-review-template drafts/design-review.json --question drafts/question.json` 生成助手填写的复核。逐条检查自然表达、场景、Insight、考点和资料适用性；给具体理由。`semantic_screen` 要读完全库机制索引后填写全部已读ID；低文字分数不代表语义不重复。发现文本召回漏掉的近题，放入 `additional_similar_ids`，并在comparisons增加比较。
+2. `design-review-template drafts/design-review.json --question drafts/question.json` 生成助手填写的复核。逐条检查自然表达、单一核心问题(single_core_question)、场景、Insight、考点和资料适用性；给具体理由。single_core_question应说明唯一决策/行动目标及其约束与依据，而不是只称“一个问号”。`semantic_screen` 要读完全库机制索引后填写全部已读ID；低文字分数不代表语义不重复。发现文本召回漏掉的近题，放入 `additional_similar_ids`，并在comparisons增加比较。
 3. 每个比较写实质差异。全部高相似项均须逐条比较，不受普通近邻的展示条数限制。高相似项至少说明两个不同维度，其中涉及目标、约束、机制或评分要求。若解释不成立，就重新选题，不能只换名词、数字、语序或同义表达。此步骤由助手完成，不增加用户审批。
 4. `candidate-reserve drafts/question.json` 在完整冻结前占用候选，其他窗口会看到它。`freeze drafts/question.json` 再检查当前复核并记录冻结版本；默认复核路径是 `drafts/design-review.json`。
 5. 放弃的完整候选可 `memory-record drafts/question.json --status rejected --note "具体失败原因"`。保留失败原因和原候选，避免下一次又采用同一机制。完成交付后可将该版本记为delivered。

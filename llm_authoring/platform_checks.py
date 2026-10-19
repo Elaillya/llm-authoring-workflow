@@ -8,6 +8,7 @@ from . import platform_client as client
 from .text import insight_text,valid_insight
 from .domains import canonical_domain
 from . import check_policy
+from .prompt_style import validate_new_prompt
 
 THREE_MODEL_REJECTION=('当前候选不合格：Seed须未达成全部决定性核心考点，且GPT或Claude至少一个全部达成。'
     '保留当前题面、原回复和判断，标记失败并重新选题生成新prompt；不调用考点质检或达成性质检。')
@@ -27,6 +28,7 @@ def initial_question(root,q):
             and q.get('question_type') in TYPES,'先选择并记录匹配的领域、子方向及题型')
     require(isinstance(q.get('prompt'),str) and 0<len(q['prompt'].strip()) and len(q['prompt'])<=100,'先形成不超过100字符的题面')
     require(valid_insight(q.get('insight')),'先完成非空Insight洞察文本')
+    validate_new_prompt(root,q['prompt'])
 
 
 def authoring_evaluation(root,ev):
@@ -43,7 +45,6 @@ def authoring_evaluation(root,ev):
 
 def descriptor(root,stage,q=None,evaluation=None):
     require(stage in client.KEYS,'未知平台检查类型')
-    config,cookie=client.configuration(root)
     if stage=='question':
         require(q is not None,'题目检查需要候选JSON');initial_question(root,q)
         binding={'task_identity':read_json(Path(root)/'TASK.json').get('memory_id',str(Path(root).resolve()))}
@@ -51,6 +52,7 @@ def descriptor(root,stage,q=None,evaluation=None):
         current=active_question(root);q=current['question'];evaluation,stats=authoring_evaluation(root,evaluation)
         binding={'task_identity':read_json(Path(root)/'TASK.json').get('memory_id',str(Path(root).resolve())),
                  'question_sha256':current['question_sha256']}
+    config,cookie=client.configuration(root)
     plain=q.get('text_format')=='plain' or isinstance(q['insight'],str)
     params={'题目':q['prompt'],'出题说明':insight_text(q['insight'])}
     if stage=='question':

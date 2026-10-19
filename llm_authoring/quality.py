@@ -8,8 +8,9 @@ from .memory import records, remember, snapshot, sync_locked, task_key, topic_in
 from .references import LIBRARY, LIFESTYLE_LIBRARY, validate_business_references, validate_lifestyle_references
 from .selection import validate_selection
 from .text import insight_text
+from .prompt_style import focus_signals,validate_new_prompt
 
-CHECKS=('natural_prompt','distinct_scenario','distinct_insight','distinct_points','source_grounding')
+CHECKS=('natural_prompt','single_core_question','distinct_scenario','distinct_insight','distinct_points','source_grounding')
 PROFILE_TEXT=('scenario','goal')
 PROFILE_LISTS=('constraints','mechanism_tags','point_targets','reasoning_path')
 AXES={'scenario','goal','constraints','mechanism','scoring_targets','reasoning_path'}
@@ -36,6 +37,7 @@ def jaccard(a,b):
 
 def naturalness_signals(q):
     prompt=q['prompt'];signals=[]
+    signals.extend({'kind':'split_question','text':text} for text in focus_signals(prompt))
     for phrase in ('随着数字化转型','在当前复杂背景下','可落地、可量化、可复制','请从多个维度','构建动态平衡','系统性地全面分析'):
         if phrase in prompt:signals.append({'kind':'template_language','text':phrase})
     if re.search(r'请从[^。？?]{0,35}(?:三个|多个|各个)维度',prompt):signals.append({'kind':'essay_instruction','text':'按维度组织长论述的指令'})
@@ -99,7 +101,7 @@ def report_locked(root,q,items):
 
 
 def prepare_candidate(root,q):
-    validate_question(q);validate_selection(root,q);validate_profile(q);validate_business_references(q);validate_lifestyle_references(root,q)
+    validate_question(q);validate_new_prompt(root,q['prompt']);validate_selection(root,q);validate_profile(q);validate_business_references(q);validate_lifestyle_references(root,q)
     require(read_json(Path(root)/'TASK.json')['task_id']==q['task_id'],'候选题目ID不属于本任务')
 
 
@@ -127,7 +129,7 @@ def validate_review(q,review,report):
     require(not report['hard_duplicates'],'存在跨题完全或归一化重复的题面、Insight或整组考点；换实质选题后重新复核')
     require(isinstance(review.get('reviewer'),str) and review['reviewer'].strip(),'记录实际设计复核执行者；由助手完成，不向用户新增审批')
     checks=review.get('checks',{})
-    require(set(checks)==set(CHECKS),'设计复核须覆盖自然表达、场景、Insight、考点及资料适用性')
+    require(set(checks)==set(CHECKS),'设计复核须覆盖自然表达、单一核心问题、场景、Insight、考点及资料适用性')
     for value in checks.values():
         require(value.get('passed') is True and isinstance(value.get('reason'),str) and value['reason'].strip(),
                 '设计复核未通过或缺少具体理由，先修改候选')
