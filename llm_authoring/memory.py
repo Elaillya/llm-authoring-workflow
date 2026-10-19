@@ -1,4 +1,4 @@
-"""Private, workspace-local question memory; no global memory or model service."""
+"""Private question memory with explicit shared-parent groups; no model service."""
 from contextlib import contextmanager
 import json
 import os
@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import sqlite3
 from .core import Error, hash_json, now, read_json, require, validate_question
+from . import memory_scope
 
 STATUSES=('draft','frozen','delivered','rejected','historical')
 
@@ -16,7 +17,7 @@ def task_key(root):
 
 
 def database_path(workspace):
-    workspace=Path(workspace).resolve();local=workspace/'local'
+    local=memory_scope.resolve(workspace)['owner']/'local'
     require(local.is_dir() and not local.is_symlink(),'本地题库须位于工作区普通local目录')
     path=local/'question-memory.sqlite3'
     for p in (path,Path(str(path)+'-wal'),Path(str(path)+'-shm')):
@@ -74,8 +75,14 @@ def remember(connection,root,q,status='draft',revision=None,note='',provenance='
 
 def sync_locked(workspace,connection):
     """Read only real task roots and frozen question records, never replies/configs."""
-    workspace=Path(workspace).resolve();roots=[workspace/'task']+sorted((workspace/'tasks').glob('*'))
     imported=0
+    for workspace in memory_scope.resolve(workspace)['members']:
+        imported+=_sync_parent(workspace,connection)
+    return imported
+
+
+def _sync_parent(workspace,connection):
+    roots=[workspace/'task']+sorted((workspace/'tasks').glob('*'));imported=0
     for root in roots:
         if root.is_symlink() or not (root/'TASK.json').is_file():continue
         require(root.resolve().is_relative_to(workspace),'题库导入目录逃逸工作区')
@@ -100,7 +107,7 @@ def sync_locked(workspace,connection):
 def sync(workspace):
     with transaction(workspace) as connection:
         imported=sync_locked(workspace,connection);count=len(records(connection))
-    return {'database':str(database_path(workspace)),'imported':imported,'entries':count,'scope':'workspace_local_only'}
+    return {**memory_scope.describe(workspace),'imported':imported,'entries':count}
 
 
 def snapshot(items,key):
@@ -130,7 +137,7 @@ def context(root,workspace,limit=12):
     learning=failure_context(root,workspace,limit)
     own=task_key(root);others=sorted([i for i in items if i['task_key']!=own],key=lambda i:(i['updated_at'],i['entry_id']))
     # Return text and profiles to allow semantic review beyond lexical matching.
-    return {'memory_snapshot_sha256':snapshot(items,own),'entries':len(items),'other_task_entries':len(others),
+    return {**memory_scope.describe(workspace),'memory_snapshot_sha256':snapshot(items,own),'entries':len(items),'other_task_entries':len(others),
             'topic_index':topic_index(items,own),
             'recent_questions':others[-limit:],'own_previous_candidates':[i for i in items if i['task_key']==own][-5:],'failure_learning':learning,
             'next':'先看题面、机制、任务目标与考点评分结构，再拟不同场景候选；需要更广上下文时提高limit或design-check全库召回'}

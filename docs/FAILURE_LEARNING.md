@@ -1,6 +1,6 @@
 # 本地失败观察、认可经验与修复
 
-同一父工作区的各题共享local/question-memory.sqlite3。原题库entries/events和重复检查快照保持；新增failure_observations、failure_reviews两张附加表。首次使用时按需建立，不清空旧库。数据不进入Codex全局记忆或GitHub，也不跨父工作区复制。
+同一父工作区的各题默认共享local/question-memory.sqlite3；显式共享组按[LOCAL_MEMORY.md](LOCAL_MEMORY.md)使用所有者的同一库。原题库entries/events和重复检查快照保持；failure_observations、failure_reviews保存观察及追加复核。未配置共享组时首次按需建立，不清空旧库；共享组主库缺失时报错。数据不进入Codex全局记忆或GitHub，不做跨库复制；已配置成员直接读写同一份库。
 
 ## 什么会被记录
 

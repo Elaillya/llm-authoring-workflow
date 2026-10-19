@@ -25,3 +25,5 @@
 3.4.0失败修复顺序、同题面授权替换和父工作区共享经验按[REPAIR_LEARNING_SPEC.md](REPAIR_LEARNING_SPEC.md)，回归使用合成原文与模拟平台返回。
 
 3.5.0按OPTIONAL_MODEL_CHECKS_SPEC.md与Skill的references/optional-model-checks.md执行本题后两项选择，题目难度/标签固定；显示领域生活娱乐，历史名称、冻结和平台载荷兼容保留。
+
+3.6.0按SHARED_MEMORY_SPEC.md支持显式跨父目录共用一份SQLite题库和失败经验；默认隔离、既有证据和判定保持。

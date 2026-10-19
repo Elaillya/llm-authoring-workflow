@@ -1,5 +1,7 @@
 # 完整出题与五模型排序
 
+题库范围以lab memory-context返回的database/scope/member_workspaces为准：默认同父目录，已配置共享组则跨明确成员共用题库、失败观察及复核。每次开始或恢复先刷新上下文，保留正在做的题目，只在设计复核过期时补做差异复核；不另建空库。共享配置及迁移规则见工具仓docs/LOCAL_MEMORY.md。
+
 先读.agents/skills/llm-authoring-workflow/SKILL.md、TASK.json、REQUEST.json与WORKLOG.md。工具仓{{TOOL_ROOT}}，专业规则为其中rules/authoring.md。工作区命令{{WORKSPACE_ROOT}}/bin/lab，题目{{TASK_ID}}。
 
 同项目质检配置已自带；本地缺失时工具自动导入或qa-setup --default，不再要求用户提供HAR/service.json。需要时给已创建Cookie文件让用户填自己的登录态。已有私有配置及Cookie保持。
@@ -16,6 +18,6 @@
 
 交付为提交信息.md和五份按模型名称命名的原回复Markdown，分别给出可点击链接。排序和备注直接使用真实模型名称，交付过程不生成ZIP。改名时按工具仓docs/HANDOFF.md保留冻结ID与原件。
 
-认可考点质检不通过时按Skill的references/repair.md修复：优先保持prompt修Insight/考点、统一重评；仍不能满足门槛先询问用户是否重新提供GPT/Claude原文，替换不可行才改prompt。设计前读failure-context；模型门槛失败及平台实际不通过自动记观察，由助手复核原因、改进和范围后在同父目录共享，错误/未确认意见与服务故障不作为可靠经验。原回复替换须本次明确同意并归档，不自动反复抽取。
+认可考点质检不通过时按Skill的references/repair.md修复：优先保持prompt修Insight/考点、统一重评；仍不能满足门槛先询问用户是否重新提供GPT/Claude原文，替换不可行才改prompt。设计前读failure-context；模型门槛失败及平台实际不通过自动记观察，由助手复核原因、改进和范围后在当前题库范围内共享（默认同父目录，显式共享组为其全部成员），错误/未确认意见与服务故障不作为可靠经验。原回复替换须本次明确同意并归档，不自动反复抽取。
 
 后两项质检策略以Skill的references/optional-model-checks.md为准：题目难度与标签检查固定；Seed未全部达成后、准备GPT/Claude填写文件前询问本题是否做考点/达成性质检，等待明确答复并用choose-model-checks记录。选择需要才并行两项；选择不需要则主流程去掉两项调用，仍需有效题目检查和three_model_gate才进入Arena与五模型排序。跳过标注未执行，不能声称通过；历史记录保持。

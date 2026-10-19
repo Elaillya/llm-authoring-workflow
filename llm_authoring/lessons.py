@@ -1,8 +1,9 @@
-"""Evidence-bound failure observations and reviewed lessons within one workspace."""
+"""Evidence-bound failure observations and reviewed lessons in the memory scope."""
 from pathlib import Path
 import json
 from .core import active_question,hash_json,now,read_json,require
 from .memory import task_key,transaction
+from .memory_scope import lesson_scope
 from .text import insight_text
 
 VERDICTS=('accepted','disputed','unresolved')
@@ -95,7 +96,7 @@ def review(workspace,decision):
         previous=_reviews(db,eid)
         if not previous or previous[-1]!=value:
             db.execute('INSERT INTO failure_reviews VALUES (?,?,?,?)',(eid,json.dumps(value,ensure_ascii=False),hash_json(value),now()))
-    return {'event_id':eid,'verdict':value['verdict'],'shared_with':'same_parent_workspace_only'}
+    return {'event_id':eid,'verdict':value['verdict'],'shared_with':lesson_scope(workspace)}
 
 
 def mark_disputed(root,stage,result,decision,q=None):
@@ -124,7 +125,7 @@ def failure_context(root,workspace,limit=12):
                     'evidence_summary':event['evidence_text'][:300],'own_task':event['task_key']==own})
     accepted.sort(key=lambda i:(i['domain']==request.get('domain'),i['subdirection']==request.get('subdirection')))
     pending.sort(key=lambda i:i['own_task'])
-    return {'scope':'same_parent_workspace_only','observed_count':total,'accepted_count':len(accepted),
+    return {'scope':lesson_scope(workspace),'observed_count':total,'accepted_count':len(accepted),
             'pending_count':len(pending),'accepted_lessons':accepted[-limit:],'pending_reviews':pending[-limit:],
             'next':'设计前读认可经验并核对适用范围；待复核观察先failure-review，错误意见和服务故障不作为可靠出题规律'}
 

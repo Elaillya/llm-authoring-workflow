@@ -5,6 +5,8 @@ description: 完成开放难题第五期完整出题与五模型排序。选领�
 
 # 完整出题与五模型排序
 
+每次开始或恢复先用memory-context/failure-context读取当前记忆。默认同父目录；若已配置local/shared-memory.json，按返回的database与member_workspaces读写同一题库和失败经验，不自行复制或新建空库。共享后保留现有候选、资料和冻结证据；未冻结设计复核过期才刷新比较，不重置任务。详情见工具仓docs/LOCAL_MEMORY.md。
+
 先读当前题目AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md，以及工具仓rules/authoring.md。路径和命令见TOOLKIT.md。首次仅有工具仓时按README创建工作区，不索取模型API配置。共用平台配置已附带；需要时只给已有Cookie文件让用户填写登录态。设计与交付表达读references/writing.md：自然prompt；灵活Insight突出决定因素；原子考点；作者字段纯文本；五份模型原Markdown保持，发送文字逐字等于prompt。
 
 1. lab begin/status先选计算机科学、商科或生活娱乐，再选子方向、题型，已有明确选择直接记录。生活娱乐按references/lifestyle.md分层选或确认当前范围；商科按资料库选范围。场景、事实和依据由助手构造并研究，使用references/design.md读共享题库和认可失败经验。旧“生活爱好类”只作兼容，冻结与原证据不改。
