@@ -13,6 +13,17 @@ from .domains import canonical_domain
 TOOL_ROOT=Path(__file__).resolve().parents[1]
 
 
+def authoring_references():
+    reference=TOOL_ROOT/'skills/llm-authoring-workflow/references'
+    return {'research_report':str(reference/'insight-rubric-study.md'),
+            'checklist':str(reference/'insight-rubric-checklist.md'),
+            'required_at':['start_or_resume','insight_before_question_check','rubric_before_freeze',
+                           'model_evaluation','qa_feedback_and_repair','arena_ranking_and_delivery'],
+            'design_review_check':'insight_rubric_alignment',
+            'requirement':'完整阅读两份参考，按阶段核对；确定Insight/考点时具体说明目标、决定机制、判定证据、等价路径及必需/可选边界',
+            'limits':'未验证高概率API过检模板；本地自查不能替代专业依据、三模型门槛或平台验收'}
+
+
 def locate_workspace(path):
     path=Path(path).absolute()
     for parent in (path,*path.parents):
@@ -193,7 +204,7 @@ def begin(root,workspace):
         memory=context(root,workspace,6)
     from .check_policy import current,prompt
     policy=current(root);choice=prompt(root) if not needs else None
-    return {'phase':'authoring','domain':domain,'question_type':request.get('question_type'),'question_type_choices':list(TYPES),
+    return {'phase':'authoring','authoring_references':authoring_references(),'domain':domain,'question_type':request.get('question_type'),'question_type_choices':list(TYPES),
             **selection,**({'next_question':choice} if choice else {}),'model_checks_policy':policy,
             'memory_context':memory,'models':models,'response_mode':'official_manual','requires_input':needs,'ready':not needs,
             'scenario_owner':'assistant','next':'按next_question先选计算机科学、商科或生活娱乐，再选子方向与题型；场景和专业资料由助手生成核实' if needs else

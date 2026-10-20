@@ -10,7 +10,7 @@ from .selection import validate_selection
 from .text import insight_text
 from .prompt_style import focus_signals,validate_new_prompt
 
-CHECKS=('natural_prompt','single_core_question','distinct_scenario','distinct_insight','distinct_points','source_grounding')
+CHECKS=('natural_prompt','single_core_question','distinct_scenario','distinct_insight','distinct_points','source_grounding','insight_rubric_alignment')
 PROFILE_TEXT=('scenario','goal')
 PROFILE_LISTS=('constraints','mechanism_tags','point_targets','reasoning_path')
 AXES={'scenario','goal','constraints','mechanism','scoring_targets','reasoning_path'}
@@ -86,7 +86,8 @@ def report_locked(root,q,items):
     neighbors=high+ordinary[:max(0,8-len(high))]
     notes=Path(root)/'drafts/sources.md'
     require(notes.is_file() and not notes.is_symlink() and notes.read_text().strip(),'先保存本题来源、设定和边界到drafts/sources.md')
-    report={'schema_version':1,'question_sha256':hash_json(q),'source_notes_sha256':sha(notes),
+    from .workspace import authoring_references
+    report={'schema_version':1,'required_references':authoring_references(),'question_sha256':hash_json(q),'source_notes_sha256':sha(notes),
             'business_library_sha256':sha(LIBRARY) if q.get('domain')=='商科' else None,
             'memory_snapshot_sha256':snapshot(items,key),'naturalness_signals':naturalness_signals(q),
             'neighbors':neighbors,'hard_duplicates':hard,'topic_index':topic_index(items,key),
@@ -129,7 +130,7 @@ def validate_review(q,review,report):
     require(not report['hard_duplicates'],'存在跨题完全或归一化重复的题面、Insight或整组考点；换实质选题后重新复核')
     require(isinstance(review.get('reviewer'),str) and review['reviewer'].strip(),'记录实际设计复核执行者；由助手完成，不向用户新增审批')
     checks=review.get('checks',{})
-    require(set(checks)==set(CHECKS),'设计复核须覆盖自然表达、单一核心问题、场景、Insight、考点及资料适用性')
+    require(set(checks)==set(CHECKS),'设计复核须覆盖自然表达、单一核心问题、场景、Insight、考点、资料适用性及insight_rubric_alignment研究对照')
     for value in checks.values():
         require(value.get('passed') is True and isinstance(value.get('reason'),str) and value['reason'].strip(),
                 '设计复核未通过或缺少具体理由，先修改候选')

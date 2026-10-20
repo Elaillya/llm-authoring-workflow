@@ -53,3 +53,9 @@ Arena按项目规定使用Search联网、Battle Mode、新会话，偏好选择�
 失败修复顺序以Skill的references/repair.md为准：认可考点问题先修Insight/考点并统一重评，仍不能满足门槛先征求用户更换GPT/Claude完整原文，不可行才改prompt。具体失败由助手分析后写父目录共享经验，保留适用范围与原始证据；未确认或错误意见不作为可靠规则。
 
 后两项平台检查由用户按Skill的references/optional-model-checks.md在准备GPT/Claude填写文件前选择。题目难度/标签检查固定；选择跳过不能跳过本地三模型门槛、五模型判断排序或声称平台通过。
+
+## Insight与核心考点的研究参考（3.6.2）
+
+开始/恢复与出题各阶段必须按skills/llm-authoring-workflow/references/insight-rubric-checklist.md阶段表，阅读并应用同目录insight-rubric-study.md完整研究报告。确定Insight时突出改变本题决策的机制；确定考点时核对目标覆盖、单一可判关系、公开最低证据、等价路径与必需/可选边界。新设计复核以insight_rubric_alignment记录具体依据，不能仅声明已读。
+
+研究无已验证的高概率API过检模板；历史修后通过不等于某项改写独自造成通过。保留专业依据、自然多样的写法和统一评分，不能靠隐藏条件维持Seed未达成，不能把质检标签、分数、无法质检或服务故障变为普适规律或平台通过。新规则不追溯重置既有冻结、回复、评估、质检或交付。

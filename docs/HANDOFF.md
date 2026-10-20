@@ -25,3 +25,7 @@ workspace-update 仅更新侧栏说明和工具入口，保留已有题目、评
 3.4.0按FAILURE_LEARNING.md与Skill的references/repair.md处理认可考点失败；先修标准统一重评，再征求GPT/Claude替换，最后改题。失败观察自动记、原因复核后共享，更新不会给历史失败批量盖认可或触发新调用。
 
 3.5.0按OPTIONAL_MODEL_CHECKS_SPEC.md与Skill的references/optional-model-checks.md执行本题后两项选择，题目难度/标签固定；显示领域生活娱乐，历史名称、冻结和平台载荷兼容保留。
+
+## 3.6.2 研究参考接续
+
+开始或恢复按Skill的references/insight-rubric-checklist.md阶段表读完整研究报告与检查单；确定Insight/考点时必须实际应用。新候选设计复核需insight_rubric_alignment具体依据；缺项或旧复核过期时保留旧文件，为当前候选补新复核。已有冻结、自查、原回复、平台回执和交付继续原版本，不因新增指引重做采集或检查。实质修Insight/考点仍另建版本、统一重评，prompt改变才重采。研究建议不代表稳定API过检规律。

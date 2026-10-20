@@ -9,3 +9,7 @@
 5. lab export --evaluation evaluations/five-rNNNN.json --self-review evaluations/self-review-rNNNN.json --ranking evaluations/ranking-rNNNN.json --output delivery/v002（选未用版号）。提交信息.md用纯文本字段和段落汇总除回复全文以外的提交字段，models/下五份Markdown分别使用真实模型名。核对原文逐字节、全部判断、具名排序/理由、输入原件与manifest。全部官方网页截图由用户单独提交。更新WORKLOG与Git检查点，分别给出提交信息及五个模型文件的可点击链接；直接使用Markdown，不打ZIP或另建合并回复文件。
 
 旧三模型材料逐字节保留。五模型模板和新交付是新增产物。旧handoff中的上下轮分工属于旧版历史，当前流程从已有证据继续到完整排序，不插入独立质检阶段。
+
+## 排序与表达优化参考
+
+进入Arena、补五模型判断及最终导出时，按[检查单](insight-rubric-checklist.md)的相应阶段复核，具体原则见[研究报告](insight-rubric-study.md)。排序始终依据同一公开标准与目标回复证据，不把反馈中的可选增强升级为隐藏考点。通过建议只作含义不变的表达优化，说明未复检；若改变标准，则须新版本、统一重评所有已存模型及重排，旧回执仅代表旧输入。

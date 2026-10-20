@@ -23,3 +23,7 @@
 认可考点质检不通过时按Skill的references/repair.md修复：优先保持prompt修Insight/考点、统一重评；仍不能满足门槛先询问用户是否重新提供GPT/Claude原文，替换不可行才改prompt。设计前读failure-context；模型门槛失败及平台实际不通过自动记观察，由助手复核原因、改进和范围后在当前题库范围内共享（默认同父目录，显式共享组为其全部成员），错误/未确认意见与服务故障不作为可靠经验。原回复替换须本次明确同意并归档，不自动反复抽取。
 
 后两项质检策略以Skill的references/optional-model-checks.md为准：题目难度与标签检查固定；Seed未全部达成后、准备GPT/Claude填写文件前询问本题是否做考点/达成性质检，等待明确答复并用choose-model-checks记录。选择需要才并行两项；选择不需要则主流程去掉两项调用，仍需有效题目检查和three_model_gate才进入Arena与五模型排序。跳过标注未执行，不能声称通过；历史记录保持。
+
+## Insight与考点研究必读（3.6.2）
+
+开始/恢复、构造题面、确定或修改Insight与核心考点、判断模型、返修及排序交付时，必须按Skill的references/insight-rubric-checklist.md对应阶段，阅读并应用references/insight-rubric-study.md完整研究报告和检查单。尤其Insight先解释决定因素怎样改变本题决策；核心考点核对目标覆盖、单一可判关系、最低证据、等价路径与必需/可选边界。新候选设计复核的insight_rubric_alignment须给出本题具体依据；旧冻结不追溯失效。报告未验证出高概率通过API的模板，不能机械照抄、为Seed失分加条件、把无法质检当通过或反复刷检查。

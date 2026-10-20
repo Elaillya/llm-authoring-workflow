@@ -29,3 +29,5 @@
 3.6.0按SHARED_MEMORY_SPEC.md支持显式跨父目录共用一份SQLite题库和失败经验；默认隔离、既有证据和判定保持。
 
 3.6.1按SINGLE_QUESTION_SPEC.md设计单一核心提问：理由融入同一问句，题目送检/冻结前拦截明显拆散写法，设计复核补single_core_question；历史冻结输入保持。
+
+3.6.2按[INSIGHT_RUBRIC_RESEARCH_SPEC.md](INSIGHT_RUBRIC_RESEARCH_SPEC.md)将完整研究报告与写作检查单作为全阶段必读参考，设计复核增加insight_rubric_alignment。报告和检查单随Skill复制；begin及design-check返回实际参考路径，公开资料不依赖私人目录，历史冻结及平台门槛保持。
