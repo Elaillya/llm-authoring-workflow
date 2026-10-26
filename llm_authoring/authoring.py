@@ -41,15 +41,19 @@ def validated_models(root,ev,roles=ROLES,include_supporting=False):
     for role in roles:
         item=read_response(root,role);record=ev['models'][role]
         if role in NAMES:
-            require(item['meta'].get('display_name')==NAMES[role],'指定模型名称不匹配')
             from .manual import validate_manual_evidence
             task=read_json(Path(root)/'TASK.json') if (Path(root)/'TASK.json').exists() else {}
+            if task.get('response_mode')=='official_clients' or item['meta'].get('source_kind')=='official_client_automation':
+                from .official import MODELS,validate_evidence
+                require(item['meta'].get('display_name')==MODELS[role][1],'实际指定模型名称不匹配')
+                validate_evidence(root,role,item)
+            else:require(item['meta'].get('display_name')==NAMES[role],'指定模型名称不匹配')
             if task.get('response_mode')=='official_manual' or item['meta'].get('source_kind')=='official_manual':
                 validate_manual_evidence(root,role,item)
         else:
             from .arena import validate_arena_evidence
             validate_arena_evidence(root,role,item)
-        request=item['meta'].get('manual_request') if item['meta'].get('source_kind')=='official_manual' else item['meta'].get('arena_request')
+        request=item['meta'].get('client_request') if item['meta'].get('source_kind')=='official_client_automation' else item['meta'].get('manual_request') if item['meta'].get('source_kind')=='official_manual' else item['meta'].get('arena_request')
         if request is not None:
             from .model_prompt import prompt_text
             sent_texts.add(prompt_text(request))
@@ -156,11 +160,13 @@ def export_authoring(root,ev,review,output):
             evidence_files=('metadata.json',m.get('raw_response_file','raw_response.json'))+(('render-manifest.json',) if pic else ())
             for name in evidence_files:
                 shutil.copyfile(item['directory']/name,evidence/name)
+            if m['source_kind']=='official_client_automation':
+                shutil.copytree(item['directory']/'client-evidence',evidence/'client-evidence')
             notes='\n\n'.join(f'{j["id"]}：{"满足" if j["met"] else "不满足"}；原因：{j["reason"]}'+('；原文依据：'+' / '.join(j['quotes']) if j['quotes'] else '') for j in stat['judgments'])
             fields['models'][role]={'ordinal':index,'display_name':m['display_name'],'requested_model':m['model'],'returned_model':m['returned_model'],
                                    'reply_markdown':item['text'],'reply_file':paths[role],'attained':stat['attained'],'attainment_notes':notes,
                                    'screenshot':f'screenshots/{role}.png' if pic else None,'source_kind':m['source_kind'],
-                                   'screenshot_submission':'historical_api_render' if pic else 'user_submits_separately'}
+                                   'screenshot_submission':'official_client_capture_evidence' if m['source_kind']=='official_client_automation' else 'historical_api_render' if pic else 'user_submits_separately'}
         platform=export_evidence(root,ev,staging)
         if platform:
             fields['platform_checks']=platform

@@ -144,14 +144,15 @@ def export_complete(root, evaluation, review, ranking, output):
         write_json(package / 'ranking.json', ranking)
         from . import VERSION
         current = active_question(root)
+        client_screens=all(fields['models'][role].get('source_kind')=='official_client_automation' for role in ROLES)
         write_json(package / 'handoff.json', {'schema_version': 1, 'kind': 'llm_complete_submission', 'workflow_version': VERSION,
                    'task_id': current['question']['task_id'], 'question_sha256': current['question_sha256'],
                    'submission_id': fields['task_id'],
                    'prompt_sha256': current['prompt_sha256'], 'rubric_sha256': current['rubric_sha256'],
                    'models_in_order': list(ALL_ROLES), 'three_model_gate': True, 'ranking': result['order'],
                    'next_workflow': 'platform_submission', 'arena_screenshots': 'user_submits_separately',
-                   'model_screenshots': 'user_submits_separately',
-                   'next_action': '完整出题与五模型排序材料已生成，用户提交甲方；所有模型的官方网页截图由用户单独提供。'})
+                   'model_screenshots': 'official_client_capture_evidence' if client_screens else 'user_submits_separately',
+                   'next_action': '浏览器接续填表；核对实际门槛、截图与排序，并依据本题授权提交。' if client_screens else '完整出题与五模型排序材料已生成，用户提交甲方；所有模型的官方网页截图由用户单独提供。'})
         (package / 'manifest.json').unlink()
         write_json(package / 'manifest.json', {'schema_version': 1, 'phase': 'complete',
                    'files': {p.relative_to(package).as_posix(): sha(p) for p in package.rglob('*') if p.is_file()}})

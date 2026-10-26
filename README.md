@@ -1,3 +1,22 @@
+# 本地浏览器自动化开发分支
+
+本分支 `dev/local-browser-automation` 保存最近的浏览器出题自动化源码、测试和接续资料，供 Windows 本地 Codex 继续移植开发。**目前仍含 SSH 和 Linux 固定路径，尚不能直接在本机独立完成全流程。** main 保留原工作流。
+
+请先读 [本地开发交接](docs/LOCAL_DEVELOPMENT_HANDOFF.md)、[真实验证及未完成项](docs/AUTOMATION_VALIDATION.md)、[私有资料迁移](docs/PRIVATE_STATE_TRANSFER.md)。根 AGENTS.md 会引导本地 Codex 读取这些文档。公开仓库不含登录态、密钥、私人题库、原题、原回复或截图。
+
+首次在本机拉取：
+
+```text
+git clone --branch dev/local-browser-automation --single-branch https://github.com/Elaillya/llm-authoring-workflow.git
+cd llm-authoring-workflow
+```
+
+在本机 VS Code 打开这个目录，并在本机 Codex 侧栏发送交接文档中的启动语。不要运行旧远程采集脚本作为本地启动方法；开发首先完成路径、依赖及客户端的本地适配。
+
+---
+
+以下是保留的原手动工作流说明；其中 API 质检、Turbo 名称、手工回复、WSL 环境等条目描述手动模式。浏览器开发模式以 AGENTS.md、本地交接及本题 TASK 合同为准，不能把旧说明当作自动化已完成。
+
 # LLM Authoring Workflow
 
 开放难题第五期完整出题与五模型排序工具，适用于Codex侧栏。选择领域/子方向与题型 → 读题库和资料 → 生成自然prompt与Insight → 平台难度与标签检查、修订复检 → 完成考点、多样性复核和冻结 → 用户提供Seed，符合筛查条件再收GPT/Claude → 三模型判断及按本题选择执行后两项质检、返修或证据异议 → 门禁通过后Arena → 五模型排序 → 六份Markdown交付。

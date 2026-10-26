@@ -72,6 +72,11 @@ def descriptor(root,stage,q=None,evaluation=None):
     params['from_agentic']='true'
     payload={**config['checks'][stage],'params':params}
     binding.update(stage=stage,platform_task_id=config['task_id'],payload_sha256=hash_json(payload))
+    if read_json(Path(root)/'TASK.json').get('platform_check_mode')=='browser':
+        from .browser_checks import binding as browser_binding
+        page=browser_binding(root)
+        require(page['task_id']==config['task_id'],'平台任务配置与浏览器题目绑定不一致')
+        binding.update(platform_item_id=page['item_id'],platform_template_id=page['template_id'])
     return {'stage':stage,'payload':payload,'binding':binding},config,cookie
 
 
@@ -92,6 +97,9 @@ def check_lock(root):
 
 
 def parse_response(stage,transport):
+    if transport.get('source')=='browser_dom_current_result':
+        from .browser_page import parse
+        return parse(stage,transport)
     result={'state':'service_error','server_conclusion':None,'feedback':''}
     if transport.get('http_status') in (401,403):return {**result,'state':'needs_cookie'}
     if transport.get('http_status')!=200 or transport.get('truncated') or transport.get('transport_error'):return result
@@ -110,6 +118,9 @@ def verified_record(directory,stage):
     require(record['request_sha256']==hash_json(request) and record['binding']==request['binding']
             and record['response_sha256']==hash_json(record['transport'])
             and record['parsed']==parse_response(stage,record['transport']),'平台检查记录绑定被改写，请核对原件')
+    if record['transport'].get('source')=='browser_dom_current_result':
+        from .browser_page import verify
+        verify(directory,stage,request,record['transport'])
     return request,record
 
 
@@ -183,6 +194,8 @@ def call_attempt(directory,request,config,cookie):
 
 def run_checks(root,stages,q=None,evaluation=None,refresh=False):
     root=Path(root).resolve()
+    require(read_json(root/'TASK.json').get('platform_check_mode')!='browser',
+            '本题通过真实浏览器按钮质检；使用browser-prepare与browser-import，不直连质检API')
     q=copy.deepcopy(q);evaluation=copy.deepcopy(evaluation)
     if any(stage in ('criteria','attainment') for stage in stages):
         _,stats=authoring_evaluation(root,evaluation)

@@ -1,7 +1,7 @@
 """A display rename must keep legacy selection, payload and frozen evidence valid."""
 from pathlib import Path
 import unittest
-from llm_authoring.selection import menu,domain_tree,choose_subdirection
+from llm_authoring.selection import menu,domain_tree,choose_subdirection,topic_index,new_question_available
 from llm_authoring.workspace import begin,choose_domain
 from llm_authoring.references import lifestyle_library,validate_lifestyle_references
 from llm_authoring.core import Error,freeze,read_json,write_json,active_question
@@ -19,7 +19,9 @@ class LifestyleRenameTests(unittest.TestCase):
         for name in ('生活爱好','生活爱好类','生活娱乐类','生活娱乐'):
             self.assertEqual(choose_domain(self.root,name)['domain'],'生活娱乐')
             self.assertEqual(domain_tree(name)['domain'],'生活娱乐')
-            self.assertEqual(domain_tree(name)['nodes'],92)
+            self.assertEqual(len(topic_index(name)),92)  # historical IDs retained
+            self.assertEqual(domain_tree(name)['nodes'],sum(new_question_available(name,n['id']) for n in topic_index(name)))
+            self.assertEqual(domain_tree(name)['topics'],domain_tree('生活娱乐')['topics'])
     def test_old_frozen_label_and_cached_platform_payload_are_preserved(self):
         choose_domain(self.root,'生活娱乐');choose_subdirection(self.root,'life_garden_indoor')
         card=next(c for c in lifestyle_library()['mechanisms'] if c['id']=='LH-C-M01')

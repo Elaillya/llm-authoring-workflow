@@ -55,6 +55,7 @@ def validate_prompt(directory, request):
 def prepare_model(root, role, evaluation=None):
     require(role in ROLES, '模型角色不合法')
     root = Path(root)
+    require(read_json(root/'TASK.json').get('response_mode')!='official_clients','本题使用官方客户端采集，不创建手工填写入口')
     from .platform_checks import question_gate
     question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
@@ -110,6 +111,7 @@ def prepare_model(root, role, evaluation=None):
 def import_model(root, role, evaluation=None):
     require(role in ROLES, '模型角色不合法')
     root = Path(root)
+    require(read_json(root/'TASK.json').get('response_mode')!='official_clients','本题使用官方客户端原件导入，不把自动采集写为用户手工提供')
     from .platform_checks import question_gate
     question_gate(root,active_question(root)['question'])
     screen = seed_screen(root, evaluation) if role != 'seed' else None
@@ -169,6 +171,10 @@ def validate_manual_evidence(root, role, item=None):
 def validate_model_evidence(root, role, item=None):
     item = item or read_response(root, role)
     task = read_json(Path(root) / 'TASK.json') if (Path(root) / 'TASK.json').exists() else {}
+    if task.get('response_mode')=='official_clients' or item['meta'].get('source_kind')=='official_client_automation':
+        from .official import validate_evidence
+        validate_evidence(root,role,item)
+        return None
     if task.get('response_mode') == 'official_manual' or item['meta'].get('source_kind') == 'official_manual':
         validate_manual_evidence(root, role, item)
         return None
@@ -179,6 +185,9 @@ def validate_model_evidence(root, role, item=None):
 
 def manual_status(root):
     root = Path(root)
+    if read_json(root/'TASK.json').get('response_mode')=='official_clients':
+        from .official import status
+        return status(root)
     complete = {}
     for role in ROLES:
         try:

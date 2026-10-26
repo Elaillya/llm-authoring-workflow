@@ -1,3 +1,7 @@
+# 自动化本地开发入口
+
+本分支继续开发及移植请先读 [LOCAL_DEVELOPMENT_HANDOFF.md](LOCAL_DEVELOPMENT_HANDOFF.md) 和 [AUTOMATION_VALIDATION.md](AUTOMATION_VALIDATION.md)。以下为保留的手动模式历史说明，不能代替浏览器开发合同或本机运行验收。
+
 # 完整提交与旧题接续
 
 3.0.0 默认使用用户提供的官方网页 Markdown。新题先询问领域和题型，不需要 API 配置。冻结候选后 model-prepare seed 创建题面与 Seed 填写文件；model-import seed 保存原文。当前版本 Seed 判断未达成全部决定性点后，才允许 model-prepare/model-import gpt、claude。文件在 model-input/rNNNN/，按模型名字命名，仅粘贴回复正文，不要求用户创建文件或额外清单。

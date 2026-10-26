@@ -436,13 +436,15 @@
             "id": "life_daily_cooking",
             "label": "做饭与食物管理",
             "audience": "普通生活使用者、学生及相应爱好者",
-            "guidance": "家庭餐食、备餐、存放和标签；官方安全要求不能用外观/气味代替。",
+            "guidance": "家庭餐食、备餐、存放和标签；官方安全要求不能用外观/气味代替。 当前不再选择已停用的备餐与厨房流程；可继续选择食品储藏等其他启用分支，不以较宽父方向标签绕过停用。",
             "children": [
               {
                 "id": "life_cooking_workflow",
                 "label": "备餐与厨房流程",
                 "audience": "普通生活使用者、学生及相应爱好者",
-                "guidance": "食材、设备、时间和食用安排的依赖关系。"
+                "guidance": "食材、设备、时间和食用安排的依赖关系。",
+                "new_questions_enabled": false,
+                "availability_reason": "当前联调多轮未获得所需模型区分度，按用户要求停止未来新题选择；保留历史读取和同prompt返修。"
               },
               {
                 "id": "life_cooking_storage",

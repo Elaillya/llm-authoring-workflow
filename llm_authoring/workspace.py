@@ -145,22 +145,28 @@ def workspace_readme(tool):
             f'新题运行 bin/lab new <编号>，每道题打开自己的code-workspace文件。\n\n工具说明：{tool}/README.md\n')
 
 
-def create_workspace(destination,tool=TOOL_ROOT,runtime=None):
+def create_workspace(destination,tool=TOOL_ROOT,runtime=None,*,initial_task_id='question-001',initial_task_folder='task'):
     root=Path(destination).absolute();tool=Path(tool).resolve()
+    folder=Path(initial_task_folder)
+    require(not folder.is_absolute() and '..' not in folder.parts and str(folder) not in ('.',''), '初始题目目录须位于新父工作区内')
+    require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,127}',initial_task_id),'初始题目ID不合法')
     require(not root.exists(),'工作区目录已存在，拒绝覆盖题目或私有配置')
     root.mkdir(parents=True);local=root/'local';local.mkdir(mode=0o700)
     runtime=runtime or {'python':str(tool/'.venv/bin/python'),'browsers':str(tool/'.browsers'),'assets':str(tool/'.assets')}
     write_json(local/'runtime.json',runtime)
     write_json(root/'.authoring-workspace.json',{'schema_version':1,'workflow':'llm-authoring','toolkit_root':str(tool),'version':VERSION})
+    if initial_task_folder!='task':
+        marker=read_json(root/'.authoring-workspace.json');marker['default_task']=folder.as_posix()
+        write_json(root/'.authoring-workspace.json',marker)
     (root/'bin').mkdir()
     launcher='#!/usr/bin/env python3\nimport json,os,sys\nfrom pathlib import Path\nroot=Path(__file__).resolve().parents[1]\n'+\
              'runtime=json.loads((root/"local/runtime.json").read_text())\nmarker=json.loads((root/".authoring-workspace.json").read_text())\n'+\
              'exe=Path(runtime["python"])\nif not exe.is_file():\n print("首次使用：请让侧栏运行工具仓 scripts/setup.py，准备依赖环境。",file=sys.stderr);sys.exit(2)\n'+\
              'os.execv(str(exe),[str(exe),str(Path(marker["toolkit_root"])/"scripts/lab.py"),"--workspace",str(root),*sys.argv[1:]])\n'
     (root/'bin/lab').write_text(launcher);(root/'bin/lab').chmod(0o755)
-    write_json(root/'Authoring.code-workspace',workspace_file('task','出题与五模型排序',root))
+    write_json(root/'Authoring.code-workspace',workspace_file(folder.as_posix(),'出题与五模型排序',root))
     (root/'README.md').write_text(workspace_readme(tool))
-    result=create_task(root,'question-001',root/'task')
+    result=create_task(root,initial_task_id,root/folder)
     return {'workspace':str(root),'workspace_file':str(root/'Authoring.code-workspace'),'response_mode':'official_manual','first_task':result}
 
 
@@ -191,7 +197,10 @@ def choose_domain(root,domain):
 def begin(root,workspace):
     root=Path(root);workspace=Path(workspace)
     request=read_json(root/'REQUEST.json')
-    models={role:{'display_name':name,'input':'user_provided_markdown'} for role,name in NAMES.items()}
+    task=read_json(root/'TASK.json')
+    response_mode=task.get('response_mode','official_manual')
+    model_input='official_client_adapter_pending' if response_mode=='official_clients' else 'user_provided_markdown'
+    models={role:{'display_name':name,'input':model_input} for role,name in NAMES.items()}
     needs=[]
     domain=canonical_domain(question_domain(root,request))
     if domain is None:needs.append('domain')
@@ -206,7 +215,7 @@ def begin(root,workspace):
     policy=current(root);choice=prompt(root) if not needs else None
     return {'phase':'authoring','authoring_references':authoring_references(),'domain':domain,'question_type':request.get('question_type'),'question_type_choices':list(TYPES),
             **selection,**({'next_question':choice} if choice else {}),'model_checks_policy':policy,
-            'memory_context':memory,'models':models,'response_mode':'official_manual','requires_input':needs,'ready':not needs,
+            'memory_context':memory,'models':models,'response_mode':response_mode,'requires_input':needs,'ready':not needs,
             'scenario_owner':'assistant','next':'按next_question先选计算机科学、商科或生活娱乐，再选子方向与题型；场景和专业资料由助手生成核实' if needs else
             '已有冻结题目，运行status查看缺失材料并接续，不重跑已完成模型' if (root/'CURRENT.json').exists() else '按已选领域和题型自动生成并核实场景'}
 

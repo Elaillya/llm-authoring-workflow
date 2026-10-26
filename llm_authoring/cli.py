@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import sys
 from . import VERSION
-from .core import ALL_ROLES, Error, ROLES, active_question, freeze, read_json, read_response, require, write_json
+from .core import ALL_ROLES, Error, ROLES, NAMES, active_question, freeze, read_json, read_response, require, write_json
 from .authoring import check_seed,check_three,evaluation_template,export_authoring,self_review_template
 from .providers import collect,recover
 from .render import render_response
@@ -56,6 +56,17 @@ def main(argv=None):
     sources.add_argument('--har',type=Path);sources.add_argument('--config',type=Path);sources.add_argument('--default',dest='use_default',action='store_true')
     qr=subs.add_parser('qa-run');qr.add_argument('stage',choices=[*platform_client.KEYS,'models'])
     qr.add_argument('--question',type=Path);qr.add_argument('--evaluation',type=Path);qr.add_argument('--refresh',action='store_true')
+    bp=subs.add_parser('browser-prepare');bp.add_argument('stage',choices=['question','models'])
+    bp.add_argument('--question',type=Path);bp.add_argument('--evaluation',type=Path)
+    bp.add_argument('--retry-reason')
+    bi=subs.add_parser('browser-import');bi.add_argument('directory',type=Path)
+    bi.add_argument('--question',type=Path);bi.add_argument('--evaluation',type=Path)
+    pg=subs.add_parser('browser-import-page');pg.add_argument('directory',type=Path);pg.add_argument('--question',type=Path,required=True)
+    mf=subs.add_parser('browser-model-prepare');mf.add_argument('role',choices=ROLES);mf.add_argument('--evaluation',type=Path,required=True)
+    mv=subs.add_parser('browser-model-verify');mv.add_argument('file',type=Path)
+    for command in ('client-prepare','client-import','client-review-template'):
+        client=subs.add_parser(command);client.add_argument('role',choices=ROLES)
+        if command=='client-prepare':client.add_argument('--seed-evaluation',type=Path)
     qst=subs.add_parser('qa-status');qst.add_argument('--evaluation',type=Path)
     qdt=subs.add_parser('qa-disagreement-template');qdt.add_argument('stage',choices=list(platform_client.KEYS));qdt.add_argument('output',type=Path);qdt.add_argument('--evaluation',type=Path);qdt.add_argument('--question',type=Path)
     qd=subs.add_parser('qa-disagree');qd.add_argument('decision',type=Path);qd.add_argument('--evaluation',type=Path);qd.add_argument('--question',type=Path)
@@ -81,16 +92,22 @@ def main(argv=None):
         e=subs.add_parser(command);e.add_argument('--evaluation',type=Path,required=True);e.add_argument('--self-review',type=Path,required=True);e.add_argument('--output',type=Path,required=True)
         if command=='export':e.add_argument('--ranking',type=Path,required=True)
     args=parser.parse_args(argv)
+    original_names=NAMES.copy()
     try:
         if args.command=='workspace-create':result=create_workspace(args.directory)
         else:
             workspace=args.workspace.absolute() if args.workspace else locate_workspace(args.task or Path.cwd())
             root=args.task.absolute() if args.task else Path.cwd() if (Path.cwd()/'TASK.json').is_file() else default_task(workspace)
             require(locate_workspace(root)==workspace,'题目不属于指定工作区')
+            if (root/'TASK.json').is_file() and read_json(root/'TASK.json').get('platform_check_mode')=='browser':
+                NAMES['seed']='Seed 2.1 Pro'
             if args.command=='new':result=create_task(workspace,args.id)
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
+                if read_json(root/'TASK.json').get('platform_check_mode')=='browser':
+                    print('请在本题的Codex侧栏发送：\n\n按 AGENTS.md 接续浏览器出题流程。读取TASK.json、REQUEST.json、WORKLOG.md和browser/binding.json，沿用已选领域完整路径及题型；刷新共享题库和失败经验，完整阅读Insight研究与检查单后由助手设计场景。先核验本机采集端与专用Chrome，通用采集端需worker_protocol=2；未就绪时给出具体启动/更新步骤。按TASK.response_mode采集原件：official_clients使用真实官方客户端及High截图，不要求用户手工粘贴前三模型，不追加题面格式指令。prompt与Insight后用真实网页按钮质检并导入原网络结果，再冻结、先Seed、后GPT/Claude。三模型门槛通过后才并行后两项网页质检；暂无继续等真实请求，结果未知不重发。用户通过Arena正常交互提供另两模型原件，接续统一五模型评分、具名排序和六份MD交付；浏览器门槛、截图与排序实际就绪后才按本题授权提交，不复用题目458的提交授权。正在开发的步骤先实现并现场验证，未验证不写通过。\n')
+                    return 0
                 print('请在当前题目的Codex侧栏发送：\n\n按 AGENTS.md 使用 llm-authoring-workflow 开始或接续完整出题流程。保留已有题目、三模型原文和判断，按status补齐缺失步骤。新题先问我计算机科学、商科还是生活娱乐，再问相应子方向，最后选择题型；设计前完整阅读Skill的references/insight-rubric-study.md和insight-rubric-checklist.md，确定Insight/考点、评估、返修及排序时按阶段核对，设计复核填写insight_rubric_alignment具体依据；不把研究当过检模板。读取本地题库和认可的共享失败经验，核实自然表达、场景/Insight/考点的实质差异；按Skill的writing.md灵活组织Insight但突出真正决定性因素，考点精简背景且一条判断一件事，提交字段用纯文本、排序备注简洁；五模型发送文字严格等于冻结prompt，不追加格式要求；不调用模型生成API，允许平台质检调用。prompt和Insight后先做难度标签检查，按反馈自主返修，通过后再冻结。按我选定的领域生成并核实场景。冻结候选后先创建Seed的Markdown填写文件；我填好后导入并判断，Seed未达成全部决定性点后，先询问我是否进行考点和达成性质检、等待实际答复并用choose-model-checks记录，再创建GPT和Claude文件。三个模型原文、判断及备注齐备后先check并确认three_model_gate=true（Seed未全部决定性达成且GPT或Claude至少一个全部达成），且我选择需要时才按Skill并行考点和达成性质检；我选择不需要则跳过两项API，保留题目检查与三模型门槛后直接进入Arena并标注未执行；若初次GPT/Claude都未达成则保留失败候选、记rejected并重新生成新prompt，不调用后两项质检；正常请求等待至完成、不设客户端时限；认可考点失败按Skill的repair.md先保持prompt修Insight/考点统一重评，再询问是否重新提供GPT/Claude，替换不可行才改prompt；真实失败由助手复核后共享经验；错误意见登记证据异议，立即告诉我不认同并给可复制备注。门禁满足后先发Arena题面和两份Markdown填写链接，再离线处理三项通过的表达建议，保持题面和判定、优化后不再质检。等我填好后继续五模型考点评估、排序及完整交付；所有模型的官方网页截图由我自行提交。\n');return 0
             elif args.command=='begin':result=begin(root,workspace)
             elif args.command=='choose-type':result=choose_type(root,args.type)
@@ -120,6 +137,21 @@ def main(argv=None):
             elif args.command=='failure-review':result=lessons.review(workspace,read_json(args.decision))
             elif args.command=='business-references':result=business_context(args.subdirection)
             elif args.command=='lifestyle-references':result=lifestyle_context(args.subdirection,args.limit,args.offset,root)
+            elif args.command in ('client-prepare','client-import','client-review-template'):
+                from . import official
+                if args.command=='client-prepare':result=official.prepare(root,args.role,args.seed_evaluation)
+                elif args.command=='client-review-template':result=official.review_template(root,args.role)
+                else:result=official.import_result(root,args.role)
+            elif args.command=='browser-import-page':
+                from . import browser_page
+                result=browser_page.import_result(root,args.directory,read_json(args.question))
+            elif args.command in ('browser-prepare','browser-import'):
+                from . import browser_checks
+                q=read_json(args.question) if args.question else None
+                ev=read_json(args.evaluation) if args.evaluation else None
+                if args.command=='browser-prepare':
+                    result=browser_checks.prepare(root,('question',) if args.stage=='question' else ('criteria','attainment'),q,ev,retry_reason=args.retry_reason)
+                else:result=browser_checks.import_results(root,args.directory,q,ev)
             elif args.command=='qa-setup':
                 config=platform_client.default_config() if args.use_default else platform_client.config_from_har(args.har) if args.har else read_json(args.config)
                 result=platform_client.setup(workspace,config)
@@ -130,6 +162,13 @@ def main(argv=None):
             elif args.command=='qa-status':
                 evaluation_path=args.evaluation or find_authoring_evaluation(root,require_gate=False)
                 result=qa.status(root,read_json(evaluation_path) if evaluation_path else None)
+            elif args.command=='browser-model-prepare':
+                from .browser_form import prepare
+                result=prepare(root,args.role,read_json(args.evaluation))
+            elif args.command=='browser-model-verify':
+                from .browser_form import validate_spec
+                result=validate_spec(args.file)
+                require(Path(result['task_root']).resolve()==root.resolve(),'填表输入属于其他题目')
             elif args.command=='qa-disagreement-template':
                 require(not args.output.exists(),'保留旧异议记录，使用新的文件名')
                 q=read_json(args.question or root/'drafts/question.json') if args.stage=='question' else None
@@ -204,6 +243,8 @@ def main(argv=None):
         print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     except (Error,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:
         print('错误：'+(str(exc) if isinstance(exc,Error) else type(exc).__name__+'；检查路径、JSON和权限，未显示私有配置。'),file=sys.stderr);return 2
+    finally:
+        NAMES.clear();NAMES.update(original_names)
 
 
 if __name__=='__main__':sys.exit(main())

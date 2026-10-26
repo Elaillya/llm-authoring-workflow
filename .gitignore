@@ -12,3 +12,19 @@ __pycache__/
 providers.json
 providers-*.json
 platform-checks/
+
+# Private automation runtime and authoring evidence
+private/
+tasks/
+client-home/
+browser-profile/
+captures/
+auth.json
+worker-connection.json
+cookie.txt
+cookies.json
+*.har
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+.authoring-workspace.json

@@ -158,7 +158,7 @@ def save_response(root, role, text, meta, raw=None):
     (directory/'reply.md').write_text(text,encoding='utf-8')
     if raw is not None:
         rawname=meta.get('raw_response_file','raw_response.json')
-        allowed={'arena_manual':('arena-input.md',),'official_manual':('model-input.md',)}.get(meta.get('source_kind'),('raw_response.json','raw_response.sse'))
+        allowed={'arena_manual':('arena-input.md',),'official_manual':('model-input.md',),'official_client_automation':('client-original.md',)}.get(meta.get('source_kind'),('raw_response.json','raw_response.sse'))
         require(rawname in allowed,'原响应文件名不合法')
         (directory/rawname).write_bytes(raw)
     metadata={**meta,'schema_version':1,'role':role,'task_id':current['question']['task_id'],
@@ -175,9 +175,9 @@ def read_response(root,role):
     meta=read_json(directory/'metadata.json');text=(directory/'reply.md').read_bytes().decode('utf-8')
     require(meta['prompt_sha256']==active_question(root)['prompt_sha256'],'回复题面版本不一致')
     require(sha(directory/'reply.md')==meta['reply_sha256'],'模型回复原件已改变')
-    if meta.get('source_kind') in ('api','arena_manual','official_manual'):
+    if meta.get('source_kind') in ('api','arena_manual','official_manual','official_client_automation'):
         rawname=meta.get('raw_response_file','raw_response.json')
-        allowed={'arena_manual':('arena-input.md',),'official_manual':('model-input.md',)}.get(meta.get('source_kind'),('raw_response.json','raw_response.sse'))
+        allowed={'arena_manual':('arena-input.md',),'official_manual':('model-input.md',),'official_client_automation':('client-original.md',)}.get(meta.get('source_kind'),('raw_response.json','raw_response.sse'))
         require(rawname in allowed,'原响应文件名不合法')
         rawpath=directory/rawname
         require(rawpath.is_file() and not rawpath.is_symlink() and sha(rawpath)==meta.get('raw_response_sha256'),'模型原始响应缺失或已改变')
