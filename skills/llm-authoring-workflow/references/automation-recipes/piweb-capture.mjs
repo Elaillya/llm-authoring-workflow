@@ -6,9 +6,44 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {sessionUrl, sha256} from './piweb-client.mjs';
+import {setTimeout as delay} from 'node:timers/promises';
 
 const SCROLLER = '.chat-content .scrollbar-subtle.overflow-y-auto';
 const fail = (ok, why) => { if (!ok) throw new Error(why); };
+
+// Navigation and standard UI folding only; never changes the model or thinking setting.
+export async function prepareConversation(page, {baseUrl,sessionId,userEntryId,entryId,modelLabel,windowMs=15000}) {
+  fail(windowMs>0 && windowMs<=30000,'Use a preparation window up to 30 seconds');
+  const target=new URL(sessionUrl(baseUrl,sessionId));
+  const current=new URL(await page.url());
+  if(current.origin!==target.origin || current.pathname!==target.pathname || current.searchParams.get('session')!==sessionId) await page.goto(target.href);
+  const end=Date.now()+windowMs;
+  do {
+    const state=await page.evaluate(({userEntryId,entryId,modelLabel})=>{
+      const scroller=document.querySelector('.chat-content .scrollbar-subtle.overflow-y-auto');
+      const entries=scroller?[...scroller.querySelectorAll('[data-entry-id]')]:[];
+      const answer=entries.find(e=>e.dataset.entryId===entryId);
+      const model=document.querySelector('.chat-content button[title="Change model"]')?.innerText.trim();
+      const thinking=document.querySelector('.chat-content button[aria-label="更改推理级别"]')?.innerText.trim();
+      if(!model || !thinking || !answer || !entries.some(e=>e.dataset.entryId===userEntryId))return {status:'loading'};
+      if(model!==modelLabel || thinking!=='high')return {status:'mismatch',model,thinking};
+      const open=[...answer.querySelectorAll('details[open]')];
+      const buttons=[...answer.querySelectorAll('button[aria-expanded="true"]')].filter(e=>/处理详情|thinking|reasoning/i.test(e.textContent+' '+e.getAttribute('aria-label')));
+      const prefix=`[data-entry-id=${JSON.stringify(entryId)}]`;
+      const folds=[...open.map((_,i)=>`${prefix} details[open] summary >> nth=${i}`),
+        ...buttons.map(e=>{const all=[...answer.querySelectorAll('button[aria-expanded="true"]')];return `${prefix} button[aria-expanded="true"] >> nth=${all.indexOf(e)}`;})];
+      return {status:'ready',folds};
+    },{userEntryId,entryId,modelLabel});
+    if(state.status==='mismatch')return state;
+    if(state.status==='ready') {
+      if(!state.folds.length)return {status:'ready',sessionId,entryId};
+      // Re-read after each click: nth positions change when expanded elements close.
+      await page.click(state.folds[0]);
+    }
+    await delay(Math.min(200,Math.max(0,end-Date.now())));
+  } while(Date.now()<end);
+  return {status:'loading',reason:'Conversation preparation window ended; inspect or continue reading'};
+}
 
 export function screenshotFilename(modelLabel) {
   fail(typeof modelLabel === 'string' && modelLabel.trim(), 'Model display name is required');
@@ -16,6 +51,20 @@ export function screenshotFilename(modelLabel) {
   fail(name.length > 0, 'Invalid model display name');
   if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name)) name = '_'+name;
   return name+'.png';
+}
+
+// Invoke only after actually inspecting the image. Does not infer visual quality.
+export async function recordVisualReview(outputDir,note) {
+  fail(path.isAbsolute(outputDir) && typeof note==='string' && note.trim(),'Describe the actual visual review');
+  const receipt=JSON.parse(await fs.readFile(path.join(outputDir,'screenshot.json'),'utf8'));
+  fail(sha256(await fs.readFile(receipt.imageFile))===receipt.sha256,'Screenshot changed');
+  const record={reviewed:true,note,imageSha256:receipt.sha256,replyHash:receipt.replyHash};
+  const target=path.join(outputDir,'visual-review.json');
+  try {await fs.writeFile(target,JSON.stringify(record,null,2),{flag:'wx'});} catch(e) {
+    if(e.code!=='EEXIST')throw e;
+    fail(JSON.stringify(JSON.parse(await fs.readFile(target,'utf8')))===JSON.stringify(record),'Visual review already recorded differently');
+  }
+  return record;
 }
 
 // Old plans/receipts stay intact; expose a byte-identical, model-named upload copy.
@@ -115,7 +164,7 @@ export async function captureConversation(page, {baseUrl, sessionId, userEntryId
 }
 
 // Resume capture/stitch from its immutable archive binding. Visual review remains a human/agent task.
-export async function prepareScreenshot(page, {archiveDirectory, outputDir, pythonExecutable, ...captureOptions},
+export async function prepareScreenshot(page, {archiveDirectory, outputDir, pythonExecutable, preparePage = true, ...captureOptions},
   {run = promisify(execFile)} = {}) {
   fail([archiveDirectory, outputDir, pythonExecutable].every(p => typeof p === 'string' && path.isAbsolute(p)), 'Use absolute archive, screenshot and Python paths');
   const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
@@ -146,6 +195,10 @@ export async function prepareScreenshot(page, {archiveDirectory, outputDir, pyth
   let plan;
   try { plan = await read(planFile); } catch (e) { if (e.code !== 'ENOENT') throw e; }
   if (!plan) {
+    if(preparePage) {
+      const prepared=await prepareConversation(page,{...result,modelLabel});
+      fail(prepared.status==='ready',`Conversation not ready: ${prepared.status}`);
+    }
     await captureConversation(page, {...captureOptions, baseUrl: result.baseUrl, sessionId: result.sessionId,
       userEntryId: result.userEntryId, entryId: result.entryId, modelId: result.model.modelId,
       modelLabel: result.model.displayName || result.model.modelId, outputDir});

@@ -79,6 +79,17 @@ test('single dispatch is exact and concurrent calls are guarded by durable inten
  assert.equal(state.posts[0].body.thinkingLevel,'high');
  assert.ok(!(await fs.readFile(path.join(args.directory,'create-intent.json'),'utf8')).includes('secret'));
 });
+
+test('receiving an existing user session is GET-only and does not fabricate creation records',async t=>{
+ const {client,state,args}=await fixture(t);
+ const input={...args,sessionId:'test-session'};
+ assert.equal((await client.receiveSession(input)).status,'complete');
+ assert.equal((await client.receiveSession(input)).status,'complete');
+ assert.equal(state.posts.length,0);
+ assert.equal(JSON.parse(await fs.readFile(path.join(args.directory,'result.json'),'utf8')).sourceKind,'piweb_user');
+ await assert.rejects(fs.access(path.join(args.directory,'create-intent.json')),/ENOENT/);
+ await assert.rejects(client.receiveSession({...input,sessionId:'other'}),/binding changed/);
+});
 test('lost creation receipt never authorizes another POST',async t=>{
  const {client,state,args}=await fixture(t);state.failPost=true;
  await assert.rejects(client.startSingle(args),/outcome unknown/);

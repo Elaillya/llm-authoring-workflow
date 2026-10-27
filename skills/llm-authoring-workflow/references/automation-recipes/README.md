@@ -15,6 +15,9 @@
 | [piweb-import.py](piweb-import.py) | 归档原文按字节导入，复用已有 lab 门槛与证据保护 |
 | [piweb-capture.mjs](piweb-capture.mjs) | ego 一轮连续分段、布局检查、浮层恢复及拼接计划 |
 | [stitch-screenshots.py](stitch-screenshots.py) | 整视口分段截图查重、裁边及按内容坐标拼接 |
+| [observation-window.mjs](observation-window.mjs) | 短观察窗口、跨进程渐进间隔和变化通知；只观察，不重试派发 |
+
+人工已完成操作的接收入口为receiveSession/receiveCheck，反馈及最终回读为feedbackStage/verifyStage；截图默认准备页面，目视后recordVisualReview。调用条件、来源差异及交付规则见[接续规则](../automation-recovery.md)，避免每题临时拼接脚本。
 
 `ego-platform.mjs` 是供 ego 的 Node 脚本导入的 ES 模块，不是整段丢入 evaluate 的旧配方。函数要求实际 page 和字符串 itemID，数据作为参数传入，不编辑公共源码里的 DATA。写入预检目标、只更新不同值；即时 DOM 一致仍需阶段回读和保存验证。详情及字段表以平台操作流程为准。
 

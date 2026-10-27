@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {captureConversation, prepareScreenshot, screenshotFilename} from '../skills/llm-authoring-workflow/references/automation-recipes/piweb-capture.mjs';
+import {captureConversation, prepareScreenshot, screenshotFilename,prepareConversation} from '../skills/llm-authoring-workflow/references/automation-recipes/piweb-capture.mjs';
 import {sha256} from '../skills/llm-authoring-workflow/references/automation-recipes/piweb-client.mjs';
 
 async function fixture(t, options={}) {
@@ -46,7 +46,7 @@ test('screenshot composition reuses verified image and rejects a replaced reply'
  const resultFile=path.join(archiveDirectory,'result.json');await fs.writeFile(resultFile,JSON.stringify(manifest));
  let stitches=0;
  const run=async(exe,args)=>{stitches++;assert.equal(args[1],'--plan');const plan=JSON.parse(await fs.readFile(args[2],'utf8'));await fs.writeFile(plan.out,'merged-image');return {stdout:JSON.stringify({ok:true,out:plan.out})};};
- const args={archiveDirectory,outputDir:f.args.outputDir,pythonExecutable:path.resolve('python')};
+ const args={archiveDirectory,outputDir:f.args.outputDir,pythonExecutable:path.resolve('python'),preparePage:false};
  const first=await prepareScreenshot(f.page,args,{run});
  assert.equal(first.status,'needs_visual_review');assert.equal(path.basename(first.imageFile),'Claude Opus 4.6.png');
  assert.equal((await prepareScreenshot(f.page,args,{run})).reused,true);assert.equal(stitches,1);assert.equal(f.calls(),3);
@@ -67,4 +67,15 @@ test('model screenshot names preserve display names and cannot escape their dire
  assert.equal(screenshotFilename('CON'),'_CON.png');
  assert.ok(!screenshotFilename('../route\\model').includes('/'));
  assert.throws(()=>screenshotFilename('   '),/display name/);
+});
+
+test('conversation preparation navigates once, folds one element at a time and never changes model',async()=>{
+ let url='https://host/other',opens=1,gotos=0,clicks=0;
+ const page={url:async()=>url,goto:async target=>{gotos++;url=target;},
+  evaluate:async()=>({status:'ready',folds:opens?['observed-summary']:[]}),
+  click:async selector=>{assert.equal(selector,'observed-summary');clicks++;opens--;}};
+ const args={baseUrl:'https://host/prefix',sessionId:'s',entryId:'a',userEntryId:'u',modelLabel:'expected',windowMs:1000};
+ assert.equal((await prepareConversation(page,args)).status,'ready');assert.equal(gotos,1);assert.equal(clicks,1);
+ page.evaluate=async()=>({status:'mismatch',model:'other'});
+ assert.equal((await prepareConversation(page,args)).status,'mismatch');assert.equal(clicks,1);
 });

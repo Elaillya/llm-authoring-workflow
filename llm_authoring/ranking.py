@@ -130,6 +130,11 @@ def export_complete(root, evaluation, review, ranking, output):
                                          'reply_file': paths[role], 'decisive_met': stat['decisive_met'], 'total_met': stat['total_met']})
         from .platform_polish import export as export_polish
         export_polish(root,evaluation,fields,result['models'],package)
+        from .automation_evidence import platform_fields,web_evidence,screenshot_evidence
+        if (Path(root)/'TASK.json').is_file() and read_json(Path(root)/'TASK.json').get('platform_checks_required') is False:
+            web=web_evidence(root,platform_fields(root,stats=result['models']),package)
+            if web:fields['web_checks']=web
+            fields['screenshot_states']=screenshot_evidence(root)
         (package / '提交信息.md').write_text(submission_markdown(fields), encoding='utf-8')
         write_json(package / 'fields.json', fields)
         write_json(package / 'authoring-evaluation.json', authoring)
@@ -143,8 +148,10 @@ def export_complete(root, evaluation, review, ranking, output):
                    'prompt_sha256': current['prompt_sha256'], 'rubric_sha256': current['rubric_sha256'],
                    'models_in_order': list(ALL_ROLES), 'three_model_gate': True, 'ranking': result['order'],
                    'next_workflow': 'platform_submission', 'arena_screenshots': 'user_submits_separately',
-                   'model_screenshots': 'user_submits_separately',
-                   'next_action': '完整出题与五模型排序材料已生成，用户提交甲方；所有模型的官方网页截图由用户单独提供。'})
+                   'model_screenshots': fields.get('screenshot_states','user_submits_separately'),
+                   'web_checks':fields.get('web_checks'),
+                   'capture_sources':{r:m['capture_source'] for r,m in fields['models'].items() if m.get('capture_source')},
+                   'next_action': '完整出题与五模型排序材料已生成，用户核对材料及实际截图状态后继续提交；Arena截图由用户另行提供。'})
         (package / 'manifest.json').unlink()
         write_json(package / 'manifest.json', {'schema_version': 1, 'phase': 'complete',
                    'files': {p.relative_to(package).as_posix(): sha(p) for p in package.rglob('*') if p.is_file()}})

@@ -74,6 +74,7 @@ def main(argv=None):
         q=subs.add_parser(command);q.add_argument('output',type=Path)
     ch=subs.add_parser('check');ch.add_argument('evaluation',type=Path)
     sc=subs.add_parser('seed-check');sc.add_argument('evaluation',type=Path)
+    pf=subs.add_parser('platform-fields');pf.add_argument('--evaluation',type=Path,required=True)
     ap=subs.add_parser('arena-prepare');ap.add_argument('--evaluation',type=Path,required=True)
     fe=subs.add_parser('five-evaluation-template');fe.add_argument('output',type=Path);fe.add_argument('--authoring-evaluation',type=Path,required=True)
     for command in ('five-check','rank'):
@@ -165,6 +166,9 @@ def main(argv=None):
             elif args.command=='check':
                 evaluation=read_json(args.evaluation);result=check_three(root,evaluation)
                 result['failure_observations']=lessons.observe_gate(root,evaluation)
+            elif args.command=='platform-fields':
+                from .automation_evidence import platform_fields
+                result=platform_fields(root,read_json(args.evaluation))
             elif args.command=='arena-prepare':result=prepare_arena(root,read_json(args.evaluation))
             elif args.command=='arena-import':result=import_arena(root,read_json(args.evaluation) if args.evaluation else None)
             elif args.command=='five-evaluation-template':

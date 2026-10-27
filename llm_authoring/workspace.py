@@ -6,6 +6,7 @@ from .filesystem import temporary_directory
 from pathlib import Path
 import subprocess
 import uuid
+import sys
 from . import VERSION
 from .core import Error, NAMES, TYPES, active_question, direction_locked, question_domain, read_json, require, write_json
 from .domains import canonical_domain
@@ -66,8 +67,8 @@ def create_task(workspace,task_id,destination=None,platform_checks=True):
     require(not root.exists(),'题目目录已存在，保留原件，请用新ID')
     root.mkdir(parents=True)
     for name in ('AGENTS.md','INPUTS.md','WORKLOG.md','.gitignore'):
-        content=(tool/'templates'/name).read_text().replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
-        (root/name).write_text(content)
+        content=(tool/'templates'/name).read_text(encoding='utf-8').replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
+        (root/name).write_text(content,encoding='utf-8')
     write_json(root/'TASK.json',{'schema_version':1,'workflow':'llm-authoring','task_id':task_id,'response_mode':'official_manual','memory_id':str(uuid.uuid4()),'platform_checks_required':bool(platform_checks)})
     write_json(root/'REQUEST.json',{'schema_version':1,'selection_schema':2,'domain':None,'domain_confirmed':False,'subdirection':None,'question_type':None,'scenario_generation':'assistant_sourced'})
     for name in ('materials','drafts','evaluations','delivery'):(root/name).mkdir()
@@ -76,7 +77,7 @@ def create_task(workspace,task_id,destination=None,platform_checks=True):
     import shutil
     skill=root/'.agents/skills/llm-authoring-workflow';skill.parent.mkdir(parents=True)
     shutil.copytree(tool/'skills/llm-authoring-workflow',skill)
-    (root/'TOOLKIT.md').write_text(f'# 工具入口\n\n源码：{tool}\n工作区：{workspace}\n命令：{workspace}/bin/lab\n工具版本：{VERSION}\n')
+    (root/'TOOLKIT.md').write_text(f'# 工具入口\n\n源码：{tool}\n工作区：{workspace}\n命令：{workspace}/bin/lab\n工具版本：{VERSION}\n',encoding='utf-8')
     subprocess.run(['git','init','-q',str(root)],check=True)
     file=root/(task_id+'.code-workspace')
     write_json(file,workspace_file('.',task_id,workspace))
@@ -107,7 +108,7 @@ def rename_task(workspace,root,label):
     require(not destination.parent.is_symlink(),'题目父目录不能为符号链接')
     marker=read_json(workspace/'.authoring-workspace.json')
     tool=Path(marker['toolkit_root'])
-    content=(tool/'templates/AGENTS.md').read_text().replace('{{TASK_ID}}',label).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
+    content=(tool/'templates/AGENTS.md').read_text(encoding='utf-8').replace('{{TASK_ID}}',label).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
     old_name=task.get('display_id',task['task_id'])+'.code-workspace'
     new_name=label+'.code-workspace'
     old=root/old_name;new=root/new_name
@@ -143,7 +144,7 @@ def rename_task(workspace,root,label):
             (destination/old_name).rename(destination/new_name)
         file=destination/new_name
         write_json(file,window)
-        (destination/'AGENTS.md').write_text(content)
+        (destination/'AGENTS.md').write_text(content,encoding='utf-8')
     except BaseException:
         # Only these small instruction/identity files are ever written by rename.
         if old_name!=new_name:(destination/new_name).unlink(missing_ok=True)
@@ -157,10 +158,32 @@ def rename_task(workspace,root,label):
             'frozen_task_id':task['task_id'],'legacy_path':str(root),'instructions_backup':str(backup)}
 
 
+def write_launcher(root):
+    root=Path(root)
+    require(not (root/'bin/lab').is_symlink(),'启动器不能为符号链接')
+    launcher='#!/usr/bin/env python3\nimport json,os,sys,subprocess\nfrom pathlib import Path\nroot=Path(__file__).resolve().parents[1]\n'+\
+             'runtime=json.loads((root/"local/runtime.json").read_text(encoding="utf-8"))\nmarker=json.loads((root/".authoring-workspace.json").read_text(encoding="utf-8"))\n'+\
+             'exe=Path(runtime["python"])\nif not exe.is_file():\n print("首次使用：请让侧栏运行工具仓 scripts/setup.py，准备依赖环境。",file=sys.stderr);sys.exit(2)\n'+\
+             'os.environ.update(PYTHONUTF8="1",PYTHONIOENCODING="utf-8")\nraise SystemExit(subprocess.call([str(exe),"-X","utf8",str(Path(marker["toolkit_root"])/"scripts/lab.py"),"--workspace",str(root),*sys.argv[1:]]))\n'
+    (root/'bin').mkdir(exist_ok=True)
+    (root/'bin/lab').write_text(launcher,encoding='utf-8')
+    if os.name!='nt':(root/'bin/lab').chmod((root/'bin/lab').stat().st_mode|0o111)
+
+
 def workspace_file(folder,label,workspace):
+    runtime=read_json(Path(workspace)/'local/runtime.json')
     return {'folders':[{'name':label,'path':folder}], 'extensions':{'recommendations':['openai.chatgpt']},
-            'tasks':{'version':'2.0.0','tasks':[{'label':'出题：侧栏开始指令','type':'process','command':str(Path(workspace)/'bin/lab'),
-                    'args':['--task','${workspaceFolder}','start'],'problemMatcher':[]}]}}
+            'tasks':{'version':'2.0.0','tasks':[{'label':'出题：侧栏开始指令','type':'process','command':runtime['python'],
+                    'args':['-X','utf8',str(Path(workspace)/'bin/lab'),'--task','${workspaceFolder}','start'],'problemMatcher':[]}]}}
+
+
+def refresh_task_command(value,workspace):
+    runtime=read_json(Path(workspace)/'local/runtime.json')
+    for task in value.get('tasks',{}).get('tasks',[]):
+        if task.get('label')=='出题：侧栏开始指令':
+            task.update(type='process',command=runtime['python'],
+                        args=['-X','utf8',str(Path(workspace)/'bin/lab'),'--task','${workspaceFolder}','start'])
+    return value
 
 
 def workspace_readme(tool):
@@ -179,18 +202,13 @@ def create_workspace(destination,tool=TOOL_ROOT,runtime=None,first_task='questio
     first_directory=task_directory_name(first_task)
     require(not root.exists(),'工作区目录已存在，拒绝覆盖题目或私有配置')
     root.mkdir(parents=True);local=root/'local';local.mkdir()
-    runtime=runtime or {'python':str(tool/'.venv/bin/python'),'browsers':str(tool/'.browsers'),'assets':str(tool/'.assets')}
+    venv_python=tool/'.venv'/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
+    runtime=runtime or {'python':str(venv_python if venv_python.is_file() else Path(sys.executable).resolve()),'browsers':str(tool/'.browsers'),'assets':str(tool/'.assets')}
     write_json(local/'runtime.json',runtime)
     write_json(root/'.authoring-workspace.json',{'schema_version':1,'workflow':'llm-authoring','toolkit_root':str(tool),'version':VERSION,'default_task':first_directory})
-    (root/'bin').mkdir()
-    launcher='#!/usr/bin/env python3\nimport json,os,sys\nfrom pathlib import Path\nroot=Path(__file__).resolve().parents[1]\n'+\
-             'runtime=json.loads((root/"local/runtime.json").read_text())\nmarker=json.loads((root/".authoring-workspace.json").read_text())\n'+\
-             'exe=Path(runtime["python"])\nif not exe.is_file():\n print("首次使用：请让侧栏运行工具仓 scripts/setup.py，准备依赖环境。",file=sys.stderr);sys.exit(2)\n'+\
-             'os.execv(str(exe),[str(exe),str(Path(marker["toolkit_root"])/"scripts/lab.py"),"--workspace",str(root),*sys.argv[1:]])\n'
-    (root/'bin/lab').write_text(launcher)
-    if os.name!='nt':(root/'bin/lab').chmod((root/'bin/lab').stat().st_mode|0o111)
+    write_launcher(root)
     write_json(root/'Authoring.code-workspace',workspace_file(first_directory,first_task,root))
-    (root/'README.md').write_text(workspace_readme(tool))
+    (root/'README.md').write_text(workspace_readme(tool),encoding='utf-8')
     result=create_task(root,first_task,platform_checks=platform_checks)
     return {'workspace':str(root),'workspace_file':str(root/'Authoring.code-workspace'),'response_mode':'official_manual','first_task':result}
 
@@ -285,19 +303,23 @@ def update_workspace(workspace,tool=TOOL_ROOT):
         skill=root/'.agents/skills/llm-authoring-workflow'
         require(not skill.is_symlink() and skill.resolve().is_relative_to(root.resolve()),'工作区Skill不能为符号链接或逃逸题目目录')
         if skill.exists():shutil.copytree(skill,saved/'skill')
-        content=(tool/'templates/AGENTS.md').read_text().replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
-        (root/'AGENTS.md').write_text(content)
+        for entry in root.glob('*.code-workspace'):
+            require(not entry.is_symlink(),'窗口配置不能为符号链接')
+            shutil.copy2(entry,saved/entry.name)
+            write_json(entry,refresh_task_command(read_json(entry),workspace))
+        content=(tool/'templates/AGENTS.md').read_text(encoding='utf-8').replace('{{TASK_ID}}',task_id).replace('{{WORKSPACE_ROOT}}',str(workspace)).replace('{{TOOL_ROOT}}',str(tool))
+        (root/'AGENTS.md').write_text(content,encoding='utf-8')
         shutil.copytree(tool/'skills/llm-authoring-workflow',skill,dirs_exist_ok=True)
-        (root/'TOOLKIT.md').write_text(f'# 工具入口\n\n源码：{tool}\n工作区：{workspace}\n命令：{workspace}/bin/lab\n工具版本：{VERSION}\n')
-        ignore=root/'.gitignore';old_ignore=ignore.read_text() if ignore.exists() else ''
+        (root/'TOOLKIT.md').write_text(f'# 工具入口\n\n源码：{tool}\n工作区：{workspace}\n命令：{workspace}/bin/lab\n工具版本：{VERSION}\n',encoding='utf-8')
+        ignore=root/'.gitignore';old_ignore=ignore.read_text(encoding='utf-8') if ignore.exists() else ''
         for entry in ('arena-input/','model-input/'):
             if entry not in old_ignore.splitlines():old_ignore=old_ignore.rstrip()+'\n'+entry+'\n'
-        ignore.write_text(old_ignore)
-        log=root/'WORKLOG.md';previous=log.read_text() if log.exists() else ''
+        ignore.write_text(old_ignore,encoding='utf-8')
+        log=root/'WORKLOG.md';previous=log.read_text(encoding='utf-8') if log.exists() else ''
         banner=f'## 当前工作流：{VERSION} 完整出题与五模型排序'
         if banner not in previous:
             log.write_text(banner+'\n\n已保留原题、三模型原件、判断、截图与旧交付。历史记录中的上下轮分工已由当前流程替代。'
-                           '当前仅接收用户提供的Markdown：先Seed判断，再GPT/Claude，再Arena与排序；所有网页截图另行提交。使用新的交付版号。\n\n---\n\n'+previous)
+                           '按本题既有分支接续：手动分支接收Markdown及另交截图；自动化分支沿用已确认服务与网页证据。先Seed，再GPT/Claude，再Arena与排序。使用新的交付版号。\n\n---\n\n'+previous,encoding='utf-8')
         evaluation=find_authoring_evaluation(root)
         arena=None
         if evaluation:
@@ -309,13 +331,15 @@ def update_workspace(workspace,tool=TOOL_ROOT):
         updated.append({'task':str(root),'preserved_existing_question':(root/'CURRENT.json').exists(),
                         'authoring_evaluation':str(evaluation) if evaluation else None,'arena':arena})
     marker.update({'toolkit_root':str(tool),'version':VERSION});write_json(workspace/'.authoring-workspace.json',marker)
-    (workspace/'README.md').write_text(workspace_readme(tool))
+    (workspace/'README.md').write_text(workspace_readme(tool),encoding='utf-8')
+    if (workspace/'bin/lab').is_file():shutil.copy2(workspace/'bin/lab',backup/'lab-launcher.py')
+    write_launcher(workspace)
     file=workspace/'Authoring.code-workspace'
     if file.exists():
         value=read_json(file)
         for folder in value.get('folders',[]):
             if folder.get('name')=='第一轮出题':folder['name']='出题与五模型排序'
-        write_json(file,value)
+        write_json(file,refresh_task_command(value,workspace))
     return {'workflow_version':VERSION,'tasks':updated,'instructions_backup':str(backup),
             'preserved':'题型、题面、Insight、考点、三模型结果、自查、旧交付、私有配置与运行环境',
             'next':'打开原工作区，运行status；保留原件，缺少回复时按Seed筛查顺序创建Markdown填写文件，再继续Arena与排序'}

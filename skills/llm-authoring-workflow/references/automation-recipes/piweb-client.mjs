@@ -2,7 +2,7 @@
 import {createHash} from 'node:crypto';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
-import {setTimeout as delay} from 'node:timers/promises';
+import {observationWindow} from './observation-window.mjs';
 
 // User-visible names are authoritative. Backend IDs are opaque routing values.
 export const ROLE_DISPLAY_NAMES = Object.freeze({seed: ['seed-2.1-turbo', 'doubao-seed-2.1-turbo'],
@@ -217,21 +217,11 @@ export function createPiWebClient({baseUrl, cwd, headers = {}, fetchImpl = globa
     }
     return observeSession({sessionId: receipt.sessionId, prompt: intent.prompt, model: intent.model});
   }
-  async function watchAttempt(directory, {windowMs = 25000, intervalMs = 1500, onChange = () => {}} = {}) {
-    requireValue(windowMs > 0 && windowMs <= 30000 && intervalMs > 0, 'Use a bounded observation window up to 30 seconds');
-    const end = Date.now() + windowMs;
-    let last, result, failures = 0;
-    do {
-      try { result = await observeAttempt(directory); }
-      catch (error) { result = observationError(error); }
-      failures = result.status === 'read_error' ? failures + 1 : 0;
-      if (failures >= 3) result = {status: 'connection_error', reason: 'Three consecutive read failures; retain attempt and restore the connection'};
-      const key = `${result.status}:${result.reason ?? ''}`;
-      if (key !== last) { await onChange({status: result.status, reason: result.reason}); last = key; }
-      if (!['running', 'read_error'].includes(result.status)) return result;
-      await delay(Math.max(0, Math.min(intervalMs * 2 ** failures, end - Date.now())));
-    } while (Date.now() < end);
-    return result; // observation window ended, NOT the generation request
+  async function watchAttempt(directory, options = {}) {
+    return observationWindow(async()=>{
+      try{return await observeAttempt(directory);}catch(error){return observationError(error);}
+    },{windowMs:25000,intervalMs:1500,...options,directory,
+      onChange: r=>options.onChange?.({status:r.status,reason:r.reason})});
   }
   async function archiveAttempt(directory) {
     const intent = await binding(directory), manifestFile = jsonName(directory, 'result');
@@ -271,6 +261,37 @@ export function createPiWebClient({baseUrl, cwd, headers = {}, fetchImpl = globa
     }
     await writeExclusive(manifestFile, json(manifest));
     return manifest;
+  }
+  // Receive an existing user-created session. This path performs GET requests only.
+  async function receiveSession({directory,promptFile,role,version,sessionId,provider,exceptionNote=null}) {
+    requireValue(path.isAbsolute(directory) && version && (!exceptionNote || typeof exceptionNote==='string'),'Invalid receive arguments');
+    const model=resolveModel(await catalog(),role,provider), {prompt,hash}=await frozenPrompt(promptFile);
+    const intent={schema:1,kind:'receive',baseUrl:base,cwd,role,version,model,promptFile,promptHash:hash,sessionId:idPart(sessionId),exceptionNote};
+    await fs.mkdir(directory,{recursive:true});
+    const intentFile=jsonName(directory,'receive-intent');
+    try {await writeExclusive(intentFile,json(intent));} catch(e) {
+      if(e.code!=='EEXIST')throw e;
+      requireValue(JSON.stringify(await readJson(intentFile))===JSON.stringify(intent),'Receive binding changed');
+    }
+    const prior=await fs.readdir(directory);
+    requireValue(!prior.some(f=>f.startsWith('create-') || f.startsWith('send-')),'Do not mix receive and dispatch evidence');
+    let observed=await observeSession({sessionId,prompt,model});
+    // Only a user-authorized configured-tools discrepancy may be accepted here.
+    // Tool calls, wrong model/high, multi-turn context and invalid replies remain invalid.
+    if(exceptionNote && observed.status==='mismatch' && observed.detail && !emptyTools(observed.detail.toolNames)) {
+      const checked=selectReply({...observed.detail,toolNames:[]},{sessionId,prompt,model});
+      if(checked.status==='complete')observed={...checked,detail:observed.detail};
+    }
+    if(observed.status!=='complete')return {status:observed.status,reason:observed.reason,sessionId};
+    const manifest={...observed.meta,role,version,baseUrl:base,cwd,promptHash:hash,
+      sourceKind:'piweb_user',exceptionNote,replyHash:sha256(observed.text),sessionHash:sha256(json(observed.detail))};
+    for(const [name,data] of [['reply.md',observed.text],['session.json',json(observed.detail)],['result.json',json(manifest)]]) {
+      try {await writeExclusive(path.join(directory,name),data);} catch(e) {
+        if(e.code!=='EEXIST')throw e;
+        requireValue((await fs.readFile(path.join(directory,name))).equals(Buffer.from(data)),'Received archive changed; preserve original');
+      }
+    }
+    return {status:'complete',manifest};
   }
   // A fixed directory identifies one authorized attempt. Existing intent is never replayed.
   async function collectRole(args, options = {}) {
@@ -314,5 +335,5 @@ export function createPiWebClient({baseUrl, cwd, headers = {}, fetchImpl = globa
   }
   return Object.freeze({baseUrl: base, cwd, preflight, readModels: catalog, readSession, readState, running, observeSession,
     startSingle: args => start({...args, mode: 'single'}), createSession: args => start({...args, mode: 'prepared'}),
-    sendPrompt, observeAttempt, watchAttempt, archiveAttempt, collectRole});
+    sendPrompt, observeAttempt, watchAttempt, archiveAttempt, collectRole, receiveSession});
 }

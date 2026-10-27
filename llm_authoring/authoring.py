@@ -162,9 +162,17 @@ def export_authoring(root,ev,review,output):
                                    'reply_markdown':item['text'],'reply_file':paths[role],'attained':stat['attained'],'attainment_notes':notes,
                                    'screenshot':f'screenshots/{role}.png' if pic else None,'source_kind':m['source_kind'],
                                    'screenshot_submission':'historical_api_render' if pic else 'user_submits_separately'}
+            from .automation_evidence import capture_source
+            captured=capture_source(root,role,staging)
+            if captured: fields['models'][role]['capture_source']=captured
         platform=export_evidence(root,ev,staging)
         if platform:
             fields['platform_checks']=platform
+        from .automation_evidence import platform_fields,web_evidence,screenshot_evidence
+        if (Path(root)/'TASK.json').is_file() and read_json(Path(root)/'TASK.json').get('platform_checks_required') is False:
+            web=web_evidence(root,platform_fields(root,stats=result['models']),staging)
+            if web:fields['web_checks']=web
+            fields['screenshot_states']=screenshot_evidence(root)
         (staging/'提交信息.md').write_text(submission_text(fields,ROLES,checkpoint=True),encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
         shutil.copyfile(Path(root)/'drafts/sources.md',staging/'evidence/sources.md')

@@ -1,5 +1,7 @@
 # 完整出题工具接口规范
 
+自动化实测优化（2026-10-27）：按[修改计划](AUTOMATION_REFINEMENT_PLAN.md)补齐真实可见itemID校验、读取状态、作用域内单选/反馈、有限保存确认及最终只读回读；receiveSession/receiveCheck只接收已有操作，不伪造派发或扩展重试授权。piweb-import保留原门槛并写入可校验的可选来源关联，automation_evidence读取来源/网页结果/反馈/截图，交付沿用原字段及原子发布，不以关闭API门禁推断网页未执行。platform-fields从同一评估生成网页字段；排序和备注函数继续共用。短窗口观察进度跨进程保留，截图可在独立页与等待重叠。Windows setup/launcher、窗口任务采用已确认解释器与显式UTF-8。专业复核只补冲突证据规则，无新表单/门槛。能力与验证边界见[实施记录](AUTOMATION_REFINEMENT_IMPLEMENTATION.md)。
+
 备注与权限修复（2026-10-27）：delivery.attainment_notes/join_note_fields统一作者备注连接，三模型检查点、五模型导出、平台达成性载荷和排序模板复用；只调整连接标点，保留原回复/引文和判定。filesystem临时对象排他创建并采用系统默认权限，保留完整写入、原子替换/发布及回滚；工作区、版本、备份、平台记录、配置和题库不再设置600/700，读取配置不以POSIX权限位作为门槛。历史Windows ACL用scripts/repair_workspace_permissions.ps1先备份再恢复匹配创建者独占模式的对象继承，不改所有者、不遍历链接、不修改系统权限。旧交付修复另建版本，核验来源并保留定制平台说明，重建新manifest；历史差异如实记录。验证使用合成材料及Windows 3.14实际ACL，普通用户读取是验收依据。
 
 工作区结构与截图命名（2026-10-27）：新建任务默认直接放父工作区question-<题号>，已带question-前缀不重复添加；workspace-create支持--first-task指定首题、--no-platform-checks创建自动化首题，default_task及窗口入口指向实际首题。new/rename采用同一命名；创建查重同时核对新旧目录里的task_id/display_id。题库同步与workspace-update共用task_roots，兼容task、tasks/*、question-*，跳过符号链接及嵌套父工作区，不搬移原件或隐式合库。pi-web长图以归档模型显示名称命名，非法文件字符净化；旧merged.png和回执不改写，恢复返回同字节模型名副本，冲突拒绝覆盖。执行约定见[目录与命名](../skills/llm-authoring-workflow/references/workspace-layout.md)。

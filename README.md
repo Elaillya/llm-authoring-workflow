@@ -31,7 +31,7 @@ python3 scripts/setup.py
 .venv/bin/python scripts/lab.py workspace-create workspaces --first-task <题号>
 ```
 
-环境要求 Python≥3.10、Git、Linux/macOS；Windows 使用 WSL。默认只准备 Python 依赖，不下载浏览器和中文字体。
+环境要求Python≥3.10、Git。setup及工作区启动入口支持Windows原生路径和UTF-8，也保留Linux/macOS及WSL入口；自动化使用已安装的ego-lite。旧信号、符号链接和渲染相关测试仍有Windows限制，当前验证范围见[本轮实施记录](docs/AUTOMATION_REFINEMENT_IMPLEMENTATION.md)。默认只准备Python依赖，不下载浏览器和中文字体。
 
 ## 选题范围与本地记忆
 
@@ -71,7 +71,7 @@ Seed 若全部达成，助手保留该结果，重新论证并修订候选；新
 
 专家开始使用请先读[自动化分支专家使用说明](docs/AUTOMATION_EXPERT_GUIDE.md)：包含前置准备、可复制的启动与恢复口令、Arena交接和常见异常处理。
 
-开始时可选择自动化分支代替手动逐步流程：助手用 `bin/lab new <题目编号> --no-platform-checks` 创建任务，启动时确认 pi-web 服务地址与答题项目目录，并指定大方向（同一任务恢复沿用已确认记录），助手按[自动化流程指导](skills/llm-authoring-workflow/references/automation.md)自主选题出题——经你部署的 pi-web 采集三个模型回复、在已登录的做题平台网页执行三项质检并上传截图——到 Arena 入口暂停交回手动，"确认后继续"、Arena 与排序仍由你完成。计数与暂停规则为助手自律规则；WORKLOG 只记阶段、决定、异常与证据位置，技术字段由配方自动保存。后两项网页检查按先考点、后达成性的顺序执行，agent核实正常通过、有效异议或平台允许的异常跳过后决定继续；三模型门槛失败时，每个题面、Insight、考点内容版本允许GPT/Claude各补取一次，归档原件后重评，正式修订内容后恢复额度；本地平台检查门禁对该类任务关闭，本地三模型门槛保留。浏览器默认使用 ego-lite，按[浏览器手册](skills/llm-authoring-workflow/references/automation-playbook.md)启动；填写、修改、暂存、质检、截图上传及恢复统一按[平台操作流程](skills/llm-authoring-workflow/references/platform-automation.md)执行（批量文本与标准控件结合）。手动分支不变。
+开始时可选择自动化分支：助手用`bin/lab new <题目编号> --no-platform-checks`创建任务，确认本次pi-web地址、答题目录及大方向，同题恢复沿用已确认记录。助手按[自动化流程指导](skills/llm-authoring-workflow/references/automation.md)自主设计、采集三模型、执行三项网页质检及截图上传，到Arena入口交接；你完成“确认后继续”、Arena采集和最终提交，助手接收Arena原文后评估排序。先考点、再由agent依据有效结果、异议或平台允许的异常规则判断是否查达成性；三模型门槛失败时，每题面/Insight/考点内容版本GPT/Claude各可补取一次，归档重评，正式修订内容才恢复额度。本地API质检门禁关闭，三模型门槛保留。浏览器默认ego-lite，[平台操作](skills/llm-authoring-workflow/references/platform-automation.md)复用批量文本与标准控件；[人工接续与等待](skills/llm-authoring-workflow/references/automation-recovery.md)使用正式配方，交付直接读取实际证据。WORKLOG只记阶段、决定、异常和证据位置，手动分支沿用原流程。
 
 ## 平台三项检查
 

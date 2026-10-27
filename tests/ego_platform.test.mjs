@@ -30,7 +30,7 @@ function check(key, {loading = false, disabled = false, warning = false, result 
 beforeEach(() => {
   nodes = new Map();
   globalThis.location = {href: 'https://aidp.bytedance.com/management/task-v2/synthetic/mark-v3/1?itemID=123'};
-  globalThis.document = {querySelector: () => ({shadowRoot: root}), body: {innerText:'最近暂存时间：10-26 12:00:00'}};
+  globalThis.document = {querySelector: () => ({shadowRoot: root}), body: {innerText:'题目 ID：123 最近暂存时间：10-26 12:00:00'}};
   globalThis.HTMLTextAreaElement = Textarea;
   for (const key of ['insight', 'core-point', 'attainment']) check(key);
 });
@@ -49,6 +49,32 @@ test('wrong item or host cannot write any fields', async () => {
   globalThis.location.href = 'https://example.com/mark-v3/1?itemID=123';
   await assert.rejects(verifyTarget(page, '123'), /itemID/);
   assert.equal(box.value, '');
+});
+
+test('rendered item must match the confirmed target even when URL still matches the old target',async()=>{
+ globalThis.document.body.innerText='题目 ID：456';
+ await assert.rejects(verifyTarget(page,'123'),/Visible platform itemID/);
+});
+
+test('stale or absent URL itemID is advisory; actual visible target may read and write',async()=>{
+ const box=put('question-input',new Textarea());
+ globalThis.document.body.innerText='题目 ID：456';
+ const verified=await verifyTarget(page,'456');
+ assert.equal(verified.itemId,'456');assert.equal(verified.targetSource,'visible_header');
+ assert.equal(verified.urlItemId,'123');assert.equal(verified.urlMatchesVisible,false);
+ await fillTextBatch(page,'456',{'question-input':'expected question'});
+ assert.equal(box.value,'expected question');
+ globalThis.location.href='https://aidp.bytedance.com/management/task-v2/synthetic/mark-v3/1';
+ assert.equal((await verifyTarget(page,'456')).urlMatchesVisible,null);
+});
+
+test('read errors and real unchecked values are distinct',async()=>{
+ put('confirm-checkbox',{matches:()=>true,checked:false});
+ let result=await readStage(page,'123',{ids:['missing-input'],checkboxIds:['confirm-checkbox']});
+ assert.equal(result.readStatus,'locator_error');assert.equal(result.checkboxes['confirm-checkbox'],false);
+ assert.equal(result.controls['confirm-checkbox'].status,'read');
+ globalThis.document.querySelector=()=>null;
+ result=await readStage(page,'123');assert.equal(result.readStatus,'loading');
 });
 
 test('invalid late field prevents partial batch mutation', async () => {

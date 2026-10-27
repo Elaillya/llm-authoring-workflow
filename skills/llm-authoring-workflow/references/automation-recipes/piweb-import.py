@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
-from llm_authoring.core import NAMES, active_question, read_json, require, validate_markdown
+from llm_authoring.core import NAMES, active_question, read_json, read_response, require, validate_markdown, write_json
 from llm_authoring.manual import PLACEHOLDER, prepare_model, import_model
 
 
@@ -23,8 +23,12 @@ def import_archive(root, directory, replacement_id=None):
     require(read_json(root/'TASK.json').get('platform_checks_required') is False,
             'pi-web 导入仅用于显式自动化任务')
     result = read_json(directory/'result.json')
-    intent = read_json(directory/'create-intent.json')
-    receipt = read_json(directory/'create-receipt.json')
+    received = (directory/'receive-intent.json').is_file()
+    intent = read_json(directory/('receive-intent.json' if received else 'create-intent.json'))
+    receipt = intent if received else read_json(directory/'create-receipt.json')
+    if received:
+        require(intent.get('kind') == 'receive' and result.get('sourceKind') == 'piweb_user', '人工采集来源不符')
+        require(not (directory/'create-intent.json').exists(), '接收和发送记录不可混用')
     current = active_question(root)
     role = result.get('role')
     require(role in ('seed', 'gpt', 'claude') and role == intent.get('role'), '采集角色不一致')
@@ -37,6 +41,20 @@ def import_archive(root, directory, replacement_id=None):
     require(result.get('sessionId') == receipt.get('sessionId') and result.get('stopReason') == 'stop', '采集会话或结束状态不符')
     text = raw.decode('utf-8')
     validate_markdown(text)
+    def bind_source():
+        item = read_response(root, role)
+        require((item['directory']/'reply.md').read_bytes() == raw, '来源与当前原回复不符')
+        names = ['result.json','session.json','reply.md'] + (['receive-intent.json'] if received else ['create-intent.json','create-receipt.json'])
+        names += [name for name in ('send-intent.json','send-receipt.json') if (directory/name).is_file()]
+        source = {'schema_version': 1, 'kind': 'piweb_user' if received else 'piweb_auto',
+                  'directory': str(directory), 'role': role, 'reply_sha256': digest(raw),
+                  'prompt_hash': result['promptHash'],
+                  'files': {name: digest((directory/name).read_bytes()) for name in names}}
+        target = item['directory']/'capture-source.json'
+        if target.exists():
+            require(read_json(target) == source, '已有不同采集来源，保留原记录并核对')
+        else:
+            write_json(target, source)
     # These functions retain all existing Seed/choice/version/evidence gates.
     if replacement_id:
         from llm_authoring import replacement
@@ -51,6 +69,7 @@ def import_archive(root, directory, replacement_id=None):
         prepared = prepare_model(root, role)
     if prepared.get('already_imported'):
         require(Path(prepared['reply_file']).read_bytes() == raw, '已有不同有效回复，须按明确授权的替换流程处理')
+        bind_source()
         return {'status': 'already_imported', 'role': role, 'reply_file': prepared['reply_file']}
     slot = Path(prepared['input_file'])
     require(Path(prepared['prompt_file']).read_bytes() == prompt, '准备文件的题面不一致')
@@ -71,6 +90,7 @@ def import_archive(root, directory, replacement_id=None):
         finally:
             Path(temp).unlink(missing_ok=True)
     imported = replacement.import_reply(root, role, replacement_id) if replacement_id else import_model(root, role)
+    bind_source()
     return {'status': 'imported', 'role': role, 'result': imported}
 
 

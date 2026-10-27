@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {fillStage,startChecks,observeChecks,waitChecks,uploadScreenshot} from '../skills/llm-authoring-workflow/references/automation-recipes/platform-stages.mjs';
+import {fillStage,startChecks,observeChecks,waitChecks,uploadScreenshot,feedbackStage,receiveCheck,verifyStage} from '../skills/llm-authoring-workflow/references/automation-recipes/platform-stages.mjs';
 
 // Page contract fake; low-level DOM selectors are tested separately in ego_platform.
 async function fixture(t){
@@ -17,12 +17,15 @@ async function fixture(t){
    if(r.operation==='fill'){Object.assign(state.values,Object.fromEntries(Object.entries(r.values).map(([k,v])=>[k,v.replace(/\r\n?/g,'\n')])));return [];}
    if(r.operation==='checks')return structuredClone(state.checks);
    if(r.operation==='upload')return {files:structuredClone(state.files),busy:false,complete:!!state.files.length};
+   if(r.operation==='radio-target')return {selector:`[data-field-id="${r.id}"] label:text-is(${JSON.stringify(r.label)})`};
+   if(r.operation==='feedback')return {status:'ready',options:['正常','异常'].map(label=>({label,selected:state.feedback===label,selector:'feedback-'+label})),notes:state.hideNoteUntilSelected && !state.feedback?[]:[{selector:'feedback-note',value:state.note||''}]};
    if(['verify','scroll'].includes(r.operation))return {};
    throw Error('unexpected request');
   },
   click:async selector=>{
    state.clicks.push(selector);
    if(selector.includes('暂存')){if(state.save)state.savedAt='10-26 01:01:00';}
+   else if(selector.startsWith('feedback-'))state.feedback=selector.slice(9);
    else if(selector.includes('label:text-is'))state.selections['question-type-radio']=JSON.parse(selector.match(/text-is\((.+)\)$/)[1]);
    else if(selector.includes('ant-select-item-option'))state.selections[state.selectedField]=JSON.parse(selector.match(/title=(.+)\]$/)[1]);
    else if(selector.includes('-select'))state.selectedField=selector.match(/data-field-id="([^"]+)"/)[1];
@@ -30,6 +33,7 @@ async function fixture(t){
     if(!state.noDispatch)Object.assign(state.checks.find(c=>c.key===key),{running:true,observation:'running',calls:2});}
    if(state.lost)throw Error('response lost');
   },
+  fill:async(_,value)=>{state.note=value;},
   setInputFiles:async(_,files)=>{state.uploads++;state.files.push({id:'new-preview',name:path.basename(files[0])});if(state.lost)throw Error('lost');}
  };
  const args={itemId:'1511',version:'r0001',directory:path.join(root,'stage'),windowMs:2,intervalMs:1};
@@ -42,6 +46,37 @@ test('fill/save lost response resumes without writing or saving again',async t=>
  assert.equal((await fillStage(page,input)).status,'saved');assert.equal(state.clicks.length,1);
  state.values['question-input']='changed';assert.equal((await fillStage(page,input)).status,'mismatch');
  await assert.rejects(fillStage(page,{...input,version:'r0002'}),/inputs changed/);
+});
+
+test('unconfirmed same-second save returns a finite result and resume never clicks again',async t=>{
+ const {page,state,args}=await fixture(t);state.save=false;
+ const input={...args,values:{'question-input':'new'}};
+ assert.equal((await fillStage(page,input)).status,'save_unconfirmed');
+ assert.equal((await fillStage(page,input)).status,'save_unconfirmed');assert.equal(state.clicks.length,1);
+});
+
+test('confirmed service failure and user rerun remain separate GET-only evidence',async t=>{
+ const {root,page,state,args}=await fixture(t);
+ await startChecks(page,{...args,keys:['attainment']});
+ Object.assign(state.checks[2],{running:false,observation:'stale_or_no_result',sectionText:'Unexpected token \'<\', "<!DOCTYPE "... is not valid JSON'});
+ const failed=await observeChecks(page,args);assert.equal(failed.results[0].status,'service_error');
+ Object.assign(state.checks[2],{calls:3,observation:'result_visible',conclusion:'不通过',resultText:'new valid result',sectionText:'new valid result'});
+ const input={...args,directory:path.join(root,'user'),priorDirectory:args.directory,key:'attainment',userStatement:'User reran this unchanged input once'};
+ const clicks=state.clicks.length;
+ assert.equal((await receiveCheck(page,input)).status,'complete');
+ assert.equal((await receiveCheck(page,input)).source,'user');assert.equal(state.clicks.length,clicks);
+ state.checks[2].calls=4;assert.equal((await receiveCheck(page,{...input,directory:path.join(root,'unknown')})).status,'unknown');
+});
+
+test('feedback saves a supplied decision and final verification is read-only',async t=>{
+ const {page,state,args}=await fixture(t);
+ state.hideNoteUntilSelected=true;
+ const input={...args,key:'attainment',label:'正常',note:'有证据异议'};
+ assert.equal((await feedbackStage(page,input)).status,'saved');
+ const clicks=state.clicks.length;
+ assert.equal((await feedbackStage(page,input)).status,'saved');assert.equal(state.clicks.length,clicks);
+ const observed=await verifyStage(page,{itemId:args.itemId});
+ assert.equal(observed.status,'observed');assert.equal(state.clicks.length,clicks);
 });
 test('running checks block a fill without consuming its write intent',async t=>{
  const {page,state,args}=await fixture(t);state.checks[0].running=true;

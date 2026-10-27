@@ -6,12 +6,21 @@ async function platformDom(page, itemId, request) {
   }
   return page.evaluate(({itemId, request}) => {
     const url = new URL(location.href);
-    if (url.hostname !== 'aidp.bytedance.com' || !url.pathname.includes('/mark-v3/') ||
-        url.searchParams.get('itemID') !== itemId) {
-      throw new Error('Platform page does not match the expected itemID');
+    if (url.hostname !== 'aidp.bytedance.com' || !url.pathname.includes('/mark-v3/')) {
+      throw new Error('Not a platform question page; cannot verify itemID');
     }
+    const visibleId = document.body.innerText.match(/题目\s*ID\s*[：:]\s*(\d+)/i)?.[1];
+    if (visibleId && visibleId !== itemId) throw Error('Visible platform itemID differs from the confirmed target; verify the actual question');
     const root = document.querySelector('div[id^="garfish_app_for_vibe-coding"]')?.shadowRoot;
-    if (!root) throw new Error('Platform form is not ready');
+    if (!root) {
+      if (request.operation === 'stage') return {itemId, values: {}, selections: {}, savedAt: null,
+        readStatus: 'loading', issues: [{reason: 'Platform form is not ready'}]};
+      throw new Error('Platform form is not ready');
+    }
+    if (!visibleId) {
+      if(request.operation==='stage')return {itemId,values:{},selections:{},savedAt:null,readStatus:'loading',issues:[{reason:'Visible itemID unavailable'}]};
+      throw Error('Visible platform itemID unavailable; wait for the target header');
+    }
     const find = id => {
       if (typeof id !== 'string' || !/^[a-z0-9-]+$/.test(id)) throw new Error('Invalid field ID');
       const matches = root.querySelectorAll(`[data-field-id="${id}"]`);
@@ -19,20 +28,54 @@ async function platformDom(page, itemId, request) {
       return matches[0];
     };
     const normalize = value => value.replace(/\r\n?/g, '\n');
-    if (request.operation === 'verify') return {itemId, url: url.href};
+    if (request.operation === 'verify') {
+      const urlItemId=url.searchParams.get('itemID');
+      return {itemId:visibleId, targetSource:'visible_header', url:url.href, urlItemId,
+        urlMatchesVisible:urlItemId===null ? null : urlItemId===visibleId};
+    }
+    if (request.operation === 'feedback') {
+      if (!['insight','core-point','attainment'].includes(request.key)) throw Error('Invalid check key');
+      const id = `${request.key}-agent-section`, section = find(id), scope = `[data-field-id="${id}"]`;
+      const labels = [...section.querySelectorAll('label')];
+      const options = labels.map((e,index) => ({label:e.querySelector('input[type="radio"]') ? e.textContent.trim() : '', selected:!!e.querySelector('input[type="radio"]:checked'),
+        selector:`${scope} label >> nth=${index}`})).filter(e => ['正常','异常'].includes(e.label));
+      if (options.length && (options.length !== 2 || new Set(options.map(e=>e.label)).size !== 2)) throw Error('Ambiguous feedback controls');
+      const notes = [...section.querySelectorAll('textarea')].map((e,index) => ({value:e.value, selector:`${scope} textarea >> nth=${index}`}));
+      return {status:options.length ? 'ready' : 'not_present', options, notes};
+    }
+    if (request.operation === 'radio-target') {
+      const container = find(request.id), labels = [...container.querySelectorAll('label')];
+      const matches = labels.map((label, index) => ({label, index})).filter(({label}) => label.textContent.trim() === request.label);
+      if (matches.length !== 1 || !matches[0].label.querySelector('input[type="radio"]')) throw Error('Missing or ambiguous radio label');
+      return {selector: `[data-field-id="${request.id}"] label >> nth=${matches[0].index}`};
+    }
     if (request.operation === 'stage') {
+      const issues = [], controls = {};
+      const readField = (id, reader) => {
+        try { const value = reader(find(id)); controls[id] = {status: 'read', value}; return value; }
+        catch (error) { issues.push({id, reason: error.message}); controls[id] = {status: 'locator_error'}; return null; }
+      };
       const values = Object.fromEntries((request.ids || []).map(id => {
-        const e = find(id);
-        if (e.tagName !== 'TEXTAREA') throw new Error(`Expected textarea: ${id}`);
-        return [id, e.value];
+        return [id, readField(id, e => {
+          if (e.tagName !== 'TEXTAREA') throw new Error(`Expected textarea: ${id}`);
+          return e.value;
+        })];
       }));
       const selections = Object.fromEntries((request.selectionIds || []).map(id => {
-        const e = find(id), active = e.querySelector('.ant-select-selection-item') || e.querySelector('input[type="radio"]:checked')?.closest('label');
-        return [id, active ? active.textContent.trim() : null];
+        return [id, readField(id, e => {
+          const active = e.querySelector('.ant-select-selection-item') || e.querySelector('input[type="radio"]:checked')?.closest('label');
+          return active ? active.textContent.trim() : null;
+        })];
       }));
+      const checkboxes = Object.fromEntries((request.checkboxIds || []).map(id => [id, readField(id, e => {
+        const input = e.matches?.('input[type="checkbox"]') ? e : e.querySelector('input[type="checkbox"]');
+        if (!input) throw Error(`Expected checkbox: ${id}`);
+        return input.checked;
+      })]));
       const text = document.body.innerText + '\n' + root.textContent;
       const savedAt = text.match(/最近暂存时间[：:]\s*(\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/)?.[1] || null;
-      return {itemId, values, selections, savedAt};
+      return {itemId, values, selections, checkboxes, savedAt, readStatus: issues.length ? 'locator_error' : 'ready', issues, controls,
+        saveObservation: savedAt ? 'timestamp_visible' : 'unavailable'};
     }
     if (request.operation === 'upload') {
       if (!['doubao', 'gpt56', 'claude'].includes(request.prefix)) throw new Error('Invalid model prefix');
@@ -107,5 +150,7 @@ export const fillTextBatch = (page, itemId, values) => platformDom(page, itemId,
 export const readTextFields = (page, itemId, ids) => platformDom(page, itemId, {operation: 'read', ids});
 export const scrollToField = (page, itemId, id) => platformDom(page, itemId, {operation: 'scroll', id});
 export const readChecks = (page, itemId, {details = false} = {}) => platformDom(page, itemId, {operation: 'checks', details});
-export const readStage = (page, itemId, {ids = [], selectionIds = []} = {}) => platformDom(page, itemId, {operation: 'stage', ids, selectionIds});
+export const readStage = (page, itemId, {ids = [], selectionIds = [], checkboxIds = []} = {}) => platformDom(page, itemId, {operation: 'stage', ids, selectionIds, checkboxIds});
+export const radioTarget = (page, itemId, id, label) => platformDom(page, itemId, {operation: 'radio-target', id, label});
 export const readUpload = (page, itemId, prefix) => platformDom(page, itemId, {operation: 'upload', prefix});
+export const readFeedback = (page,itemId,key) => platformDom(page,itemId,{operation:'feedback',key});

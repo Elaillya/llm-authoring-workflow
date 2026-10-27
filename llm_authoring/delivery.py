@@ -89,10 +89,21 @@ def submission_text(fields,roles,checkpoint=False):
     field('出题说明备注',fields['author_notes'])
     if checkpoint:
         field('检查点接续说明','三模型区分度检查通过。此为出题检查点，继续补齐Arena两份Markdown、五模型排序及完整提交。')
-    manual=all(fields['models'][role].get('source_kind')=='official_manual' for role in roles if role not in ('arena_1','arena_2'))
-    source='前三份回复为用户提供的官方页面Markdown。' if manual else '前三份回复包含历史API原文，历史API渲染图不等于官方网页截图。'
-    field('材料来源说明',source+'Arena回复为用户提供的Markdown。工具未独立核验网页型号、会话及Arena模式和随机过程。官方网页截图由用户另行向甲方提交。')
-    if fields.get('platform_checks',{}).get('form_notes'):
-        field('平台质检异议及表单备注',fields['platform_checks']['form_notes'])
+    if any(m.get('capture_source') for m in fields['models'].values()):
+        from .automation_evidence import source_text
+        source=source_text(fields['models'])
+        states=fields.get('screenshot_states',{})
+        for role,state in states.items():
+            source+='\n'+fields['models'][role]['display_name']+'截图：'+state['description']+'。'
+        field('材料来源说明',source+'\nArena截图由用户另行向甲方提交。')
+    else:
+        manual=all(fields['models'][role].get('source_kind')=='official_manual' for role in roles if role not in ('arena_1','arena_2'))
+        source='前三份回复为用户提供的官方页面Markdown。' if manual else '前三份回复包含历史API原文，历史API渲染图不等于官方网页截图。'
+        field('材料来源说明',source+'Arena回复为用户提供的Markdown。工具未独立核验网页型号、会话及Arena模式和随机过程。官方网页截图由用户另行向甲方提交。')
+    platform_notes=fields.get('platform_checks',{}).get('form_notes','')
+    if fields.get('web_checks'):
+        from .automation_evidence import web_notes
+        platform_notes+='\n\n'+web_notes(fields['web_checks'])
+    if platform_notes.strip():field('平台质检异议及表单备注',platform_notes.strip())
     if fields.get('postpass_polish'):field('平台通过后表达优化说明',fields['postpass_polish']['notice'])
     return '\n'.join(lines).rstrip()+'\n'

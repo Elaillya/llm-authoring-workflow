@@ -96,7 +96,7 @@ if (observed.status === 'complete') {
 
 截图可以与后两项网页质检的等待重叠：平台页保持输入不变，每个观察窗口在独立 pi-web 页准备一张，随后回读平台状态。上传等检查结束；回复替换后旧截图失效，仅 Insight/考点评估改变而回复未变可复用已核验图，不强制重截。
 
-仅在三模型门槛后执行。复用已授权空间/页面，用 `sessionUrl(baseUrl, sessionId)` 打开会话；先 snapshot 核实当前 DOM，正常控件折叠思考，核对问题、最终回复、可见型号与 high。截图不会发起生成。
+模型已完成即可准备其长图，包括等待GPT/Claude时准备Seed；上传仍等待三模型门槛及平台检查完成。复用已授权空间/页面，prepareScreenshot默认准备正确会话并检查显示状态，标准控件折叠处理详情。新结构先snapshot核对，不为截图切换型号或high。截图不会发起生成。目视核验后调用recordVisualReview记录已完成的检查；人工会话接收和等待安排见[接续规则](../automation-recovery.md)。
 
 ```js
 // 在 ego 的 UTF-8 .mjs 脚本中导入，变量来自已归档 result.json。

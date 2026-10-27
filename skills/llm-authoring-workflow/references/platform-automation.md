@@ -6,9 +6,9 @@
 
 ## 1. 核对目标与保存断点
 
-读取当前任务 TASK、WORKLOG，已有题目先 `lab status`，确定当前版本及缺失步骤。按浏览器手册找回用户授权的空间和平台标签页，首次用完整快照核对可见题号、任务名称、URL 中 itemID、登录态和已有内容；题号与 itemID 分别记录。有既有材料时与本地版本比较后接续，不直接覆盖。
+读取当前任务TASK、WORKLOG，已有题目先lab status，确定当前版本及缺失步骤。找回已授权空间和平台标签页，用完整快照核对页面实际显示的业务题号、任务名称、题目ID、登录态和已有内容，以页面实际题目ID建立itemId目标；业务题号与平台itemID分别记录。URL的itemID可因站内切题而滞后，只作参考。有既有材料时与本地版本比较后接续，不直接覆盖。
 
-将初始表单快照、空间 ID、page label、itemID、版本保存到私有 `platform-web/rNNNN/`。后续每轮先 `verifyTarget(page, itemId)`；标签页切题、控件缺失或匹配不唯一时停止写入并重新观察。先查清有没有运行中或结果未知的请求，再决定是否操作。
+将初始表单快照、空间ID、page label、实际itemID、版本保存到私有platform-web/rNNNN。后续每轮verifyTarget核对站点、做题页面及页面实际ID与已确认目标；URL差异仅返回提示，不阻止操作。实际ID与目标不符时核实是否切题，未加载则等待。控件缺失/重复先观察，查清运行中或未知请求后再操作。
 
 完成判据：本地候选与平台目标对应、初始内容和断点已保存、未完成请求已查清。登录、验证码、控制权转移或身份不明时交给用户处理。
 
@@ -140,6 +140,11 @@ console.log(await readTextFields(page, itemId, Object.keys(expected)));
 | `observeChecks(page,{itemId,directory})` | 批量只读当前状态；complete 表示本次检查已返回，结论仍需区分通过/不通过。输入变化、旧结果或无法关联不能标完成 |
 | `waitChecks(page,args,{windowMs,onWindow})` | 最多 30 秒观察窗口，默认 15 秒；onWindow 可在独立 pi-web 页准备一张截图，然后回读平台。正常检查没有总时限 |
 | `uploadScreenshot(page,{itemId,version,directory,prefix,imageFile})` | prefix 为 doubao/gpt56/claude；绝对图片路径。等检查结束，上传一次、确认新增预览/完成标记和暂存后返回 uploaded |
+| `feedbackStage(page,{itemId,version,directory,key,label,note})` | 应用agent已确定的正常/异常及备注，限对应区块，暂存回读；不判定专业结论 |
+| `receiveCheck(page,{itemId,version,directory,key,priorDirectory,userStatement})` | 接收用户已完成的一次重跑，只读关联前次输入/次数，unknown不补造派发 |
+| `verifyStage(page,{itemId,values,selections,checkboxIds})` | 最终统一只读；复选框ID来自实际观察，不自动勾选或修改 |
+
+读取状态、save_unconfirmed、反馈与人工接续参数、等待安排及自动证据导出见[接续规则](automation-recovery.md)。三模型平台字段用lab platform-fields生成，按依赖分批填写。等待器跨窗口保留进度，不重复输出未变化的完整结果。
 
 `fillStage` 的题型标签使用“分析决策”“开放推荐”“How-to”等当前界面文字。先填豆包并选未达成，等后续区块实际出现，再第二阶段填 GPT/Claude；不要一次传尚不存在的字段。示例中的 values/selections 已由本地确认内容生成，不需要用户重复填写配置：
 
