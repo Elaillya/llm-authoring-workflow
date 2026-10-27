@@ -8,7 +8,7 @@ import subprocess
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
-ALLOWED_ROOT={'README.md','AGENTS.md','LICENSE','NOTICE.md','.gitignore','requirements.lock'}
+ALLOWED_ROOT={'README.md','AGENTS.md','CONTEXT.md','LICENSE','NOTICE.md','.gitignore','requirements.lock'}
 ALLOWED_DIR={'llm_authoring','skills','templates','config','rules','scripts','docs','assets','tests'}
 
 

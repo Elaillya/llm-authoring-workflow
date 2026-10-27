@@ -24,7 +24,7 @@ class ManualTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.workspace = Path(self.temp.name) / 'workspace'
         create_workspace(self.workspace)
-        self.root = self.workspace / 'task'
+        self.root = self.workspace / 'question-001'
         task=json.loads((self.root/'TASK.json').read_text());task.pop('platform_checks_required',None)
         (self.root/'TASK.json').write_text(json.dumps(task))
         # Preserve the v3 request format as a backwards-compatibility fixture.

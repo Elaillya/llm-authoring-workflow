@@ -21,22 +21,75 @@ def _directory(root,replacement_id):
 def _approved_failure(root,failure_id):
     from .workspace import locate_workspace
     item=lessons.show(locate_workspace(root),failure_id);event=item['observation']
-    require(event['task_key']==task_key(root) and event['kind']=='criteria_quality_failed'
+    require(event['task_key']==task_key(root) and event['kind'] in ('criteria_quality_failed','criteria_web_quality_failed')
             and item['reviews'] and item['reviews'][-1]['verdict']=='accepted','仅为本题已认可的考点质检失败准备替换')
     require(event['prompt']==active_question(root)['question']['prompt'],'题面已改变，按新题从Seed开始')
+    if event['kind']=='criteria_web_quality_failed':
+        from .web_failure import verify
+        verify(root,event['evidence'])
     attempt=Path(event['evidence']['attempt'])
     require(not list(attempt.glob('disagreement-*.json')),'该意见已登记异议，不作为认可的修复依据')
     return item
 
 
-def prepare(root,role,failure_id,*,authorization_note,reason,evaluation=None):
+def retry_key(current):
+    """A retry belongs to content, not a revision label or evaluation commentary."""
+    q=current['question']
+    return hash_json({key:q[key] for key in ('prompt','insight','points')})
+
+
+def _authorize_plan(root,plan):
+    if plan.get('authorization_kind')=='automation_gate_retry':
+        require(read_json(Path(root)/'TASK.json').get('platform_checks_required') is False,'版本补取仅用于自动化分支')
+        require(plan.get('retry_key')==retry_key(active_question(root)),'补取题面、Insight或考点版本已变化')
+        require(hash_json(plan.get('retry_evaluation'))==plan.get('retry_evaluation_sha256'),'补取依据损坏')
+    else:
+        _approved_failure(root,plan['failure_id'])
+
+
+def _plan_result(directory,plan):
+    receipt=directory/'receipt.json'
+    if plan.get('retry_key') and not receipt.exists():
+        # A crash after reserving the allowance must resume the same fill-in files.
+        for target,data in ((directory/'prompt.md',prompt_text(plan['request']).encode('utf-8')),
+                            (directory/(NAMES[plan['role']]+'.md'),PLACEHOLDER.encode('utf-8'))):
+            require(not target.is_symlink(),'补取填写文件不能为符号链接')
+            if not target.exists():
+                with target.open('xb') as stream:stream.write(data)
+        validate_prompt_file(directory/'prompt.md',plan['request'])
+    return {'replacement_id':plan['replacement_id'],'role':plan['role'],'prompt_file':str(directory/'prompt.md'),
+            'input_file':str(directory/(NAMES[plan['role']]+'.md')),'current_original_preserved':True,
+            'already_imported':receipt.exists(),
+            'next':'沿用该补取入口和采集尝试；已导入时统一重评，不再次生成' if plan.get('retry_key') else
+                   '等待用户填入完整原文；导入后重新统一评估三模型，不能假定替换成功或自动继续质检'}
+
+
+def prepare(root,role,failure_id=None,*,authorization_note,reason,evaluation=None,gate_evaluation=None):
     require(role in ('gpt','claude'),'仅允许用户重新提供GPT或Claude；Seed按原门槛保持')
-    require(isinstance(authorization_note,str) and authorization_note.strip(),'先询问用户并取得明确同意，记录原授权语句')
+    require(isinstance(authorization_note,str) and authorization_note.strip(),'记录用户已给出的规则授权或本次替换同意')
     require(isinstance(reason,str) and reason.strip(),'说明为何仅修订Insight和考点仍不可行，以及待补的考点缺口')
-    root=Path(root).resolve();_approved_failure(root,failure_id)
+    root=Path(root).resolve()
+    if gate_evaluation is None:_approved_failure(root,failure_id)
+    else:require(failure_id is None,'补取依据和考点失败依据只能选择一项')
     from .platform_checks import check_lock,question_gate
     with check_lock(root):
         current=active_question(root);question_gate(root,current['question']);screen=seed_screen(root,evaluation)
+        retry=None
+        if gate_evaluation is not None:
+            require(read_json(root/'TASK.json').get('platform_checks_required') is False,'版本补取仅用于自动化分支')
+            retry=retry_key(current)
+            # Reserved slots consume the allowance, including after interrupted dispatch.
+            for manifest in (root/'model-input').glob('r*/replacements/*/replacement.json'):
+                saved=read_json(manifest)
+                if saved.get('role')==role and saved.get('retry_key')==retry:
+                    require(saved.get('question_sha256')==current['question_sha256'],
+                            '相同内容版本的补取额度已使用；只改元数据不能恢复额度')
+                    directory=_directory(root,saved['replacement_id']);_authorize_plan(root,saved)
+                    return _plan_result(directory,saved)
+            from .authoring import check_three
+            decision=check_three(root,gate_evaluation)
+            require(not decision['models']['seed']['attained'] and not decision['three_model_gate'],
+                    '仅在Seed未全部达成且三模型门槛不满足时补取GPT/Claude')
         for model in ROLES:
             item=validate_manual_evidence(root,model)
             require(prompt_text(item['meta']['manual_request'])==current['question']['prompt'],
@@ -44,7 +97,7 @@ def prepare(root,role,failure_id,*,authorization_note,reason,evaluation=None):
         old=read_response(root,role)
         for previous in input_directory(root).glob('replacements/*/replacement.json'):
             saved=read_json(previous)
-            if saved.get('role')==role and saved.get('failure_id')==failure_id and saved.get('authorization_note')==authorization_note:
+            if retry is None and saved.get('role')==role and saved.get('failure_id')==failure_id and saved.get('authorization_note')==authorization_note:
                 require(False,'这份授权已有替换填写入口，继续该入口；本次结果不合格时先告知用户，不自动重复抽取')
         replacement_id=current['revision']+'-'+uuid.uuid4().hex[:16]
         directory=_directory(root,replacement_id);directory.mkdir(parents=True)
@@ -53,13 +106,17 @@ def prepare(root,role,failure_id,*,authorization_note,reason,evaluation=None):
               'question_sha256':current['question_sha256'],'prompt_sha256':current['prompt_sha256'],
               'old_response_sha256':old['meta']['reply_sha256'],'old_metadata_sha256':sha(old['directory']/'metadata.json'),
               'request':request,'authorization_note':authorization_note,'reason':reason,'prepared_at':now()}
+        if retry is not None:
+            plan.update(authorization_kind='automation_gate_retry',retry_key=retry,
+                        retry_evaluation=gate_evaluation,retry_evaluation_sha256=hash_json(gate_evaluation))
         write_json(directory/'replacement.json',plan)
         (directory/'prompt.md').write_bytes(current['question']['prompt'].encode())
         slot=directory/(NAMES[role]+'.md');slot.write_text(PLACEHOLDER)
-        (directory/'填写说明.md').write_text('使用所列型号的官方网页新会话和规定的中高推理模式，发送prompt.md全部原文，不加其他要求。将完整Markdown粘贴到模型文件并保存；网页截图自行交甲方。新回复仍可能不达成，原回复和失败记录保留。\n')
-        return {'replacement_id':replacement_id,'role':role,'prompt_file':str(directory/'prompt.md'),
-                'input_file':str(slot),'current_original_preserved':True,
-                'next':'等待用户填入完整原文；导入后重新统一评估三模型，不能假定替换成功或自动继续质检'}
+        (directory/'填写说明.md').write_text(
+            '按pi-web配方使用独立新会话、high和仅聊天，发送prompt.md原文；固定本入口的采集尝试目录，未知请求只读恢复。归档后用piweb-import.py --replacement-id导入并统一重评。旧原件保留，新回复仍可能未达成，同版本不再补取。\n'
+            if retry is not None else
+            '使用所列型号的官方网页新会话和规定的中高推理模式，发送prompt.md全部原文，不加其他要求。将完整Markdown粘贴到模型文件并保存；网页截图自行交甲方。新回复仍可能不达成，原回复和失败记录保留。\n')
+        return _plan_result(directory,plan)
 
 
 def pending(root):
@@ -74,7 +131,7 @@ def pending(root):
         if role not in ('gpt','claude') or plan.get('question_sha256')!=current['question_sha256']:continue
         if plan.get('replacement_id')!=directory.name or not plan.get('authorization_note'):continue
         try:
-            _approved_failure(root,plan['failure_id']);old=read_response(root,role)
+            _authorize_plan(root,plan);old=read_response(root,role)
             if old['meta']['reply_sha256']!=plan['old_response_sha256'] or sha(old['directory']/'metadata.json')!=plan['old_metadata_sha256']:continue
         except (Error,OSError,ValueError,KeyError,TypeError):continue
         result.append({'role':role,'replacement_id':directory.name,'failure_id':plan['failure_id'],
@@ -91,7 +148,7 @@ def import_reply(root,role,replacement_id,evaluation=None):
             and plan.get('question_sha256')==current['question_sha256']
             and plan.get('prompt_sha256')==current['prompt_sha256'],'替换计划题面或冻结版本已变化，保留原件并重新核对')
     require(isinstance(plan.get('authorization_note'),str) and plan['authorization_note'].strip(),'替换缺少用户明确授权记录')
-    _approved_failure(root,plan['failure_id'])
+    _authorize_plan(root,plan)
     slot=directory/(NAMES[role]+'.md');require(slot.is_file() and not slot.is_symlink(),'缺少普通模型填写文件')
     raw=slot.read_bytes();reply=raw.decode('utf-8')
     require(reply.strip()!=PLACEHOLDER.strip(),'请先填入用户提供的新回复')

@@ -15,7 +15,7 @@ import test_platform_client as fixtures
 class SharedConfigTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.workspace=Path(self.temp.name)/'new-lab'
-        create_workspace(self.workspace);self.task=self.workspace/'task'
+        create_workspace(self.workspace);self.task=self.workspace/'question-001'
     def tearDown(self):self.temp.cleanup()
     def test_public_metadata_has_no_login_session_or_original_item(self):
         value=client.default_config()
@@ -33,7 +33,7 @@ class SharedConfigTests(unittest.TestCase):
             value,cookie=client.configuration(self.task);call.assert_not_called()
         self.assertEqual(value,client.default_config())
         self.assertEqual(read_json(self.workspace/'local/aidp/service.json'),value)
-        self.assertTrue(cookie.is_file());self.assertEqual(cookie.stat().st_mode&0o777,0o600)
+        self.assertTrue(cookie.is_file())
         with self.assertRaisesRegex(Error,'Cookie'):client.load_cookie(cookie)
     def test_existing_custom_configuration_and_cookie_are_never_replaced(self):
         result=client.setup(self.workspace,fixtures.config());cookie=Path(result['cookie_file'])

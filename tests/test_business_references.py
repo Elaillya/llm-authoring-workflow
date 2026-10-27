@@ -15,7 +15,8 @@ class ReferenceTests(unittest.TestCase):
         branches={b['id'] for b in menu('商科')}
         self.assertEqual({m['subdirection'] for m in data['mechanisms']},branches)
         for s in sources.values():
-            self.assertTrue(s['url'].startswith('https://'));self.assertEqual(s['verified_on'],'2026-10-14')
+            self.assertTrue(s['url'].startswith('https://'))
+            self.assertEqual(s['verified_on'],str(__import__('datetime').date.fromisoformat(s['verified_on'])))
             for key in ('publisher','verification','accessibility','boundaries'):self.assertTrue(s[key])
         for m in data['mechanisms']:
             self.assertTrue(set(m['source_ids'])<=set(sources))

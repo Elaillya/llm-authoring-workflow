@@ -3,6 +3,7 @@
 .assets/
 local/
 workspaces/
+workspace/
 dist/
 __pycache__/
 *.pyc
@@ -12,3 +13,7 @@ __pycache__/
 providers.json
 providers-*.json
 platform-checks/
+# 项目方原文仅作本机规则来源与参照，不进入发布包（哈希见 rules/source-manifest.json）
+【开放难题五期】评测集外发方案.md
+试标验收问题汇总.md
+出题与模型评估工作规范.md

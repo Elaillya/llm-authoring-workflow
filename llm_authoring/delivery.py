@@ -6,6 +6,31 @@ from .core import ALL_ROLES, hash_json, read_json
 from .text import insight_text
 
 
+def join_note_fields(parts):
+    """Normalize only author-field boundaries; quoted evidence stays verbatim."""
+    text=''
+    for part in parts:
+        if not part:continue
+        if text:
+            text=text.rstrip()
+            # A completed sentence already separates the next labeled field.
+            separator='' if text.endswith(('。','.','！','？','!','?','；',';')) else '；'
+            text+=separator
+        text+=part
+    return text
+
+
+def attainment_notes(stat, *, kinds=True):
+    lines=[]
+    for item in stat['judgments']:
+        label=item['id']
+        if kinds:label+='（'+('决定性' if item['kind']=='decisive' else '非决定性')+'）'
+        lines.append(label+'：'+join_note_fields([
+            '满足' if item['met'] else '不满足', '原因：'+item['reason'],
+            '原文依据：'+' / '.join(item['quotes']) if item['quotes'] else '']))
+    return '\n\n'.join(lines)
+
+
 def model_files(names):
     """Keep readable model names while producing portable, distinct file paths."""
     files = {}

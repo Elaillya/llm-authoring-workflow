@@ -2,12 +2,12 @@
 from pathlib import Path
 import copy
 import shutil
-import tempfile
 from .core import (ALL_ROLES, ARENA_ROLES, ROLES, active_question, hash_json,
                    read_response, require, sha, write_json)
 from .authoring import check_three, evaluation_template, export_authoring, validated_models
 from .arena import validate_arena_evidence, validate_names
-from .delivery import model_files,named_text,submission_text
+from .delivery import model_files,named_text,submission_text,attainment_notes,join_note_fields
+from .filesystem import temporary_directory
 
 
 def five_evaluation_template(root, authoring_evaluation):
@@ -41,21 +41,14 @@ def check_five(root, evaluation):
             'groups': groups, 'order': order, 'models_in_order': list(ALL_ROLES)}
 
 
-def attainment_notes(stat):
-    return '\n\n'.join(f'{item["id"]}（{"决定性" if item["kind"]=="decisive" else "非决定性"}）：'
-                       f'{"满足" if item["met"] else "不满足"}；原因：{item["reason"]}'
-                       + ('；原文依据：' + ' / '.join(item['quotes']) if item['quotes'] else '')
-                       for item in stat['judgments'])
-
-
 def ranking_template(root, evaluation):
     current = active_question(root)
     result = check_five(root, evaluation)
     notes = {}
     for role, stat in result['models'].items():
         notes[role] = (f'全部决定性考点{"达成" if stat["attained"] else "未达成"}，决定性点{stat["decisive_met"]}/{stat["decisive_total"]}，'
-                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。' + '；'.join(
-                           f'{item["id"]}{"满足" if item["met"] else "未满足"}：{item["reason"]}' for item in stat['judgments']))
+                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。' + join_note_fields([
+                           f'{item["id"]}{"满足" if item["met"] else "未满足"}：{item["reason"]}' for item in stat['judgments']]))
     return {'schema_version': 1, 'phase': 'ranking', 'task_id': current['question']['task_id'],
             'question_sha256': current['question_sha256'], 'evaluation_sha256': hash_json(evaluation),
             'reviewer': evaluation['reviewer'], 'groups': result['groups'], 'order': result['order'],
@@ -102,7 +95,7 @@ def export_complete(root, evaluation, review, ranking, output):
     for name in ('responses', 'revisions', 'attempts', 'arena-input', 'model-input', 'evaluations', 'drafts','platform-checks'):
         require(not output.resolve().is_relative_to((Path(root) / name).resolve()), '提交不能写入原件、考点、输入或评估目录')
     output.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix='.complete-export-', dir=output.parent))
+    staging = temporary_directory(output.parent, '.complete-export-')
     try:
         # Reuse manual-source validation and historical evidence compatibility.
         authoring = copy.deepcopy(evaluation)

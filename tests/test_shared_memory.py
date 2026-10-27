@@ -20,12 +20,12 @@ class SharedMemoryTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.ws=Path(self.temp.name)/'one'
         self.peer=Path(self.temp.name)/'two'
         for ws in (self.ws,self.peer):
-            create_workspace(ws);root=ws/'task'
+            create_workspace(ws);root=ws/'question-001'
             task=read_json(root/'TASK.json');task.pop('platform_checks_required',None)
             write_json(root/'TASK.json',task)
             choose_domain(root,'计算机科学');choose_subdirection(root,'cs_courses');choose_type(root,'分析决策类')
             (root/'drafts/sources.md').write_text('合成测试依据，无真实模型或平台调用。')
-        self.a=self.ws/'task';self.b=self.peer/'task'
+        self.a=self.ws/'question-001';self.b=self.peer/'question-001'
         with transaction(self.ws):pass
         self.config={'schema_version':1,'owner_workspace':str(self.ws),'members':[str(self.ws),str(self.peer)]}
 

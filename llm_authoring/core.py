@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 import shutil
 import os
-import tempfile
+from .filesystem import temporary_directory,temporary_file
 from datetime import datetime, timezone
 from .text import valid_insight
 from .domains import canonical_domain
@@ -33,7 +33,7 @@ def read_json(path):
 def write_json(path, value):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     require(not path.is_symlink(), '输出文件不能为符号链接')
-    fd,name=tempfile.mkstemp(prefix='.'+path.name+'-',dir=path.parent)
+    fd,name=temporary_file(path.parent,'.'+path.name+'-')
     try:
         with os.fdopen(fd,'w',encoding='utf-8') as output:
             output.write(json.dumps(value,ensure_ascii=False,indent=2)+'\n');output.flush();os.fsync(output.fileno())
@@ -49,6 +49,12 @@ def hash_json(value): return hashlib.sha256(json.dumps(value,ensure_ascii=False,
 
 
 def now(): return datetime.now(timezone.utc).isoformat(timespec='seconds')
+
+
+def direction_locked(root):
+    """Frozen selection may only change in explicit automation tasks (--no-platform-checks)."""
+    task=Path(root)/'TASK.json'
+    return not task.is_file() or read_json(task).get('platform_checks_required') is not False
 
 
 def validate_question(q,legacy_domain=False):
@@ -103,7 +109,7 @@ def freeze_record(root,q):
     index=max([int(p.name[1:]) for p in revs.iterdir() if re.fullmatch(r'r\d{4}',p.name)]+[0])+1
     name=f'r{index:04d}';directory=revs/name
     value.update({'revision':name,'frozen_at':now()})
-    staging=Path(tempfile.mkdtemp(prefix='.freeze-'+name+'-',dir=revs))
+    staging=temporary_directory(revs,'.freeze-'+name+'-')
     try:
         write_json(staging/'question.json',value)
         require(not directory.exists(),'冻结版本已存在，请重新读取当前版本后重试')
@@ -155,7 +161,7 @@ def save_response(root, role, text, meta, raw=None):
     validate_markdown(text); current=active_question(root);directory=response_dir(root,role)
     require(not directory.exists(),'当前题面已有该模型的回复或调用记录，保留原件；不要自动重复调用')
     directory.mkdir(parents=True)
-    (directory/'reply.md').write_text(text,encoding='utf-8')
+    (directory/'reply.md').write_text(text,encoding='utf-8',newline='')
     if raw is not None:
         rawname=meta.get('raw_response_file','raw_response.json')
         allowed={'arena_manual':('arena-input.md',),'official_manual':('model-input.md',)}.get(meta.get('source_kind'),('raw_response.json','raw_response.sse'))

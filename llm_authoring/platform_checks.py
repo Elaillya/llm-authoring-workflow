@@ -78,7 +78,7 @@ def descriptor(root,stage,q=None,evaluation=None):
 def records_directory(root):
     base=Path(root).resolve();directory=base/'platform-checks'
     require(not directory.is_symlink(),'平台检查目录不能为符号链接')
-    directory.mkdir(mode=0o700,exist_ok=True);directory.chmod(0o700)
+    directory.mkdir(exist_ok=True)
     return directory
 
 
@@ -231,7 +231,7 @@ def _run_checks(root,stages,q,evaluation,refresh,*,locked):
             cookie=client.load_cookie(descriptions[pending[0]][2]);jobs=[]
             for stage in pending:
                 request,config,_=descriptions[stage]
-                directory=base/f'{stage}-{time.time_ns()}-{uuid.uuid4().hex[:8]}';directory.mkdir(mode=0o700)
+                directory=base/f'{stage}-{time.time_ns()}-{uuid.uuid4().hex[:8]}';directory.mkdir()
                 write_json(directory/'request.json',request)
                 write_json(directory/'intent.json',{'started_at':now(),'state':'one_attempt_no_retry',
                            'request_sha256':hash_json(request),'timeout_seconds':None})

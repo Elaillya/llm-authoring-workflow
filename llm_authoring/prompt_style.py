@@ -9,6 +9,8 @@ def focus_signals(prompt):
     # Question marks inside links and inline code are data, not extra questions.
     text=re.sub(r'`[^`\n]*`|https?://[^\s，。；！？]+','',prompt)
     text=unicodedata.normalize('NFKC',text);signals=[]
+    if text.count('?')<1:
+        signals.append('题面缺少完整问句；将核心任务连同所需理由写成一个完整问句')
     if text.count('?')>1:
         signals.append('存在多个问句；将选择、安排及所需依据合成一个核心提问')
     if re.search(r'[,;。?!\n]\s*(?:(?:为什么|为何|理由是什么|原因是什么)(?:呢)?|(?:并|再)?(?:请)?(?:说明|解释)(?:理由|原因))[?。.!]?\s*$',text):

@@ -9,7 +9,6 @@ import json
 import os
 from pathlib import Path
 import re
-import stat
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -24,7 +23,6 @@ SUFFIXES = {'chat_completions':'/chat/completions', 'responses':'/responses', 'a
 def private_json(path):
     path=Path(path)
     require(path.is_file() and not path.is_symlink(), 'API 配置须为普通私有文件')
-    require(stat.S_IMODE(path.stat().st_mode)&0o077==0, 'API 配置权限须为 600（不能允许其他用户读取）')
     return read_json(path)
 
 
@@ -51,7 +49,7 @@ def load_provider(path, role, *, allow_local=False):
     if not key and provider.get('api_key_file'):
         keyfile=Path(provider['api_key_file'])
         if not keyfile.is_absolute(): keyfile=Path(path).parent/keyfile
-        require(keyfile.is_file() and not keyfile.is_symlink() and stat.S_IMODE(keyfile.stat().st_mode)&0o077==0,'密钥文件须为普通私有文件')
+        require(keyfile.is_file() and not keyfile.is_symlink(),'密钥文件须为普通私有文件')
         key=keyfile.read_text().strip()
     if not key and provider.get('api_key_env'): key=os.environ.get(provider['api_key_env'],'').strip()
     require(key and '\n' not in key and '\r' not in key, f'{role} 缺少有效密钥')

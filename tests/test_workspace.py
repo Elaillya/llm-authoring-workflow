@@ -8,7 +8,7 @@ from llm_authoring.workspace import TOOL_ROOT,begin,choose_domain,choose_type,cr
 class WorkspaceTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)/'我的 工作区'
-        create_workspace(self.root);self.task=self.root/'task'
+        create_workspace(self.root);self.task=self.root/'question-001'
         task=json.loads((self.task/'TASK.json').read_text());task.pop('platform_checks_required',None)
         (self.task/'TASK.json').write_text(json.dumps(task))
         # Preserve the v3 request format as a backwards-compatibility fixture.
@@ -50,14 +50,14 @@ class WorkspaceTests(unittest.TestCase):
         config=(self.root/'local/providers.json').read_bytes()
         result=rename_task(self.root,self.task,'cs_47')
         renamed=Path(result['task'])
-        self.assertEqual(renamed,self.root/'tasks/cs_47')
+        self.assertEqual(renamed,self.root/'question-cs_47')
         self.assertTrue(self.task.is_symlink())
         self.assertEqual(self.task.resolve(),renamed)
         task=json.loads((renamed/'TASK.json').read_text())
         self.assertEqual(task['task_id'],'question-001')
         self.assertEqual(task['display_id'],'cs_47')
         self.assertEqual(before,{p:sha(renamed/p) for p in before})
-        self.assertEqual(json.loads((self.root/'.authoring-workspace.json').read_text())['default_task'],'tasks/cs_47')
+        self.assertEqual(json.loads((self.root/'.authoring-workspace.json').read_text())['default_task'],'question-cs_47')
         self.assertTrue((renamed/'cs_47.code-workspace').is_file())
         new=create_task(self.root,'cs_35')
         self.assertEqual(begin(Path(new['task']),self.root)['requires_input'],['domain','question_type'])
@@ -90,7 +90,7 @@ class WorkspaceTests(unittest.TestCase):
         collision.write_text('existing user workspace')
         with self.assertRaises(Error):rename_task(self.root,self.task,'cs_47')
         self.assertEqual(collision.read_text(),'existing user workspace')
-        self.assertFalse((self.root/'tasks/cs_47').exists())
+        self.assertFalse((self.root/'question-cs_47').exists())
         collision.unlink()
         result=rename_task(self.root,self.task,'cs_47')
         self.assertEqual(read_json(result['workspace_file'])['settings'],config['settings'])
@@ -102,7 +102,7 @@ class WorkspaceTests(unittest.TestCase):
         with patch('llm_authoring.workspace.write_json',side_effect=OSError('synthetic write failure')):
             with self.assertRaises(OSError):rename_task(self.root,self.task,'cs_47')
         self.assertTrue(self.task.is_dir());self.assertFalse(self.task.is_symlink())
-        self.assertFalse((self.root/'tasks/cs_47').exists())
+        self.assertFalse((self.root/'question-cs_47').exists())
         self.assertEqual(before,{p:p.read_bytes() for p in paths})
     def test_workspace_and_private_config_are_not_overwritten(self):
         from llm_authoring.core import Error
