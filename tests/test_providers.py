@@ -22,9 +22,9 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual(payload['reasoning_effort'],'high');self.assertEqual(payload['max_completion_tokens'],1000)
         self.assertEqual(payload['messages'],[{'role':'system','content':FORMAT},{'role':'user','content':'题目正文'}])
         self.assertNotIn('insight',json.dumps(payload))
-    def test_public_config_is_refused(self):
+    def test_config_accepts_system_default_permissions(self):
         self.config.chmod(0o644)
-        with self.assertRaisesRegex(Error,'权限'):load_provider(self.config,'seed')
+        self.assertEqual(load_provider(self.config,'seed')['model'],'doubao-seed-2.1-turbo')
     def test_prompt_override_is_refused(self):
         p=load_provider(self.config,'seed');p['request_options']['messages']=[]
         with self.assertRaisesRegex(Error,'覆盖'):make_payload(p,'题面')

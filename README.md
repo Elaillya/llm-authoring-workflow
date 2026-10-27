@@ -2,9 +2,9 @@
 
 开放难题第五期完整出题与五模型排序工具，适用于Codex侧栏。选择领域/子方向与题型 → 读题库和资料 → 生成自然prompt与Insight → 平台难度与标签检查、修订复检 → 完成考点、多样性复核和冻结 → 用户提供Seed，符合筛查条件再收GPT/Claude → 三模型判断及按本题选择执行后两项质检、返修或证据异议 → 门禁通过后Arena → 五模型排序 → 六份Markdown交付。
 
-前三个模型固定为 Seed 2.1 Turbo、GPT-5.6 sol、Claude Opus 4.6。非决定性核心考点可选，没有时输出“无”。**不调用模型 API，不要求配置密钥，不生成截图。所有官方网页截图由用户另行提交甲方。**
+前三个模型固定为 Seed 2.1 Turbo、GPT-5.6 sol、Claude Opus 4.6。非决定性核心考点可选，没有时输出“无”。**手动分支不调用模型 API、不要求配置密钥，官方网页截图由用户另行提交甲方。自动化分支通过已确认的 pi-web 采集并截图，见下文。**
 
-## 题目检查固定，后两项由你选择
+## 手动分支：题目检查固定，后两项由你选择
 
 领域现统一称“生活娱乐”；旧名称只作历史兼容。Seed未全部达成后，助手会在给出GPT、Claude填写文件之前询问是否执行考点质检、达成性质检：
 
@@ -28,10 +28,10 @@
 
 ```bash
 python3 scripts/setup.py
-.venv/bin/python scripts/lab.py workspace-create ../my-authoring-workspace
+.venv/bin/python scripts/lab.py workspace-create workspaces --first-task <题号>
 ```
 
-环境要求 Python≥3.10、Git、Linux/macOS；Windows 使用 WSL。默认只准备 Python 依赖，不下载浏览器和中文字体。
+环境要求Python≥3.10、Git。setup及工作区启动入口支持Windows原生路径和UTF-8，也保留Linux/macOS及WSL入口；自动化使用已安装的ego-lite。旧信号、符号链接和渲染相关测试仍有Windows限制，当前验证范围见[本轮实施记录](docs/AUTOMATION_REFINEMENT_IMPLEMENTATION.md)。默认只准备Python依赖，不下载浏览器和中文字体。
 
 ## 选题范围与本地记忆
 
@@ -47,11 +47,11 @@ python3 scripts/setup.py
 
 流程已纳入[完整研究报告](skills/llm-authoring-workflow/references/insight-rubric-study.md)与[写作检查单](skills/llm-authoring-workflow/references/insight-rubric-checklist.md)。助手在开始/恢复、确定Insight、编写考点、判断模型、返修和排序交付时必须按阶段参考，重点核对决定性机制如何改变选择、核心目标是否被考点覆盖、最低证据和等价路径，以及必需条件与可选建议的边界。
 
-冻结前新增insight_rubric_alignment设计复核，助手给出本题具体依据，无需你额外填写。既有冻结题继续缺失步骤，不因升级重做模型。报告保留失败到通过的案例和实验局限：尚未验证出高概率通过现行API的模板，不能照抄句式或反复刷结果。公开版可独立阅读，不依赖本机研究路径或私人题库。
+冻结前在现有insight_rubric_alignment设计复核中，助手独立推导完成任务的解题路线，双向检查目标/必要前提与考点覆盖，再用“全部决定性点满足但仍答错”和“正确替代路线被误判”两类反例查缺口；How-to题还检查可操作性。相关认可失败经验转换成本题自查，结果仍写入同一字段，无需你额外填写、审批或增加质检调用。既有冻结题继续缺失步骤，不因升级重做模型。报告保留失败到通过的案例和实验局限：尚未验证出高概率通过现行API的模板，不能照抄句式或反复刷结果。公开版可独立阅读，不依赖本机研究路径或私人题库。
 
 ## 表达与考点
 
-新prompt只围绕一个核心问题，用一个完整问句提出；所需原因、依据和相关安排融入其中，不在结尾单独追问“为什么”。送题目检查前自查，明显拆散的问句会本地拦截；设计复核还须判断语义是否为单一任务。旧冻结题面和模型原文保留。
+新prompt只围绕一个核心问题，用一个完整问句提出（全文仅一个问号、一个疑问点）；所需原因、依据和相关安排融入其中，不在结尾单独追问“为什么”。送题目检查前自查，明显拆散的问句会本地拦截；设计复核还须判断语义是否为单一任务。旧冻结题面和模型原文保留。
 
 发送给五模型的全部文字严格等于题目prompt，不追加Markdown格式等要求。Insight可用一段话点题、因果说明或按需分层，但始终突出真正改变结论的决定性因素并解释其作用；新模板不再强制机制/优先级/结论三个字段。核心考点减少背景，每条只判断一个明确的事实、关系或行动，保留必要边界。Insight、考点、达成性和排序说明用纯文本；五份模型原回复仍保存为MD。示例与自查见[表达规则](skills/llm-authoring-workflow/references/writing.md)。
 
@@ -67,7 +67,15 @@ Seed 若全部达成，助手保留该结果，重新论证并修订候选；新
 
 三模型门槛为Seed未全部达成、GPT或Claude至少一个全部达成，三份原文均须保存。用户选择需要后两项检查时还需完成平台考点和达成性质检，合理问题助手自主修订；可核对的错误意见保留原不通过、登记证据异议并向用户解释和提供备注。门禁满足后才创建Arena的两份模型MD和题面，填入Search + Battle随机两模型。型号不得重复、不得与前三个相同、不得为GPT/Claude系列。
 
+## 自动化分支（可选）
+
+专家开始使用请先读[自动化分支专家使用说明](docs/AUTOMATION_EXPERT_GUIDE.md)：包含前置准备、可复制的启动与恢复口令、Arena交接和常见异常处理。
+
+开始时可选择自动化分支：助手用`bin/lab new <题目编号> --no-platform-checks`创建任务，确认本次pi-web地址、答题目录及大方向，同题恢复沿用已确认记录。助手按[自动化流程指导](skills/llm-authoring-workflow/references/automation.md)自主设计、采集三模型、执行三项网页质检及截图上传，到Arena入口交接；你完成“确认后继续”、Arena采集和最终提交，助手接收Arena原文后评估排序。先考点、再由agent依据有效结果、异议或平台允许的异常规则判断是否查达成性；三模型门槛失败时，每题面/Insight/考点内容版本GPT/Claude各可补取一次，归档重评，正式修订内容才恢复额度。本地API质检门禁关闭，三模型门槛保留。浏览器默认ego-lite，[平台操作](skills/llm-authoring-workflow/references/platform-automation.md)复用批量文本与标准控件；[人工接续与等待](skills/llm-authoring-workflow/references/automation-recovery.md)使用正式配方，交付直接读取实际证据。WORKLOG只记阶段、决定、异常和证据位置，手动分支沿用原流程。
+
 ## 平台三项检查
+
+以下 API 操作适用于手动分支。自动化分支默认执行三项网页检查，同题已有明确选择优先保留；网页操作与恢复见[平台操作流程](skills/llm-authoring-workflow/references/platform-automation.md)。
 
 平台质检服务允许自动调用，与自动生成模型回复的API分开。prompt与Insight形成后先做题目难度/标签判断；三模型原文、达成判断及备注齐备后，先`lab check <当前评估文件>`并确认`three_model_gate=true`，且用户选择需要时再用`qa-run models --evaluation <当前三模型评估>`并行做考点与达成性质检。正常请求等待到完成，不设客户端时间上限。初次GPT/Claude都未达成全部决定性考点时，当前候选不合格，保留失败记录并重新选题生成新prompt；认可后期考点失败的修复分支先按下方“修复与共享经验”处理，不调用后两项质检。Seed已全部达成也同样拦截；单项调用和--refresh不能绕过。合格候选的合理质检不通过由助手返修复检；登录或服务错误保留并处理，不重复发送结果未知的请求。
 
@@ -81,26 +89,30 @@ Seed 若全部达成，助手保留该结果，重新论证并修订候选；新
 
 不认同有证据可核对的错误质检时，助手保留原返回，明确告诉用户“不认同该不通过结论”，生成可复制表单备注；本地状态记为有证据异议继续，不冒充服务通过。细节、命令及表单放置方式见[平台检查与返修](skills/llm-authoring-workflow/references/platform-checks.md)。旧任务继续原合同，不因更新自动清空或重做。
 
-工作区对五份 Markdown 做完整性、版本绑定和逐点判断；用户提供的来源声明不等于工具已核验网页、型号、会话或随机过程。全部官方网页截图由你另行提交。
+工作区对五份 Markdown 做完整性、版本绑定和逐点判断；用户提供的来源声明不等于工具已核验网页、型号、会话或随机过程。手动分支的官方网页截图由你另行提交。
 
 ## 交付内容
 
 最终交付六份方便复制的 Markdown：
 
-- `delivery/vNNN/提交信息.md`：题目、题型、Insight、两类考点、五模型达成性及备注、具名排序和排序理由，正文使用纯文本字段和段落，保留.md文件名便于原入口接续。
+- `delivery/vNNN/提交信息.md`：题目、题型、Insight、两类考点、五模型达成性及备注、具名排序和排序理由，正文使用纯文本字段和段落，保留.md文件名便于原入口接续。达成性备注按考点编号逐条（结论、原因、关键依据）；各字段组织格式固定，更新只改内容不改格式。
 - `delivery/vNNN/models/`：五份按真实模型名命名的原回答，不在提交信息中重复内嵌。
 
 没有非决定性核心考点时填写“无”。排序先比较全部决定性考点达成性，再在同一梯队按全部核心考点满足数比较，相同并列；排序和理由直接使用模型名称，理由简洁说明具体考点差异及原因，没有字数下限。证据不足不能记为未达成。JSON、原始输入及哈希清单保留作记录，不生成交付 ZIP。
 
 ## 失败后的修复与经验
 
-认可考点质检不通过时，先保持prompt，按独立专业依据修正Insight、考点并统一重评三模型；仍无法满足门槛，先询问你是否重新提供GPT或Claude的完整官方网页回复，替换不可行再改prompt。你同意后助手创建新填写文件，导入时归档旧原文，重新判断；不会自动反复重抽，也不保证替换后达成。
+以下人工替换顺序适用于手动分支；自动化分支按上节每内容版本一次的补取额度执行。认可考点质检不通过时，先保持prompt，按独立专业依据修正Insight、考点并统一重评三模型；仍无法满足门槛，先询问你是否重新提供GPT或Claude的完整官方网页回复，替换不可行再改prompt。你同意后助手创建新填写文件，导入时归档旧原文，重新判断；不会自动反复重抽，也不保证替换后达成。
 
-模型门槛失败和平台实际内容不通过会记入父工作区的私有失败观察。助手复核具体原因、改进和适用范围后，其他题目窗口可读；登录、服务错误、未确认和错误意见不当作可靠出题经验。私人记录不上传GitHub。说明见[失败经验](docs/FAILURE_LEARNING.md)和[修复步骤](skills/llm-authoring-workflow/references/repair.md)。
+模型门槛失败、API内容不通过自动记为私有观察；自动化网页考点不通过由助手用已有配方证据登记。助手在返修、放弃候选或交接时复核合理原因，写出可执行改进及适用边界，后续相关题目在冻结前据此自查；未确认或错误意见不作为可靠经验。其他网页阶段及技术故障先保留本题证据与处理记录，当前登记能力见[失败经验](docs/FAILURE_LEARNING.md)。经验按实际题库范围共享，私人记录不上传GitHub；修复顺序见[修复步骤](skills/llm-authoring-workflow/references/repair.md)。
 
 ## 每道题打开一个窗口
 
-在侧栏说“新建题目 <题目编号>”，把 `<题目编号>` 换成你希望使用的编号。助手运行 `bin/lab new <题目编号>`，创建 `tasks/<题目编号>/<题目编号>.code-workspace`，用新窗口打开即可。各题有独立 Git、题面、回复、判断和交付，共用运行环境；每道新题分别选择领域和题型。
+在侧栏说“在workspaces下新建题目 <题目编号>”。父工作区不存在时，助手用 `python scripts/lab.py workspace-create workspaces --first-task <题目编号>` 直接创建首题；已存在时用 `python scripts/lab.py --workspace workspaces new <题目编号>`。自动化分支在对应创建命令后加 `--no-platform-checks`。
+
+新题统一放在 `workspaces/question-<题目编号>/`，直接包含TASK.json、WORKLOG.md及题目材料，打开命令返回的code-workspace即可。各题独立保存原件和Git，共用父目录local中的题库、失败经验及配置。采集、平台回执和截图按版本/角色/尝试分目录；完整截图以模型显示名称命名。具体约定见[工作区与文件命名](skills/llm-authoring-workflow/references/workspace-layout.md)。旧task、tasks及独立父工作区保留原路径接续，不自动搬移或合库。
+
+工作区材料使用系统默认权限并继承父目录，流程不额外限制为创建者独占。历史Windows工作区出现访问拒绝时，助手可用[scripts/repair_workspace_permissions.ps1](scripts/repair_workspace_permissions.ps1)备份并恢复受影响对象的权限继承；已有交付内容修复另存新版本。
 
 已有题目可以运行 `bin/lab rename <新题目编号>` 改名，保留冻结 ID、证据、Git 历史和旧路径入口。
 

@@ -27,6 +27,15 @@ class PromptFocusTests(unittest.TestCase):
                        '代码中的`?`与`??`该如何区分？'):
             with self.subTest(prompt=prompt):self.assertEqual(focus_signals(prompt),[])
 
+    def test_statement_without_interrogative_is_detected(self):
+        for prompt in ('先核对验收依据，再批量生成代码，并保留检查记录。','请安排两项工作并附上各自步骤。'):
+            with self.subTest(prompt=prompt):self.assertTrue(focus_signals(prompt))
+
+    def test_statement_prompt_cannot_be_frozen(self):
+        q=self.candidate(self.a);q['prompt']='先核对验收依据，再批量生成代码，并保留检查记录。'
+        with self.assertRaisesRegex(Error,'一个核心问题'):freeze(self.a,q)
+        self.assertFalse((self.a/'CURRENT.json').exists())
+
     def test_bad_new_question_stops_before_configuration_and_network(self):
         q=self.candidate(self.a);q['prompt']='台灯怎么选，为什么？'
         with patch('llm_authoring.platform_client.configuration') as config,patch('llm_authoring.platform_client.call') as send:

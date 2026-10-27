@@ -1,5 +1,11 @@
 # 完整出题工具接口规范
 
+自动化实测优化（2026-10-27）：按[修改计划](AUTOMATION_REFINEMENT_PLAN.md)补齐真实可见itemID校验、读取状态、作用域内单选/反馈、有限保存确认及最终只读回读；receiveSession/receiveCheck只接收已有操作，不伪造派发或扩展重试授权。piweb-import保留原门槛并写入可校验的可选来源关联，automation_evidence读取来源/网页结果/反馈/截图，交付沿用原字段及原子发布，不以关闭API门禁推断网页未执行。platform-fields从同一评估生成网页字段；排序和备注函数继续共用。短窗口观察进度跨进程保留，截图可在独立页与等待重叠。Windows setup/launcher、窗口任务采用已确认解释器与显式UTF-8。专业复核只补冲突证据规则，无新表单/门槛。能力与验证边界见[实施记录](AUTOMATION_REFINEMENT_IMPLEMENTATION.md)。
+
+备注与权限修复（2026-10-27）：delivery.attainment_notes/join_note_fields统一作者备注连接，三模型检查点、五模型导出、平台达成性载荷和排序模板复用；只调整连接标点，保留原回复/引文和判定。filesystem临时对象排他创建并采用系统默认权限，保留完整写入、原子替换/发布及回滚；工作区、版本、备份、平台记录、配置和题库不再设置600/700，读取配置不以POSIX权限位作为门槛。历史Windows ACL用scripts/repair_workspace_permissions.ps1先备份再恢复匹配创建者独占模式的对象继承，不改所有者、不遍历链接、不修改系统权限。旧交付修复另建版本，核验来源并保留定制平台说明，重建新manifest；历史差异如实记录。验证使用合成材料及Windows 3.14实际ACL，普通用户读取是验收依据。
+
+工作区结构与截图命名（2026-10-27）：新建任务默认直接放父工作区question-<题号>，已带question-前缀不重复添加；workspace-create支持--first-task指定首题、--no-platform-checks创建自动化首题，default_task及窗口入口指向实际首题。new/rename采用同一命名；创建查重同时核对新旧目录里的task_id/display_id。题库同步与workspace-update共用task_roots，兼容task、tasks/*、question-*，跳过符号链接及嵌套父工作区，不搬移原件或隐式合库。pi-web长图以归档模型显示名称命名，非法文件字符净化；旧merged.png和回执不改写，恢复返回同字节模型名副本，冲突拒绝覆盖。执行约定见[目录与命名](../skills/llm-authoring-workflow/references/workspace-layout.md)。
+
 - 新题先选择计算机科学、商科或生活娱乐，再选择config/domains.json的子方向及三种题型之一；助手负责场景、事实、限制和专业资料核实。没有用户材料不阻塞。领域不得从 cs_ 等 ID 或相邻题目推断。
 - 候选题面≤100字符；Insight用非空纯文本突出决定性因素及其作用，组织形式灵活，兼容旧三字段对象；考点减少背景且每条独立可判定；至少一个决定性考点，非决定性考点可选，没有时交付“无”。先冻结再获取回答，禁止倒推标准。
 - 3.0.0 所有模型回复手动填入工具预先创建的 Markdown。新用户不需要 API 配置，不自动调用 Seed/GPT/Claude，collect/recover/render 命令拒绝执行。所有官方网页截图由用户另行提交；不渲染模拟网页，不要求在工作区上传截图。
@@ -8,7 +14,7 @@
 - 准备重复执行不覆盖已填写内容；导入同一原件幂等，已有不同回复不可覆盖。原始输入缺失或被修改、哈希不符、版本错配时不能进入评估。题面不变而考点或Insight修订时复用回复、统一重评，题面改变重新获取。
 - 三模型门槛为 Seed 未全部达成且 GPT 或 Claude 至少一个全部达成，三份完整原文均须保存。逐点 met 为布尔值、reason 具体，满足必须有准确原文 quotes；缺证据不是 false。作者自查保留，不插入独立质检阶段。
 - 后两项质检发送前必须在本地通过同版三模型门槛：Seed未全部决定性达成且GPT或Claude至少一个全部达成。完整但不合格的判断直接转candidate_rejected，保留负结果并重新选题，不读Cookie、不发请求、不新增尝试；models、单项及--refresh共用拦截，缓存不能绕过。详见THREE_MODEL_QA_GATE_SPEC.md。
-- 新任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行检查考点与达成性，正常请求等待到完成、没有客户端上限；合理不通过返修。三项实际通过后先发Arena链接，再记录不改变含义及判定的表达优化，最终交付使用优化文字并说明未复检。错误内容意见给证据异议和可复制备注，保留原结论。Cookie私有。协议见PLATFORM_SPEC.md；本轮变更以QA_REFINEMENTS_SPEC.md为准，执行分支见Skill的references/platform-checks.md。
+- 新任务默认platform_checks_required：prompt/Insight先难度标签检查，三模型原文、判断及备注齐备后并行检查考点与达成性，正常请求等待到完成、没有客户端上限；合理不通过返修。`lab new --no-platform-checks` 可显式关闭该合同（自动化分支）：本地题目/后两项门禁直通、质检选择进入legacy，三项质检改在平台网页真实执行（见3.7.0）。三项实际通过后先发Arena链接，再记录不改变含义及判定的表达优化，最终交付使用优化文字并说明未复检。错误内容意见给证据异议和可复制备注，保留原结论。Cookie私有。协议见PLATFORM_SPEC.md；本轮变更以QA_REFINEMENTS_SPEC.md为准，执行分支见Skill的references/platform-checks.md。
 - 平台门禁及三模型门槛通过后创建Arena填写文件；准备、导入和导出均重新校验，导入需当前evaluation。Arena仍只收用户原Markdown及实际型号，截图另交。旧任务续作不强迫补检查；workspace-update不自动修改旧TASK合同。
 - 五模型统一判断全部决定性与非决定性点。排序先按全部决定性达成性分梯队，同梯队按全部考点满足数降序，相同并列；没有品牌、文风或长度权重。排序和备注使用真实型号；简洁说明五模型具体考点差异及原因，不设字数下限，并绑定评估哈希。
 - 完整交付保留六个文件：提交信息.md用普通标签与纯文本段落呈现题目、题型、Insight、两类考点、达成性/备注及排序/理由；五份回复在models/按真实型号命名，原始字节一致，主文件给出回复路径。没有截图、ZIP、合并回复文件或附加用户清单。JSON、evidence及manifest保留作内部记录。
@@ -31,3 +37,9 @@
 3.6.1按SINGLE_QUESTION_SPEC.md设计单一核心提问：理由融入同一问句，题目送检/冻结前拦截明显拆散写法，设计复核补single_core_question；历史冻结输入保持。
 
 3.6.2按[INSIGHT_RUBRIC_RESEARCH_SPEC.md](INSIGHT_RUBRIC_RESEARCH_SPEC.md)将完整研究报告与写作检查单作为全阶段必读参考，设计复核增加insight_rubric_alignment。报告和检查单随Skill复制；begin及design-check返回实际参考路径，公开资料不依赖私人目录，历史冻结及平台门槛保持。
+
+3.7.0自动化分支（轻量）按[AUTOMATION_SPEC.md](AUTOMATION_SPEC.md)实施：`lab new --no-platform-checks` 写入 platform_checks_required=false，question/final/stage 门禁与质检选择对该任务直通（legacy 合同），本地三模型门槛不变；流程、计数与 WORKLOG 记录为助手指导规则（Skill references/automation.md），浏览器操作配方随 Skill 发布（references/automation-playbook.md），不新增校验代码。附带修复：save_response 以 newline='' 字节精确写 reply.md（Windows 文本模式换行翻译曾使原件校验必然失败）；focus_signals 增加零问号拦截（题面须恰好一个问号）。回归以合成材料覆盖：标志写入、门禁直通、冻结/导入/arena-prepare 全链路、必需任务仍拦截。
+
+网页考点失败的授权替换：`web-failure-register <检查目录>` 读取平台配方的 input、core-point-intent/dispatch/result，核对本次调用、冻结版本、原文和输入哈希，登记独立类型 `criteria_web_quality_failed`。只适用自动化任务，不调用平台、不创建 API 回执、不改变现有检查门禁。助手先 failure-review 认可，再凭本次明确用户授权调用既有 model-replace-prepare/import；准备及导入时重验网页证据哈希。旧原件归档、Seed先行、同题面和统一重评规则保持。首次数量由空显示为1时，仅在已记录本次 running/1 派发证据时关联，不能采用旧结果。
+
+自动化顺序检查与版本补取（2026-10-26）：先处理网页考点，agent按结果/有效异议/平台允许的异常跳过判断是否发达成性；移除 `advanceModelChecks` 的程序性结论门槛，复用单项 startChecks/waitChecks，不新增放行参数、文件或审批。每个 prompt+Insight+points 内容版本，在 Seed 未全达成且完整三模型门槛失败时允许 GPT/Claude 各一次补取；沿用已授权规则，无需平台失败ID或逐轮批准。`model-replace-prepare --retry-evaluation <同版三模型评估>` 与旧 --failure 互斥，保留 --authorization-note/--reason；两个角色先准备入口再采集导入，内容哈希防止重启或仅修改评估备注重置额度。正式修订三项内容任一项才恢复额度，Seed门槛与候选/修复预算保持。复用既有计划、归档、回滚和导入恢复；`piweb-import.py --replacement-id` 只写获准入口。手动分支的原显式替换与API并行策略保持。

@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 import json
 import os
-import tempfile
+from .filesystem import temporary_file
 from .core import read_json, require
 
 ENDPOINT='https://aidp.bytedance.com/llm/union/app/invoke'
@@ -21,16 +21,16 @@ def private_directory(workspace):
     require(base.is_dir() and not base.is_symlink(),'父工作区local须为普通目录')
     directory=base/'aidp'
     require(not directory.is_symlink(),'平台私有目录不能为符号链接')
-    directory.mkdir(mode=0o700,exist_ok=True);directory.chmod(0o700)
+    directory.mkdir(exist_ok=True)
     for name in ('service.json','cookie.txt'):
         require(not (directory/name).is_symlink(),'平台配置和Cookie不能为符号链接')
     cookie=directory/'cookie.txt'
     if not cookie.exists():
-        try:fd=os.open(cookie,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        try:fd=os.open(cookie,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o666)
         except FileExistsError:pass
         else:
             with os.fdopen(fd,'w') as stream:stream.write(COOKIE_PLACEHOLDER)
-    require(cookie.is_file(),'Cookie须为普通文件');cookie.chmod(0o600)
+    require(cookie.is_file(),'Cookie须为普通文件')
     return directory
 
 
@@ -91,7 +91,7 @@ def setup(workspace,config):
     if not target.exists():
         # Publish a complete file exclusively: concurrent setup must never
         # overwrite a custom configuration or expose partially written JSON.
-        fd,name=tempfile.mkstemp(prefix='.service-',dir=directory)
+        fd,name=temporary_file(directory,'.service-')
         try:
             with os.fdopen(fd,'w',encoding='utf-8') as stream:
                 json.dump(config,stream,ensure_ascii=False,indent=2);stream.write('\n');stream.flush();os.fsync(stream.fileno())
@@ -99,7 +99,6 @@ def setup(workspace,config):
             except FileExistsError:pass
         finally:Path(name).unlink(missing_ok=True)
     require(validated_config(read_json(target))==config,'已有平台配置，保留原件；确认新任务配置后由助手显式编辑')
-    target.chmod(0o600)
     return {'service_file':str(target),'cookie_file':str(directory/'cookie.txt'),
             'next':'需要检查时填写Cookie；账号密码不进入聊天、源码或日志'}
 
@@ -113,7 +112,6 @@ def configuration(root):
 
 def load_cookie(path):
     path=Path(path);require(path.is_file() and not path.is_symlink(),'Cookie须为普通私有文件')
-    require(path.stat().st_mode&0o077==0,'Cookie文件权限须为600')
     cookie=path.read_text(encoding='utf-8-sig').strip()
     require(cookie and cookie!=COOKIE_PLACEHOLDER.strip() and '=' in cookie
             and not any(c in cookie for c in '\r\n'),'请填写或更新Cookie文件：'+str(path))

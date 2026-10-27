@@ -355,6 +355,186 @@
       "mechanism_notes": "启动资金包括开业前费用、需要配置的非现金资产和早期经营缺口所需现金。",
       "boundaries": "2017 方法文不是当前开店报价或法规；不同支出分类不能导致重复计算。",
       "scenario_seed": "准备做上门服务，已有设备但账上现金少，应如何估计启动资金。"
+    },
+    {
+      "id": "S21",
+      "title": "2.4 Marketing Plan Progress Using Metrics",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-marketing/pages/2-4-marketing-plan-progress-using-metrics",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_marketing"
+      ],
+      "mechanism_notes": "客户终身价值应超过获客成本，并给出简化公式（每客户年利润×平均保留年数−获客成本）；强调 CLV 是前瞻估计而非保证，判断客户盈利还要计入销货与服务成本。",
+      "boundaries": "教学示例（干洗店、电器店份额）非行业实证；不含本地化数据、留存率动态建模或法律合规讨论。",
+      "scenario_seed": "两家获客渠道的优劣因估计窗口与成本归集口径不同而反转。"
+    },
+    {
+      "id": "S22",
+      "title": "15.4 Price Discrimination (Introduction to Economic Analysis, McAfee & Lewis)",
+      "publisher": "Saylor / LibreTexts",
+      "url": "https://socialsci.libretexts.org/Bookshelves/Economics/Applied_Economics/Introduction_to_Economic_Analysis_(LibreTexts)/15%3A_Monopoly/15.04%3A_Price_Discrimination",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_marketing"
+      ],
+      "mechanism_notes": "差别定价的两个前提：能区分不同需求的客群、能阻止转售套利；直接/间接歧视框架，数量折扣与优惠券、版本划分（学生版软件、家庭/专业版系统）作为间接歧视的自选择手段；给出加价与需求弹性关系式。",
+      "boundaries": "无福利效应推导、无一级歧视图形推导、无数值例题；许可 CC BY-NC-SA 3.0。",
+      "scenario_seed": "软件是否值得推出学生版，取决于高低需求客群的自选择是否成立、套利风险有多大。"
+    },
+    {
+      "id": "S23",
+      "title": "Lecture Notes（Lec 8 Process Flow Models；Lec 10 Queueing Systems）15.760A Operations Management",
+      "publisher": "MIT OpenCourseWare",
+      "url": "https://ocw.mit.edu/courses/15-760a-operations-management-spring-2002/pages/lecture-notes/",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_operations"
+      ],
+      "mechanism_notes": "讲义目录确认两讲主题：流程流模型与排队系统；Little 定律（系统内平均数=到达率×平均停留时间）属流程分析核心内容，用以刻画产能、在制与等待的约束关系。",
+      "boundaries": "目录页仅列条目，正文为 PDF；未列出以 Little 定律命名的独立讲义；无服务行业基准数据。",
+      "scenario_seed": "门店在排队长度、平均等待与放弃率之间做产能决策。"
+    },
+    {
+      "id": "S24",
+      "title": "2.5 Agency Issues – Shareholders and Corporate Boards (Principles of Finance)",
+      "publisher": "OpenStax via LibreTexts",
+      "url": "https://biz.libretexts.org/Bookshelves/Finance/Principles_of_Finance_(OpenStax)/02%3A_Corporate_Structure_and_Governance/2.05%3A_Agency_Issues-_Shareholders_and_Corporate_Boards",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_organization"
+      ],
+      "mechanism_notes": "代理冲突分三类（股东-管理层、投资者-债权人、股东-其他利益相关者）；对齐手段含业绩与道德激励、股权包与长期薪酬、惩罚差业绩、敌意收购威胁；列举 Enron、WorldCom 等公开失效案例。",
+      "boundaries": "概念与案例层，不含合约设计的数学模型；董事会运作在 2.4 节；无习题解答。",
+      "scenario_seed": "店长奖金只挂钩短期营业额后出现宰客与损耗上升。"
+    },
+    {
+      "id": "S25",
+      "title": "9.2 Work Group Structure",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/organizational-behavior/pages/9-2-work-group-structure",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_organization"
+      ],
+      "mechanism_notes": "社会性惰化定义为群体成员在群体任务上减少努力；发生条件三条：任务被认为不重要或过于简单、个人产出无法被识别、预期同事会偷懒；大群体比小群体更普遍；管理手段指向赋予更大任务责任与挑战性工作设计。",
+      "boundaries": "页面明确说明群体规模与生产率无清晰确定关系；不含量化模型；角色冲突细节在本章其他节。",
+      "scenario_seed": "个人计件改为团队奖金池后产量下降的归因。"
+    },
+    {
+      "id": "S26",
+      "title": "A Tutorial on Thompson Sampling (arXiv:1707.02038)",
+      "publisher": "Russo, Van Roy, Kazerouni, Osband, Wen / arXiv",
+      "url": "https://arxiv.org/abs/1707.02038",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_analytics"
+      ],
+      "mechanism_notes": "在线决策需在利用已知信息与获取新信息之间平衡；以 Bernoulli bandit 为例说明按后验采样分配流量的思路，并讨论算法何时有效及与其他算法的关系；教程性质（期刊版见 Foundations and Trends in ML 2018）。",
+      "boundaries": "方法论综述，无业务案例与行业数据；非平稳环境变体未全覆盖；arXiv 非独家分发许可。",
+      "scenario_seed": "固定等长 A/B 与按后验提前分配流量在错选损失与错过更优方案损失上的权衡。"
+    },
+    {
+      "id": "S27",
+      "title": "Simpson's paradox in psychological science: a practical guide",
+      "publisher": "Kievit, Frankenhuis, Waldorp, Borsboom / Frontiers in Psychology（PMC 公开版）",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3740239",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_analytics"
+      ],
+      "mechanism_notes": "聚合数据反直觉特征：子群体内的方向在聚合后可整体反转，根源是子群体构成比例（基率）不同；跨层推断需要背景知识（观察数据无法区分混淆与中介）；Berkeley 录取与肾结石治疗案例。",
+      "boundaries": "无直接商业管理案例；论文明确不存在统一规则预防所有情形；可视化与聚类检验各有局限。",
+      "scenario_seed": "两个渠道在每个客群内 A 优、聚合后 B 优的转化率决策。"
+    },
+    {
+      "id": "S28",
+      "title": "9.04 Inventory Models for Certain Demand – Economic Order Quantity (EOQ)",
+      "publisher": "LibreTexts（NWTC Introduction to Operations Management）",
+      "url": "https://biz.libretexts.org/Courses/Northeast_Wisconsin_Technical_College/Introduction_to_Operations_Management_(NWTC)/09%3A_Inventory_Management/9.04%3A_Inventory_Models_for_Certain_Demand_-_Economic_Order_Quantity_(EOQ)",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_daily"
+      ],
+      "mechanism_notes": "EOQ 由总成本（仅订货成本与持有成本）对批量求导最小化得到；假设：从外部供应商订货、需求恒定、提前期恒定、每次订货量固定；因需求确定不考虑短缺。",
+      "boundaries": "确定需求模型：不含随机需求、安全库存、数量折扣与缺货成本；页面示例只有题面未展示完整解答；EPQ 在 9.5 节。",
+      "scenario_seed": "季节性商品按 EOQ 安排补货节律，实际却出现旺季缺货与淡季损耗并存。"
+    },
+    {
+      "id": "S29",
+      "title": "19.1 What Is Working Capital?",
+      "publisher": "OpenStax / Rice University",
+      "url": "https://openstax.org/books/principles-finance/pages/19-1-what-is-working-capital",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_daily"
+      ],
+      "mechanism_notes": "现金转换周期 = 存货转换天数 + 应收账款回收天数 − 应付账款递延天数，三段各有周转率到天数的两步算法并配有数值示例（现金周期 57.2 天的拆解）；压缩周期的代价：应付不能违反信用条款，存货过快周转与应收过紧各有经营影响。",
+      "boundaries": "流动比率是时点值不预示未来流动性；行业比较基准需订阅数据库；季节性行业差异明显。",
+      "scenario_seed": "账面盈利但现金紧张的小店，用现金周期口径定位占款环节。"
+    },
+    {
+      "id": "S30",
+      "title": "17.3 Hotelling Differentiation (Introduction to Economic Analysis, McAfee & Lewis)",
+      "publisher": "Saylor / LibreTexts",
+      "url": "https://socialsci.libretexts.org/Bookshelves/Economics/Applied_Economics/Introduction_to_Economic_Analysis_(LibreTexts)/17%3A_Imperfect_Competition/17.03%3A_Hotelling_Differentiation",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_strategy"
+      ],
+      "mechanism_notes": "线段定位模型（冰淇淋摊位、按含糖量的麦片分布、两党政纲趋同）：价格固定时均衡是两厂商聚集中点，即最小差异化；定位选择把竞争维度从价格转为位置。",
+      "boundaries": "不含价格内生的差异化均衡（17.4 圆形模型）；不含最大差异化结论与运输成本福利比较；有图示无正式公式；习题无解答。",
+      "scenario_seed": "两家奶茶店在扎堆商圈与分散设点之间选择的均衡条件。"
+    },
+    {
+      "id": "S31",
+      "title": "VRIO Analysis (Strategic Management)",
+      "publisher": "John Morris / Oregon State University Open Textbook",
+      "url": "https://open.oregonstate.education/strategicmanagement/chapter/4-vrio-analysis",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_strategy"
+      ],
+      "mechanism_notes": "VRIO 四判据与绩效对照表（无价值=劣势；有价值不稀缺=平价；加稀缺=暂时优势；再加难模仿且组织利用=持续优势）；难模仿性源于历史条件、因果模糊与社会复杂性（默会资源如文化、声誉）；组织利用是必要条件（控制体系、汇报关系、薪酬政策）。",
+      "boundaries": "被模仿所需时长的判断依赖主观估计（专利期限类比）；无行业数据库；例证为公开报道的教学案例。",
+      "scenario_seed": "评价秘方、熟客社群与排班系统哪个构成持续优势。"
+    },
+    {
+      "id": "S32",
+      "title": "15.7 Peak-load Pricing (Introduction to Economic Analysis, McAfee & Lewis)",
+      "publisher": "Saylor / LibreTexts",
+      "url": "https://socialsci.libretexts.org/Bookshelves/Economics/Applied_Economics/Introduction_to_Economic_Analysis_(LibreTexts)/15%3A_Monopoly/15.07%3A_Peak-load_Pricing",
+      "verified_on": "2026-10-25",
+      "verification": "html_text_read",
+      "accessibility": "public_no_login_observed",
+      "topics": [
+        "business_operations"
+      ],
+      "mechanism_notes": "共享产能的成本 β 由两个需求时段共同消耗：均衡要么把全部产能成本计入高峰期价格（Case 1：q1>q2），要么用价格把两期需求量拉平（Case 2）；给出利润函数、拉格朗日一阶条件与 Ramsey 定价形式。",
+      "boundaries": "两时段模型，无多时段一般化推导与数值算例；无图示；练习题（酒店、电力）只有题干；不含监管与公平性约束讨论。",
+      "scenario_seed": "健身房在高峰时段差别定价与全时段统一价之间选择，两种定价隐含不同的产能成本归因。"
     }
   ],
   "mechanisms": [
@@ -719,6 +899,266 @@
         "S03"
       ],
       "scenario_seed": "准备在居民区做周末课程，签一年租约前应该先验证什么。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B19",
+      "subdirection": "business_marketing",
+      "title": "客户终身价值与获客成本的口径决定结论",
+      "mechanism": "判断一个客群值不值得获取，取决于终身价值与获客成本的比较，而两者都依赖估计窗口与成本归集口径；口径不同，同一组数据的结论可以反转。",
+      "assumptions": [
+        "估计窗口、留存假设与贴现处理已明确",
+        "获客成本只归集为获取该客群实际发生的支出"
+      ],
+      "limits": [
+        "教材公式是简化估计，不含留存率变化与再投入的动态",
+        "不提供任何行业基准值或本地数据"
+      ],
+      "source_ids": [
+        "S21"
+      ],
+      "scenario_seed": "门店在两个获客渠道间分配预算，因是否计入服务成本、窗口长短的口径不同，结论相反。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B20",
+      "subdirection": "business_marketing",
+      "title": "差别定价成立靠分离与套利阻止",
+      "mechanism": "差别定价要成立，须能区分不同需求的客群并阻止转售套利；间接歧视（数量折扣、优惠券、版本划分）靠客群自选择实现分离，而不是直接识别身份。",
+      "assumptions": [
+        "厂商有一定市场势力",
+        "不同客群的需求弹性存在差异"
+      ],
+      "limits": [
+        "不含福利效应推导与数值例题",
+        "不涉及价格法规与平台规则的合规边界"
+      ],
+      "source_ids": [
+        "S22"
+      ],
+      "scenario_seed": "一款软件是否值得推出功能受限的学生版，取决于高低需求客群的自选择是否成立、套利风险有多大。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B21",
+      "subdirection": "business_operations",
+      "title": "峰谷定价隐含产能成本的归因口径",
+      "mechanism": "共享产能在高峰与平峰间分配成本：要么把产能成本全部计入高峰价格，要么用相对价格把各时段需求拉平；归因口径不同，价格结构与高峰压力的结论不同。",
+      "assumptions": [
+        "各时段需求可区分且可分时定价",
+        "产能跨时段共享且成本随峰值变化"
+      ],
+      "limits": [
+        "两时段模型，无多时段一般化与数值算例",
+        "不含监管与公平性约束讨论"
+      ],
+      "source_ids": [
+        "S32"
+      ],
+      "scenario_seed": "健身房在高峰时段差别定价与全时段统一价之间选择，需要判断两种定价各自隐含的产能成本归因及对高峰拥挤的影响。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B22",
+      "subdirection": "business_operations",
+      "title": "排队系统的吞吐-在制-等待约束",
+      "mechanism": "稳定状态下系统内平均数量等于到达率乘平均停留时间；产能、在制与等待互相约束，同时改善三者通常需要改变系统结构而不是调参数。",
+      "assumptions": [
+        "系统进入稳定状态",
+        "度量口径（系统边界、平均方式）前后一致"
+      ],
+      "limits": [
+        "目录页仅列讲义条目，正文为 PDF",
+        "不含具体服务行业基准数据"
+      ],
+      "source_ids": [
+        "S23"
+      ],
+      "scenario_seed": "门店在排队长度、平均等待与放弃率之间做产能决策，需要指出哪个口径的变化能同时改善两个指标、哪个必然牺牲另一个。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B23",
+      "subdirection": "business_accounting",
+      "title": "销售组合漂移让盈亏平衡点失真",
+      "mechanism": "多产品盈亏平衡依赖销售组合不变假设；组合漂移改变加权贡献毛益，按旧组合算出的盈亏平衡点与目标利润不再适用，税后目标还须先换算为税前口径。",
+      "assumptions": [
+        "产品间贡献毛益差异明显",
+        "组合比例可观察或可假设"
+      ],
+      "limits": [
+        "教材页不含多产品盈亏平衡的完整计算与敏感性分析",
+        "图表数据不完整"
+      ],
+      "source_ids": [
+        "S06"
+      ],
+      "scenario_seed": "门店促销把销量推向低毛利产品后，总销量达标却仍未过盈亏平衡点，需要用组合口径重算。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B24",
+      "subdirection": "business_organization",
+      "title": "代理问题的对齐手段各有成本",
+      "mechanism": "委托人无法完全观察代理人行为与努力时产生代理冲突；股权与长期薪酬、监督、收购威胁都是对齐手段，但每种手段只对齐特定维度并引入新的行为诱导。",
+      "assumptions": [
+        "存在可部分观察的业绩信号",
+        "激励与监督本身有成本"
+      ],
+      "limits": [
+        "教材页为概念与公开案例列举，不含合约设计模型",
+        "不涉及法律与监管条文细节"
+      ],
+      "source_ids": [
+        "S24"
+      ],
+      "scenario_seed": "给店长的奖金只挂钩短期营业额后，出现向上虚报、损耗上升与老客流失，需要归因激励口径漏掉了哪些维度。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B25",
+      "subdirection": "business_organization",
+      "title": "社会性惰化取决于贡献可辨识度",
+      "mechanism": "群体成员在任务意义低、个人产出不可辨识或预期他人偷懒时降低努力；群体规模放大这三个条件，改变贡献的可辨识度是针对性的管理杠杆。",
+      "assumptions": [
+        "个人贡献可辨识性是可操作的关键变量",
+        "任务与激励结构给定"
+      ],
+      "limits": [
+        "教材页明确群体规模与生产率无确定关系，不提供量化模型",
+        "工作设计层面的手段细节在其他章节"
+      ],
+      "source_ids": [
+        "S25"
+      ],
+      "scenario_seed": "把个人计件改成团队奖金池后产量下降，需要归因到可辨识度变化与预期他人偷懒，而不是笼统的士气说法。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B26",
+      "subdirection": "business_analytics",
+      "title": "实验的探索-利用权衡",
+      "mechanism": "在线决策要在利用已知最优方案与继续获取新信息之间分配流量；把继续实验的机会成本显式纳入，才能判断实验该跑多久、何时开始倾向更优方案。",
+      "assumptions": [
+        "结果反馈及时且流量可分配",
+        "收益分布在实验期内近似平稳"
+      ],
+      "limits": [
+        "教程为方法论综述，无业务案例与行业数据",
+        "非平稳环境的变体未全覆盖"
+      ],
+      "source_ids": [
+        "S26"
+      ],
+      "scenario_seed": "促销实验跑满固定两周与按后验提前向更优方案倾斜，两种方案的错选损失与错过更优方案损失不同，需要结构化表达该权衡。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B27",
+      "subdirection": "business_analytics",
+      "title": "聚合口径的方向反转",
+      "mechanism": "每个子群体内的关系方向在聚合后可能整体反转，根源是子群体构成比例不同；该按聚合还是分层决策，取决于分层变量与决策对象的关系，且需要数据之外的背景判断。",
+      "assumptions": [
+        "存在同时影响分组与结果的构成变量",
+        "各层数据可获得"
+      ],
+      "limits": [
+        "论文为方法指南，无直接商业案例",
+        "观察数据无法区分混淆与中介，需背景知识"
+      ],
+      "source_ids": [
+        "S27"
+      ],
+      "scenario_seed": "两个渠道在每个客群内 A 转化率更高，聚合后 B 更高，需要判断按哪个口径决策并指出还缺什么信息。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B28",
+      "subdirection": "business_daily",
+      "title": "EOQ 的确定需求边界",
+      "mechanism": "经济订货量在需求恒定、提前期恒定、只计订货与持有成本的假设下由总成本最小化决定；把确定模型外推到波动或季节性环境时，结论与实际损耗、缺货表现背离。",
+      "assumptions": [
+        "需求与提前期确定",
+        "无数量折扣、无缺货情形"
+      ],
+      "limits": [
+        "教材页示例解答未完整展示",
+        "不含随机需求、安全库存与折扣情形"
+      ],
+      "source_ids": [
+        "S28"
+      ],
+      "scenario_seed": "季节性商品按 EOQ 安排补货节律，实际却出现旺季缺货与淡季损耗并存，需要逐条指出哪条假设被违反。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B29",
+      "subdirection": "business_daily",
+      "title": "现金转换周期定位占款环节",
+      "mechanism": "现金周期等于存货天数加应收天数减应付天数；每个分母与平均口径的选择改变结论，压缩周期有经营与信用关系的代价，账面盈利与现金充裕是两回事。",
+      "assumptions": [
+        "财务数据可获得且平均口径一致",
+        "已意识到行业与季节性差异"
+      ],
+      "limits": [
+        "应付压缩的信用关系与信用评级代价不能无限化",
+        "行业比较基准需要订阅数据库"
+      ],
+      "source_ids": [
+        "S29"
+      ],
+      "scenario_seed": "扩张中的小店账面盈利但现金紧张，需要用现金周期口径定位占款环节，并说明缩短每个环节的代价。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B30",
+      "subdirection": "business_strategy",
+      "title": "定位竞争与最小差异化",
+      "mechanism": "在位置模型中，价格外生时厂商聚集于中点是均衡（最小差异化）；定位选择把竞争维度从价格转为位置，价格是否内生化会改变均衡方向。",
+      "assumptions": [
+        "消费者选择最近的厂商",
+        "价格外生或给定"
+      ],
+      "limits": [
+        "不含价格内生的差异化均衡与最大差异化结论",
+        "教材页有图示无正式公式，习题无解答"
+      ],
+      "source_ids": [
+        "S30"
+      ],
+      "scenario_seed": "两家奶茶店在扎堆商圈与分散设点之间选择，需要说明在什么条件下扎堆是均衡、什么条件下分散成立。",
+      "scenario_origin": "constructed_from_mechanism_not_user_experience",
+      "acceptance_status": "unvalidated_scenario_seed"
+    },
+    {
+      "id": "B31",
+      "subdirection": "business_strategy",
+      "title": "VRIO 判据区分暂时与持续优势",
+      "mechanism": "资源产生持续优势须同时有价值、稀缺、难模仿且被组织利用；有价值但普遍只是平价，难模仿性通常来自历史条件、因果模糊与社会复杂性，缺乏组织利用则优势无法兑现。",
+      "assumptions": [
+        "资源与能力可识别",
+        "竞争者获取它们存在成本或时间劣势"
+      ],
+      "limits": [
+        "被模仿所需时长的判断依赖主观估计",
+        "不提供行业数据库与本地验证手段"
+      ],
+      "source_ids": [
+        "S31"
+      ],
+      "scenario_seed": "评价一家店的秘方、熟客社群与排班系统哪个构成持续优势，需要逐项过四判据并指出组织利用缺口。",
       "scenario_origin": "constructed_from_mechanism_not_user_experience",
       "acceptance_status": "unvalidated_scenario_seed"
     }

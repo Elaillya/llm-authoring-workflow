@@ -1,6 +1,6 @@
 """Domain choices and progressive topic scopes, retaining flat legacy branches."""
 from pathlib import Path
-from .core import active_question, question_domain, read_json, require, write_json
+from .core import active_question, direction_locked, question_domain, read_json, require, write_json
 from .domains import canonical_domain,LIFESTYLE
 
 CATALOG=Path(__file__).resolve().parents[1]/'config/domains.json'
@@ -46,7 +46,7 @@ def choose_subdirection(root,branch,confirm=False):
     require(request.get('selection_schema')==2,'旧题请保留原选择；未冻结新题可先升级选题入口')
     domain=canonical_domain(question_domain(root,request));selected=topic_node(domain,branch)
     require(selected is not None,'先选择大方向，再从该方向菜单选择子方向')
-    if (root/'CURRENT.json').exists():
+    if (root/'CURRENT.json').exists() and direction_locked(root):
         require(active_question(root)['question'].get('subdirection')==branch,'已冻结题目不能更换子方向，请新建题目')
     confirmed=bool(confirm or not selected['has_children'] or
                    (request.get('subdirection')==branch and request.get('subdirection_confirmed') is True))

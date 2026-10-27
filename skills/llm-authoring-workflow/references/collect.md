@@ -1,3 +1,5 @@
+自动化分支不按本文执行，改读[automation.md](automation.md)：模型回复经pi-web采集导入，质检在平台网页运行。本文适用于手动分支。
+
 进入GPT/Claude收集之前先读optional-model-checks.md：Seed未全部达成后询问是否执行后两项质检、等待实际答复并记录；已有选择沿用。选择跳过只去掉后续两项API，模型原文和达成门槛保持。
 
 # 三模型手动 Markdown

@@ -9,4 +9,6 @@ git remote add origin https://github.com/YOUR-ACCOUNT/YOUR-REPOSITORY.git
 git push -u origin main
 ```
 
-别人 Clone 后依 README 建自己的工作区。首次选择领域和题型，不需要模型 API 密钥；到相应步骤填写助手创建的 Markdown 文件。用户的官方网页截图另行提交项目方。
+别人 Clone 后依 README 建自己的工作区。手动分支按Markdown填写流程执行；自动化分支的专家准备、启动口令、Arena交接和异常处理见[专家使用说明](AUTOMATION_EXPERT_GUIDE.md)。自动化使用专家自行准备的pi-web服务及已登录的ego-lite，不把个人配置、题目材料和运行环境加入公开源码。
+
+已有远程分支时，先fetch并比较历史，再选择推送目标。独立原型分支保持原用途；当前流程在单独分支提交，通过面向main的PR审阅，不直接覆盖或强推既有分支。若本地未发布历史混有个人环境信息，可保留原本地分支，将审查后的完整源码快照整理为基于远程main的新提交；检查最终文件和将公开的提交历史。

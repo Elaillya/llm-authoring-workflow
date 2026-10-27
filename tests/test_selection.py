@@ -2,15 +2,16 @@
 from pathlib import Path
 import tempfile
 import unittest
-from llm_authoring.core import Error, read_json, write_json
-from llm_authoring.workspace import begin, choose_domain, create_workspace
+from llm_authoring.core import Error, hash_json, read_json, write_json
+from llm_authoring.workspace import begin, choose_domain, choose_type, create_workspace
 from llm_authoring.selection import choose_subdirection, menu, validate_selection
+from test_core import question
 
 
 class SelectionTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.ws=Path(self.temp.name)/'ws'
-        create_workspace(self.ws);self.root=self.ws/'task'
+        create_workspace(self.ws);self.root=self.ws/'question-001'
     def tearDown(self):self.temp.cleanup()
     def test_three_domains_and_cs_four_branches(self):
         result=begin(self.root,self.ws)
@@ -48,3 +49,14 @@ class SelectionTests(unittest.TestCase):
         choose_domain(self.root,'材料科学')
         request=read_json(self.root/'REQUEST.json');request['question_type']='How-to类';write_json(self.root/'REQUEST.json',request)
         self.assertTrue(begin(self.root,self.ws)['ready'])
+    def test_frozen_manual_task_keeps_subdirection_and_type_lock(self):
+        choose_domain(self.root,'计算机科学');choose_subdirection(self.root,'cs_courses');choose_type(self.root,'分析决策类')
+        q=question();q.update(task_id='question-001',domain='计算机科学',subdirection='cs_courses')
+        frozen={'question':q,'revision':'r0001','frozen_at':'2026-10-12T00:00:00+00:00',
+                'question_sha256':hash_json(q),'prompt_sha256':hash_json(q['prompt']),'rubric_sha256':hash_json(q['points'])}
+        write_json(self.root/'revisions/r0001/question.json',frozen)
+        write_json(self.root/'CURRENT.json',{'revision':'r0001'})
+        with self.assertRaisesRegex(Error,'不能更换子方向'):choose_subdirection(self.root,'cs_research')
+        with self.assertRaisesRegex(Error,'改题型'):choose_type(self.root,'How-to类')
+        choose_type(self.root,'分析决策类')
+        choose_subdirection(self.root,'cs_courses')

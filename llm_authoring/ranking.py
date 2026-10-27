@@ -2,12 +2,12 @@
 from pathlib import Path
 import copy
 import shutil
-import tempfile
 from .core import (ALL_ROLES, ARENA_ROLES, ROLES, active_question, hash_json,
                    read_response, require, sha, write_json)
 from .authoring import check_three, evaluation_template, export_authoring, validated_models
 from .arena import validate_arena_evidence, validate_names
-from .delivery import model_files,named_text,submission_text
+from .delivery import model_files,named_text,submission_text,attainment_notes,join_note_fields
+from .filesystem import temporary_directory
 
 
 def five_evaluation_template(root, authoring_evaluation):
@@ -41,21 +41,14 @@ def check_five(root, evaluation):
             'groups': groups, 'order': order, 'models_in_order': list(ALL_ROLES)}
 
 
-def attainment_notes(stat):
-    return '\n\n'.join(f'{item["id"]}（{"决定性" if item["kind"]=="decisive" else "非决定性"}）：'
-                       f'{"满足" if item["met"] else "不满足"}；原因：{item["reason"]}'
-                       + ('；原文依据：' + ' / '.join(item['quotes']) if item['quotes'] else '')
-                       for item in stat['judgments'])
-
-
 def ranking_template(root, evaluation):
     current = active_question(root)
     result = check_five(root, evaluation)
     notes = {}
     for role, stat in result['models'].items():
         notes[role] = (f'全部决定性考点{"达成" if stat["attained"] else "未达成"}，决定性点{stat["decisive_met"]}/{stat["decisive_total"]}，'
-                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。' + '；'.join(
-                           f'{item["id"]}{"满足" if item["met"] else "未满足"}：{item["reason"]}' for item in stat['judgments']))
+                       f'全部考点{stat["total_met"]}/{stat["total_points"]}。' + join_note_fields([
+                           f'{item["id"]}{"满足" if item["met"] else "未满足"}：{item["reason"]}' for item in stat['judgments']]))
     return {'schema_version': 1, 'phase': 'ranking', 'task_id': current['question']['task_id'],
             'question_sha256': current['question_sha256'], 'evaluation_sha256': hash_json(evaluation),
             'reviewer': evaluation['reviewer'], 'groups': result['groups'], 'order': result['order'],
@@ -102,7 +95,7 @@ def export_complete(root, evaluation, review, ranking, output):
     for name in ('responses', 'revisions', 'attempts', 'arena-input', 'model-input', 'evaluations', 'drafts','platform-checks'):
         require(not output.resolve().is_relative_to((Path(root) / name).resolve()), '提交不能写入原件、考点、输入或评估目录')
     output.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix='.complete-export-', dir=output.parent))
+    staging = temporary_directory(output.parent, '.complete-export-')
     try:
         # Reuse manual-source validation and historical evidence compatibility.
         authoring = copy.deepcopy(evaluation)
@@ -137,6 +130,11 @@ def export_complete(root, evaluation, review, ranking, output):
                                          'reply_file': paths[role], 'decisive_met': stat['decisive_met'], 'total_met': stat['total_met']})
         from .platform_polish import export as export_polish
         export_polish(root,evaluation,fields,result['models'],package)
+        from .automation_evidence import platform_fields,web_evidence,screenshot_evidence
+        if (Path(root)/'TASK.json').is_file() and read_json(Path(root)/'TASK.json').get('platform_checks_required') is False:
+            web=web_evidence(root,platform_fields(root,stats=result['models']),package)
+            if web:fields['web_checks']=web
+            fields['screenshot_states']=screenshot_evidence(root)
         (package / '提交信息.md').write_text(submission_markdown(fields), encoding='utf-8')
         write_json(package / 'fields.json', fields)
         write_json(package / 'authoring-evaluation.json', authoring)
@@ -150,8 +148,10 @@ def export_complete(root, evaluation, review, ranking, output):
                    'prompt_sha256': current['prompt_sha256'], 'rubric_sha256': current['rubric_sha256'],
                    'models_in_order': list(ALL_ROLES), 'three_model_gate': True, 'ranking': result['order'],
                    'next_workflow': 'platform_submission', 'arena_screenshots': 'user_submits_separately',
-                   'model_screenshots': 'user_submits_separately',
-                   'next_action': '完整出题与五模型排序材料已生成，用户提交甲方；所有模型的官方网页截图由用户单独提供。'})
+                   'model_screenshots': fields.get('screenshot_states','user_submits_separately'),
+                   'web_checks':fields.get('web_checks'),
+                   'capture_sources':{r:m['capture_source'] for r,m in fields['models'].items() if m.get('capture_source')},
+                   'next_action': '完整出题与五模型排序材料已生成，用户核对材料及实际截图状态后继续提交；Arena截图由用户另行提供。'})
         (package / 'manifest.json').unlink()
         write_json(package / 'manifest.json', {'schema_version': 1, 'phase': 'complete',
                    'files': {p.relative_to(package).as_posix(): sha(p) for p in package.rglob('*') if p.is_file()}})

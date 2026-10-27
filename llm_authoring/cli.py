@@ -28,7 +28,9 @@ def main(argv=None):
     parser.add_argument('--workspace',type=Path);parser.add_argument('--task',type=Path)
     subs=parser.add_subparsers(dest='command',required=True)
     w=subs.add_parser('workspace-create');w.add_argument('directory',type=Path)
-    n=subs.add_parser('new');n.add_argument('id')
+    w.add_argument('--first-task',default='question-001',help='首题编号，直接创建question-<编号>，不生成额外占位题')
+    w.add_argument('--no-platform-checks',action='store_true',help='首题使用自动化网页质检分支')
+    n=subs.add_parser('new');n.add_argument('id');n.add_argument('--no-platform-checks',action='store_true',help='自动化分支任务：关闭本地平台检查门禁，质检在平台网页执行')
     rn=subs.add_parser('rename');rn.add_argument('name')
     cp=subs.add_parser('choose-model-checks');cp.add_argument('choice',choices=check_policy.CHOICES);cp.add_argument('--user-note',required=True)
     subs.add_parser('start');subs.add_parser('begin');subs.add_parser('status');subs.add_parser('workspace-update')
@@ -44,12 +46,13 @@ def main(argv=None):
     dc=subs.add_parser('design-check');dc.add_argument('question',type=Path)
     dr=subs.add_parser('design-review-template');dr.add_argument('output',type=Path);dr.add_argument('--question',type=Path,required=True)
     cr=subs.add_parser('candidate-reserve');cr.add_argument('question',type=Path);cr.add_argument('--review',type=Path)
-    rp=subs.add_parser('model-replace-prepare');rp.add_argument('role',choices=['gpt','claude']);rp.add_argument('--failure',required=True);rp.add_argument('--authorization-note',required=True);rp.add_argument('--reason',required=True);rp.add_argument('--seed-evaluation',type=Path)
+    rp=subs.add_parser('model-replace-prepare');rp.add_argument('role',choices=['gpt','claude']);rp_source=rp.add_mutually_exclusive_group(required=True);rp_source.add_argument('--failure');rp_source.add_argument('--retry-evaluation',type=Path);rp.add_argument('--authorization-note',required=True);rp.add_argument('--reason',required=True);rp.add_argument('--seed-evaluation',type=Path)
     ri=subs.add_parser('model-replace-import');ri.add_argument('role',choices=['gpt','claude']);ri.add_argument('replacement_id');ri.add_argument('--seed-evaluation',type=Path)
     fl=subs.add_parser('failure-context');fl.add_argument('--limit',type=int,default=12)
     fs=subs.add_parser('failure-show');fs.add_argument('event_id')
     ft=subs.add_parser('failure-review-template');ft.add_argument('event_id');ft.add_argument('output',type=Path)
     fr=subs.add_parser('failure-review');fr.add_argument('decision',type=Path)
+    wf=subs.add_parser('web-failure-register');wf.add_argument('directory',type=Path)
     br=subs.add_parser('business-references');br.add_argument('--subdirection')
     lr=subs.add_parser('lifestyle-references');lr.add_argument('--subdirection');lr.add_argument('--limit',type=int,default=8);lr.add_argument('--offset',type=int,default=0)
     qs=subs.add_parser('qa-setup');sources=qs.add_mutually_exclusive_group(required=True)
@@ -71,6 +74,7 @@ def main(argv=None):
         q=subs.add_parser(command);q.add_argument('output',type=Path)
     ch=subs.add_parser('check');ch.add_argument('evaluation',type=Path)
     sc=subs.add_parser('seed-check');sc.add_argument('evaluation',type=Path)
+    pf=subs.add_parser('platform-fields');pf.add_argument('--evaluation',type=Path,required=True)
     ap=subs.add_parser('arena-prepare');ap.add_argument('--evaluation',type=Path,required=True)
     fe=subs.add_parser('five-evaluation-template');fe.add_argument('output',type=Path);fe.add_argument('--authoring-evaluation',type=Path,required=True)
     for command in ('five-check','rank'):
@@ -82,12 +86,12 @@ def main(argv=None):
         if command=='export':e.add_argument('--ranking',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
-        if args.command=='workspace-create':result=create_workspace(args.directory)
+        if args.command=='workspace-create':result=create_workspace(args.directory,first_task=args.first_task,platform_checks=not args.no_platform_checks)
         else:
             workspace=args.workspace.absolute() if args.workspace else locate_workspace(args.task or Path.cwd())
             root=args.task.absolute() if args.task else Path.cwd() if (Path.cwd()/'TASK.json').is_file() else default_task(workspace)
             require(locate_workspace(root)==workspace,'题目不属于指定工作区')
-            if args.command=='new':result=create_task(workspace,args.id)
+            if args.command=='new':result=create_task(workspace,args.id,platform_checks=not args.no_platform_checks)
             elif args.command=='rename':result=rename_task(workspace,root,args.name)
             elif args.command=='workspace-update':result=update_workspace(workspace)
             elif args.command=='start':
@@ -110,7 +114,7 @@ def main(argv=None):
                 require(not args.output.exists(),'设计复核文件已存在，保留旧记录；新版请使用新文件名')
                 write_json(args.output,review_template(root,read_json(args.question)));result={'output':str(args.output),'next':'助手逐项填写真实比较理由，再candidate-reserve或freeze，不向用户新增确认'}
             elif args.command=='candidate-reserve':result=reserve(root,read_json(args.question),args.review)
-            elif args.command=='model-replace-prepare':result=replacement.prepare(root,args.role,args.failure,authorization_note=args.authorization_note,reason=args.reason,evaluation=args.seed_evaluation)
+            elif args.command=='model-replace-prepare':result=replacement.prepare(root,args.role,args.failure,authorization_note=args.authorization_note,reason=args.reason,evaluation=args.seed_evaluation,gate_evaluation=read_json(args.retry_evaluation) if args.retry_evaluation else None)
             elif args.command=='model-replace-import':result=replacement.import_reply(root,args.role,args.replacement_id,args.seed_evaluation)
             elif args.command=='failure-context':result=lessons.failure_context(root,workspace,args.limit)
             elif args.command=='failure-show':result=lessons.show(workspace,args.event_id)
@@ -118,6 +122,9 @@ def main(argv=None):
                 require(not args.output.exists(),'保留已有失败复核，使用新文件名')
                 write_json(args.output,lessons.review_template(workspace,args.event_id));result={'output':str(args.output)}
             elif args.command=='failure-review':result=lessons.review(workspace,read_json(args.decision))
+            elif args.command=='web-failure-register':
+                from .web_failure import register
+                result=register(root,args.directory)
             elif args.command=='business-references':result=business_context(args.subdirection)
             elif args.command=='lifestyle-references':result=lifestyle_context(args.subdirection,args.limit,args.offset,root)
             elif args.command=='qa-setup':
@@ -159,6 +166,9 @@ def main(argv=None):
             elif args.command=='check':
                 evaluation=read_json(args.evaluation);result=check_three(root,evaluation)
                 result['failure_observations']=lessons.observe_gate(root,evaluation)
+            elif args.command=='platform-fields':
+                from .automation_evidence import platform_fields
+                result=platform_fields(root,read_json(args.evaluation))
             elif args.command=='arena-prepare':result=prepare_arena(root,read_json(args.evaluation))
             elif args.command=='arena-import':result=import_arena(root,read_json(args.evaluation) if args.evaluation else None)
             elif args.command=='five-evaluation-template':

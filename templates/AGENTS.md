@@ -1,5 +1,9 @@
 # 完整出题与五模型排序
 
+新题目录与材料命名按Skill的references/workspace-layout.md：仓库内统一使用workspaces/question-<题号>，共用父目录local；首题通过workspace-create --first-task创建，后续用new。已有题保留路径接续，更新不迁移或合库。模型长截图以已核验显示名称命名，上传使用配方返回的imageFile。
+
+分支边界：手动分支按下文的用户填写、可选后两项 API 质检与用户另交截图执行。自动化分支以 references/automation.md 为执行合同：默认三项网页质检，不重复询问可选 API 策略；同题已有明确用户选择优先保留。先处理考点质检，再由agent依据结果、有效异议或平台允许的异常跳过规则判断是否运行达成性质检；不以程序强制要求考点返回通过。Seed未全部达成而三模型门槛不满足时，每个题面+Insight+考点内容版本允许GPT、Claude各补取一次；本规则授权范围内不逐轮询问，归档旧原文后统一重评。修改内容并正式冻结新版本后额度恢复；重启、改评估备注、仅换版本号不恢复。额度用完仍不满足则淘汰候选。机器回执由配方生成，WORKLOG 仅记阶段、决定、异常和证据位置。
+
 题库范围以lab memory-context返回的database/scope/member_workspaces为准：默认同父目录，已配置共享组则跨明确成员共用题库、失败观察及复核。每次开始或恢复先刷新上下文，保留正在做的题目，只在设计复核过期时补做差异复核；不另建空库。共享配置及迁移规则见工具仓docs/LOCAL_MEMORY.md。
 
 先读.agents/skills/llm-authoring-workflow/SKILL.md、TASK.json、REQUEST.json与WORKLOG.md。工具仓{{TOOL_ROOT}}，专业规则为其中rules/authoring.md。工作区命令{{WORKSPACE_ROOT}}/bin/lab，题目{{TASK_ID}}。
@@ -16,14 +20,14 @@
 
 已有题面、三模型证据或交付时保留原件并接续。新任务按Skill的references/platform-checks.md：prompt与Insight后先做难度标签检查，修订复检再冻结；三模型原文、判断及备注齐备后先lab check，必须读取three_model_gate=true且用户选择需要后两项检查，才用qa-run models并行做考点和达成性质检；Seed须未全部决定性达成，GPT或Claude至少一个全部达成。初次两者都未达成则保留负结果、记rejected并重新选题生成新prompt；认可后期考点失败后的修复分支见references/repair.md，不调用后两项质检，不能放宽标准或改判来过门槛。正常请求等待到完成，不设客户端等待上限；持续报告并等待原进程。合理不通过自主返修；错误意见登记证据异议，立即告知不认同并给出可复制备注。门禁与三模型门槛满足后先发Arena填写链接，三项实际通过的优化建议此后离线处理，保持题面、专业含义与判定，优化后不再调用质检。缺失/过期Cookie填已创建父目录私有文件。模型生成API仍禁用，平台质检允许调用；截图用户另交。旧任务按原合同续作。
 
-不设置独立质检阶段；既有作者自查复用。每个检查点更新WORKLOG，保留版本、负结果和原件。完成条件是完整五模型字段、排序与具体理由、新交付及哈希清单，不能止于旧三模型handoff。
+不设置独立质检阶段；既有作者自查复用。阶段完成或决定/异常变化时更新WORKLOG，保留版本、负结果和原件。完成条件是完整五模型字段、排序与具体理由、新交付及哈希清单，不能止于旧三模型handoff。
 
 交付为提交信息.md和五份按模型名称命名的原回复Markdown，分别给出可点击链接。排序和备注直接使用真实模型名称，交付过程不生成ZIP。改名时按工具仓docs/HANDOFF.md保留冻结ID与原件。
 
-认可考点质检不通过时按Skill的references/repair.md修复：优先保持prompt修Insight/考点、统一重评；仍不能满足门槛先询问用户是否重新提供GPT/Claude原文，替换不可行才改prompt。设计前读failure-context；模型门槛失败及平台实际不通过自动记观察，由助手复核原因、改进和范围后在当前题库范围内共享（默认同父目录，显式共享组为其全部成员），错误/未确认意见与服务故障不作为可靠经验。原回复替换须本次明确同意并归档，不自动反复抽取。
+认可考点质检不通过时按Skill的references/repair.md修复：优先保持prompt修Insight/考点、统一重评；仍不能满足门槛先询问用户是否重新提供GPT/Claude原文，替换不可行才改prompt。失败时按工具仓docs/FAILURE_LEARNING.md复用观察与复核；网页考点用已有证据登记，返修、放弃候选或交接时总结合理原因、可执行自查和适用边界。设计前读failure-context，冻结前把相关认可经验用于本题复核；共享限当前实际题库范围，错误/未确认意见与服务故障不作为可靠出题经验。原回复替换须本次明确同意并归档，不自动反复抽取。
 
-后两项质检策略以Skill的references/optional-model-checks.md为准：题目难度与标签检查固定；Seed未全部达成后、准备GPT/Claude填写文件前询问本题是否做考点/达成性质检，等待明确答复并用choose-model-checks记录。选择需要才并行两项；选择不需要则主流程去掉两项调用，仍需有效题目检查和three_model_gate才进入Arena与五模型排序。跳过标注未执行，不能声称通过；历史记录保持。
+手动分支后两项质检策略以Skill的references/optional-model-checks.md为准：题目难度与标签检查固定；Seed未全部达成后、准备GPT/Claude填写文件前询问本题是否做考点/达成性质检，等待明确答复并用choose-model-checks记录。选择需要才并行两项；选择不需要则主流程去掉两项调用，仍需有效题目检查和three_model_gate才进入Arena与五模型排序。跳过标注未执行，不能声称通过；历史记录保持。
 
 ## Insight与考点研究必读（3.6.2）
 
-开始/恢复、构造题面、确定或修改Insight与核心考点、判断模型、返修及排序交付时，必须按Skill的references/insight-rubric-checklist.md对应阶段，阅读并应用references/insight-rubric-study.md完整研究报告和检查单。尤其Insight先解释决定因素怎样改变本题决策；核心考点核对目标覆盖、单一可判关系、最低证据、等价路径与必需/可选边界。新候选设计复核的insight_rubric_alignment须给出本题具体依据；旧冻结不追溯失效。报告未验证出高概率通过API的模板，不能机械照抄、为Seed失分加条件、把无法质检当通过或反复刷检查。
+开始/恢复、构造题面、确定或修改Insight与核心考点、判断模型、返修及排序交付时，必须按Skill的references/insight-rubric-checklist.md对应阶段，阅读并应用references/insight-rubric-study.md完整研究报告和检查单。尤其Insight先解释决定因素怎样改变本题决策；核心考点核对目标覆盖、单一可判关系、最低证据、等价路径与必需/可选边界。冻结前按检查单“对应检查”独立推导解题路线、双向查漏及反例检验，结果合并进现有insight_rubric_alignment，不新增表单或程序门槛；旧冻结不追溯失效。报告未验证出高概率通过API的模板，不能机械照抄、为Seed失分加条件、把无法质检当通过或反复刷检查。

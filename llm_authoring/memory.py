@@ -30,9 +30,9 @@ def transaction(workspace):
     path=database_path(workspace)
     if not path.exists():
         try:
-            fd=os.open(path,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600);os.close(fd)
+            fd=os.open(path,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o666);os.close(fd)
         except FileExistsError:pass
-    require(path.is_file(),'本地题库须为普通文件');path.chmod(0o600)
+    require(path.is_file(),'本地题库须为普通文件')
     connection=sqlite3.connect(path,timeout=30)
     try:
         connection.execute('PRAGMA foreign_keys=ON')
@@ -82,7 +82,8 @@ def sync_locked(workspace,connection):
 
 
 def _sync_parent(workspace,connection):
-    roots=[workspace/'task']+sorted((workspace/'tasks').glob('*'));imported=0
+    from .workspace import task_roots
+    roots=task_roots(workspace);imported=0
     for root in roots:
         if root.is_symlink() or not (root/'TASK.json').is_file():continue
         require(root.resolve().is_relative_to(workspace),'题库导入目录逃逸工作区')

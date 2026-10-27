@@ -94,4 +94,4 @@ class FailureLearningTests(unittest.TestCase):
         with transaction(self.ws) as db:before=snapshot(records(db),'another')
         self.accept(eid)
         with transaction(self.ws) as db:self.assertEqual(before,snapshot(records(db),'another'))
-        self.assertEqual(lessons.failure_context(other/'task',other)['observed_count'],0)
+        self.assertEqual(lessons.failure_context(other/'question-001',other)['observed_count'],0)

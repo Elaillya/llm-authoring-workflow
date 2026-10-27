@@ -1,20 +1,22 @@
 ---
 name: llm-authoring-workflow
-description: 完成开放难题第五期完整出题与五模型排序。选领域/子方向和题型，读题库及失败经验，题面与Insight固定先查难度标签；冻结后先Seed，再询问是否进行后两项质检并收GPT/Claude Markdown。选择需要才在三模型门槛后并行质检，选择不需要则跳过两项进入Arena；收两份随机模型MD、排序交付六份MD。认可失败先修标准、再征求换回复、最后改题；错误意见给证据异议。模型回复手动、截图用户另交。
+description: 完成开放难题第五期完整出题与五模型排序，开头可选自动化分支（用户指定大方向后由助手按automation.md自主出题至Arena入口，pi-web采集、平台网页质检）。手动流程：选领域/子方向和题型，读题库及失败经验，题面与Insight固定先查难度标签；冻结后先Seed，再询问是否进行后两项质检并收GPT/Claude Markdown。选择需要才在三模型门槛后并行质检，选择不需要则跳过两项进入Arena；收两份随机模型MD、排序交付六份MD。认可失败先修标准、再征求换回复、最后改题；错误意见给证据异议。模型回复手动、截图用户另交。
 ---
 
 # 完整出题与五模型排序
 
+新建题目、恢复路径和保存自动化材料按[工作区与文件命名](references/workspace-layout.md)：共用父工作区workspaces，新题直接位于question-<题号>；旧路径接续不迁移。最终截图使用已核验模型显示名称，上传使用配方返回的imageFile。
+
 开始或恢复先完整阅读[Insight与考点研究](references/insight-rubric-study.md)及[写作检查单](references/insight-rubric-checklist.md)，按检查单的阶段表执行；确定或修改Insight/核心考点时必须实际应用，不能只列链接。研究没有验证出高概率过检模板。
 
-每次开始或恢复先用memory-context/failure-context读取当前记忆。默认同父目录；若已配置local/shared-memory.json，按返回的database与member_workspaces读写同一题库和失败经验，不自行复制或新建空库。共享后保留现有候选、资料和冻结证据；未冻结设计复核过期才刷新比较，不重置任务。详情见工具仓docs/LOCAL_MEMORY.md。
+每次开始或恢复先用memory-context/failure-context读取当前记忆。默认同父目录；若已配置local/shared-memory.json，按返回的database与member_workspaces读写同一题库和失败经验，不自行复制或新建空库。共享后保留现有候选、资料和冻结证据；未冻结设计复核过期才刷新比较，不重置任务。失败发生时由助手按[失败经验闭环](../../docs/FAILURE_LEARNING.md)核实、总结并复用，返修、放弃候选或阶段交接时处理本题待复核观察；认可经验在设计复核中转成本题自查，读过不等于应用。详情见工具仓docs/LOCAL_MEMORY.md。
 
 先读当前题目AGENTS.md、TASK.json、REQUEST.json、WORKLOG.md，以及工具仓rules/authoring.md。路径和命令见TOOLKIT.md。首次仅有工具仓时按README创建工作区，不索取模型API配置。共用平台配置已附带；需要时只给已有Cookie文件让用户填写登录态。设计与交付表达读references/writing.md：自然prompt；灵活Insight突出决定因素；原子考点；作者字段纯文本；五份模型原Markdown保持，发送文字逐字等于prompt。
 
-1. lab begin/status先选计算机科学、商科或生活娱乐，再选子方向、题型，已有明确选择直接记录。生活娱乐按references/lifestyle.md分层选或确认当前范围；商科按资料库选范围。场景、事实和依据由助手构造并研究，使用references/design.md读共享题库和认可失败经验。旧“生活爱好类”只作兼容，冻结与原证据不改。
+1. 开始先询问手动或自动化分支。自动化分支按[references/automation.md](references/automation.md)执行：任务用`lab new <编号> --no-platform-checks`创建，启动时先确认 pi-web 服务地址和答题项目目录（本任务已明确则沿用，不设默认地址），用户指定大方向，助手按题库覆盖自主选题出题、经pi-web采集三模型回复、平台网页执行三项质检与截图上传，到Arena入口暂停交回手动；浏览器默认 ego-lite，先读[浏览器手册](references/automation-playbook.md)；平台填写、修改、暂存、质检、上传及恢复必须按[平台操作流程](references/platform-automation.md)执行。自动化分支默认三项网页质检，同题已有明确选择优先；先处理网页考点，再由agent按正常结果、有效异议或获准异常跳过决定查达成性，不加程序性结论门槛；门槛失败的同内容版本GPT/Claude各可补取一次，原文归档、统一重评，额度规则见automation.md。阶段组合与轻量记录按 automation.md，无需另建登记。手动分支沿用下述步骤：lab begin/status先选计算机科学、商科或生活娱乐，再选子方向、题型，已有明确选择直接记录。生活娱乐按references/lifestyle.md分层选或确认当前范围；商科按资料库选范围。场景、事实和依据由助手构造并研究，使用references/design.md读共享题库和认可失败经验。旧“生活爱好类”只作兼容，冻结与原证据不改。
 2. 按references/writing.md先把prompt收束为一个核心问题和完整问句，原因/依据融入其中，按研究报告与检查单提炼真正改变决策的机制、核对适用边界后写Insight，再固定按references/platform-checks.md检查题目难度与标签；合理返修复检，错误意见保留证据异议。通过后补齐考点、逐条核对目标覆盖、最低证据、等价路径与必需/可选边界，完成含single_core_question及insight_rubric_alignment的设计复核/预留/冻结。已有冻结题从缺失步骤接续，保持原题面。
 3. 按references/collect.md先收Seed完整Markdown并判断。Seed未全部决定性达成后，**创建GPT/Claude填写文件前必须读references/optional-model-checks.md，询问用户是否进行考点与达成性质检，等待实际答复并记录选择**；同题已有选择直接沿用。再给两份填写链接，原样导入，按检查单同版、同标准统一完成三模型判断与备注，不能倒推考点制造失分。
 4. lab check确认three_model_gate=true：Seed未全部决定性达成，且GPT/Claude至少一个全部达成。选择需要才按references/platform-checks.md用qa-run models并行后两项，正常请求等至完成；选择不需要则去除这两个步骤，按有效题目检查及本地三模型门槛直接进入Arena。门槛失败不能通过选择跳过放行；初次失败保留负结果并换新prompt。认可考点失败按references/repair.md先修Insight/考点统一重评、再征求回复替换、最后改prompt；失败原因复核后共享。按研究报告核对总评、逐点细节与真实输入；错误质检告知不认同并给可复制表单备注，无法质检/服务错误/空结果各自保留。
 5. 按references/arena-rank.md先发Arena题面和两份填写链接。只有三项实际通过才可按原规则离线优化通过建议、免复检；跳过不声称通过。收Arena两份MD、统一五模型考点评估和具名排序，按references/evaluate-deliver.md交付提交信息.md与五份模型原MD并给链接，不生成ZIP，更新WORKLOG和Git检查点。
 
-保留原件、失败历史和私有选择；未得到完整回复或型号不能确认是证据不足。完整交付需要五份原文、同版判断、合规型号、具名排序与具体简洁理由、纯文本作者字段和manifest。用户提交截图，工具不独立核验真实网页或甲方验收。
+保留原件、失败历史和私有选择；未得到完整回复或型号不能确认是证据不足。完整交付需要五份原文、同版判断、合规型号、具名排序与具体简洁理由、纯文本作者字段和manifest。手动分支由用户提交截图；自动化分支按截图配方核验实际页面，但不代表甲方验收。

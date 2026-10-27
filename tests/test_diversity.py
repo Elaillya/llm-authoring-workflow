@@ -25,7 +25,7 @@ def accept(root,q):
 class DiversityTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.ws=Path(self.temp.name)/'ws';create_workspace(self.ws)
-        self.a=self.ws/'task';self.b=Path(create_task(self.ws,'second')['task'])
+        self.a=self.ws/'question-001';self.b=Path(create_task(self.ws,'second')['task'])
         for root in (self.a,self.b):
             # Exercise the earlier diversity contract independently of new QA gates.
             task=read_json(root/'TASK.json');task.pop('platform_checks_required',None);write_json(root/'TASK.json',task)
@@ -53,7 +53,7 @@ class DiversityTests(unittest.TestCase):
         c=context(self.b,self.ws)
         self.assertEqual(c['other_task_entries'],1)
         self.assertEqual(c['recent_questions'][0]['question']['prompt'],q['prompt'])
-        self.assertEqual((self.ws/'local/question-memory.sqlite3').stat().st_mode&0o777,0o600)
+        self.assertTrue((self.ws/'local/question-memory.sqlite3').is_file())
     def test_duplicate_prompt_insight_and_points_are_each_detected(self):
         original=self.candidate(self.a);accept(self.a,original);freeze(self.a,original)
         q=self.candidate(self.b,1)

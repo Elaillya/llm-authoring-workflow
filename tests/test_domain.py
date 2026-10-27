@@ -13,7 +13,7 @@ class DomainTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory()
         self.workspace=Path(self.temp.name)/'workspace'
         create_workspace(self.workspace)
-        self.task=self.workspace/'task'
+        self.task=self.workspace/'question-001'
         task=json.loads((self.task/'TASK.json').read_text());task.pop('platform_checks_required',None)
         (self.task/'TASK.json').write_text(json.dumps(task))
         # Preserve the v3 request format as a backwards-compatibility fixture.

@@ -22,17 +22,17 @@ class ClientTests(unittest.TestCase):
     def test_private_cookie_slot_and_existing_configuration_preserved(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);(root/'local').mkdir();result=setup(root,config())
-            cookie=Path(result['cookie_file']);self.assertEqual(cookie.stat().st_mode&0o777,0o600)
+            cookie=Path(result['cookie_file']);self.assertTrue(cookie.is_file())
             with self.assertRaises(Error):load_cookie(cookie)
             cookie.write_text('sid=TEST-ONLY-CREDENTIAL')
             self.assertEqual(load_cookie(cookie),'sid=TEST-ONLY-CREDENTIAL')
             setup(root,config());self.assertEqual(cookie.read_text(),'sid=TEST-ONLY-CREDENTIAL')
             with self.assertRaises(Error):setup(root,{**config(),'task_id':'456'})
-    def test_cookie_permissions_and_symlinks_rejected(self):
+    def test_cookie_uses_system_permissions_and_symlinks_are_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);(root/'local').mkdir();r=setup(root,config());cookie=Path(r['cookie_file'])
             cookie.write_text('sid=TEST-ONLY');cookie.chmod(0o644)
-            with self.assertRaises(Error):load_cookie(cookie)
+            self.assertEqual(load_cookie(cookie),'sid=TEST-ONLY')
             cookie.chmod(0o600);link=root/'link';link.symlink_to(cookie)
             with self.assertRaises(Error):load_cookie(link)
     def test_conversion_header_and_cookie_runtime_only_without_retries(self):

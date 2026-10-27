@@ -1,7 +1,6 @@
 """Three-model screening checkpoints and shared point-level evidence validation."""
 from pathlib import Path
 import shutil
-import tempfile
 from .core import (Error, NAMES, ROLES, active_question, read_json, read_response,
                    question_domain, require, sha, validate_image, write_json)
 from .delivery import model_files,submission_id,submission_text
@@ -143,7 +142,9 @@ def export_authoring(root,ev,review,output):
             'decisive_points':[p for p in q['points'] if p['kind']=='decisive'],
             'supporting_points':[p for p in q['points'] if p['kind']=='supporting'] or '无','models':{}}
     output.parent.mkdir(parents=True,exist_ok=True)
-    staging=Path(tempfile.mkdtemp(prefix='.authoring-export-',dir=output.parent))
+    from .filesystem import temporary_directory
+    from .delivery import attainment_notes
+    staging=temporary_directory(output.parent,'.authoring-export-')
     try:
         (staging/'models').mkdir();(staging/'evidence').mkdir()
         if any(pictures.values()):(staging/'screenshots').mkdir()
@@ -156,14 +157,22 @@ def export_authoring(root,ev,review,output):
             evidence_files=('metadata.json',m.get('raw_response_file','raw_response.json'))+(('render-manifest.json',) if pic else ())
             for name in evidence_files:
                 shutil.copyfile(item['directory']/name,evidence/name)
-            notes='\n\n'.join(f'{j["id"]}：{"满足" if j["met"] else "不满足"}；原因：{j["reason"]}'+('；原文依据：'+' / '.join(j['quotes']) if j['quotes'] else '') for j in stat['judgments'])
+            notes=attainment_notes(stat,kinds=False)
             fields['models'][role]={'ordinal':index,'display_name':m['display_name'],'requested_model':m['model'],'returned_model':m['returned_model'],
                                    'reply_markdown':item['text'],'reply_file':paths[role],'attained':stat['attained'],'attainment_notes':notes,
                                    'screenshot':f'screenshots/{role}.png' if pic else None,'source_kind':m['source_kind'],
                                    'screenshot_submission':'historical_api_render' if pic else 'user_submits_separately'}
+            from .automation_evidence import capture_source
+            captured=capture_source(root,role,staging)
+            if captured: fields['models'][role]['capture_source']=captured
         platform=export_evidence(root,ev,staging)
         if platform:
             fields['platform_checks']=platform
+        from .automation_evidence import platform_fields,web_evidence,screenshot_evidence
+        if (Path(root)/'TASK.json').is_file() and read_json(Path(root)/'TASK.json').get('platform_checks_required') is False:
+            web=web_evidence(root,platform_fields(root,stats=result['models']),staging)
+            if web:fields['web_checks']=web
+            fields['screenshot_states']=screenshot_evidence(root)
         (staging/'提交信息.md').write_text(submission_text(fields,ROLES,checkpoint=True),encoding='utf-8')
         write_json(staging/'question.json',current);write_json(staging/'fields.json',fields)
         shutil.copyfile(Path(root)/'drafts/sources.md',staging/'evidence/sources.md')
